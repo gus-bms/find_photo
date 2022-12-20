@@ -33,7 +33,7 @@ const CustomButton = React.forwardRef(function CustomButton(
   );
 });
 
-export default function UseButton() {
+export default function KakaoBtn() {
   return (
     <CustomButton>
       <Image
