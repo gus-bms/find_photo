@@ -10,7 +10,7 @@ const FixedWidth = styled('div')`
     width: 100%;
 `
 
-export const AppLayout = (props: { children: React.ReactNode }) => {
+const AppLayout = (props: { children: React.ReactNode }) => {
 
   return (
     <Centering>
@@ -18,3 +18,5 @@ export const AppLayout = (props: { children: React.ReactNode }) => {
     </ Centering>
   )
 }
+
+export default AppLayout

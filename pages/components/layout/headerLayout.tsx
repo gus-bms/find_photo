@@ -1,6 +1,6 @@
 import Header from '../header/header'
 
-export const HeaderLayout = (props: { children: React.ReactNode }) => {
+const HeaderLayout = (props: { children: React.ReactNode }) => {
   return (
     <>
       <Header />
@@ -8,3 +8,5 @@ export const HeaderLayout = (props: { children: React.ReactNode }) => {
     </>
   )
 }
+
+export default HeaderLayout
