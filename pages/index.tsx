@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Map from './components/map/map'
 
+
 export default function Home() {
   return (
     <>

@@ -35,7 +35,7 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
             ml: 1,
             flex: 1
           }}
-          placeholder="검색"
+          placeholder="동을 검색해보세요!"
           value={search}
           id='search'
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
