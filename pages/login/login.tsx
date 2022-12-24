@@ -1,9 +1,10 @@
-import style from '../styles/Login.module.css'
+import Image from 'next/image';
+import style from '../../styles/Login.module.css'
 import Head from 'next/head';
 import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
 import { useRouter } from 'next/router';
-import KakaoBtn from './components/login/loginKakao';
-import NaverBtn from './components/login/loginNaver';
+import KakaoBtn from '../components/login/loginKakao';
+import NaverBtn from '../components/login/loginNaver';
 const Login = () => {
   const router = useRouter()
   const goJoin = () => {
@@ -57,12 +58,13 @@ const Login = () => {
           </Box>
           <Grid
             container
+            justifyContent='center'
             spacing={1}
           >
             <Grid
               item
-              xs={12}
-              md={6}
+              xs={2}
+              md={2}
               overflow="hidden"
               textAlign='right'
             >
@@ -70,8 +72,8 @@ const Login = () => {
             </Grid>
             <Grid
               item
-              xs={12}
-              md={6}
+              xs={2}
+              md={2}
               overflow="hidden"
               textAlign="left"
             >

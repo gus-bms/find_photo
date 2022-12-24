@@ -1,5 +1,18 @@
 /* rgb(255 212 127 / 38%); */
 
+.sso__btn {
+  background-size: cover;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  color: transparent;
+  border: none;
+  width: 68px;
+  height: 68px;
+}
+.sso__btn:hover {
+  background-color: transparent;
+}
+
 .login__btn {
   background-color: #67737ead !important;
 }

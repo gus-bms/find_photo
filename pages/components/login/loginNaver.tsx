@@ -1,47 +1,35 @@
-import * as React from 'react';
-import clsx from 'clsx';
-import { ButtonUnstyledProps, useButton } from '@mui/base/ButtonUnstyled';
-import { styled } from '@mui/system';
-import Image from 'next/image';
+import { Button } from '@mui/material';
+import style from '../../../styles/Login.module.css'
 
-const CustomButtonRoot = styled('button')`
-  background-repeat: no-repeat;
-  background-size: cover;
-  cursor: pointer;
-  border: none;
-  background-color: rgba( 255, 255, 255, 0 );
-`;
+declare global {
+  interface Window {
+    naver: any;
+  }
+}
 
-const CustomButton = React.forwardRef(function CustomButton(
-  props: ButtonUnstyledProps,
-  ref: React.ForwardedRef<any>,
-) {
-  const { children } = props;
-  const { active, getRootProps } = useButton({
-    ...props,
-    ref,
-  });
+export default function NaverBtn() {
+  const login = () => {
+    const naverLogin = new window.naver.LoginWithNaverId({
+      clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID,
+      callbackUrl: 'http://localhost:3000/oauth/naver',
+      isPopup: false,
+      // loginButton: { color: 'green', type: 3, height: 58 },
+      callbackHandle: true,
+    })
+    // console.log(naverLogin)
+    naverLogin.init()
+  }
 
-  const classes = {
-    active,
-  };
 
   return (
-    <CustomButtonRoot {...getRootProps()} className={clsx(classes)}>
-      {children}
-    </CustomButtonRoot>
-  );
-});
-
-export default function UseButton() {
-  return (
-    <CustomButton>
-      <Image
-        src="/asset/naver_login_icon.png"
-        alt="Kakao Login"
-        width="75"
-        height="75"
+    <>
+      <Button
+        className={style.sso__btn}
+        id='naverIdLogin'
+        sx={{ backgroundImage: 'url(/asset/naver_login_icon.png)' }}
+        onClick={login}
       />
-    </CustomButton>
+    </>
   );
 }
+
