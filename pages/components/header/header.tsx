@@ -6,7 +6,7 @@ import { logoutAction } from '../../../store/modules/isLogin';
 import { IRootState } from '../../../store/modules'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useCookies } from 'react-cookie'; // useCookies import
 
 export const Header = () => {
@@ -20,6 +20,12 @@ export const Header = () => {
     dispatch(logoutAction());
 
   }, []);
+
+  useEffect(() => {
+    console.log('hi')
+    if (document.cookie.split('id').length == 1)
+      dispatch(logoutAction());
+  }, [])
   return (
     <>
       <Grid
