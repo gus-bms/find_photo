@@ -11,7 +11,7 @@ interface Data {
 }
 
 interface UserInfo {
-  id: number;
+  id: string;
   properties: {
     nickname: string;
     profile_image?: string;
@@ -32,7 +32,7 @@ export default async function handler(
       },
       data: {
         grant_type: "authorization_code",
-        client_id: "9851b7210644addc1e868f1785b8fe5c",
+        client_id: process.env.NEXT_PUBLIC_KAKAO_APPKEY,
         code: req.body.authCode,
       },
     })
@@ -45,7 +45,7 @@ export default async function handler(
 
   const token = await getToken();
   const userInfo: UserInfo = await getUserInfo(token);
-  await checkUser(userInfo);
+  await checkUser(userInfo, token);
 
   res.status(200).json({
     ok: true,
@@ -70,7 +70,7 @@ const getUserInfo = async (token: string) =>
     });
 
 // 카카오톡에서 조회된 ID 값이 데이터베이스에 존재하는지 체크합니다.
-const checkUser = async (userInfo: UserInfo) => {
+const checkUser = async (userInfo: UserInfo, token: string) => {
   console.log(userInfo);
   const id = userInfo.id;
   await axios
@@ -78,9 +78,14 @@ const checkUser = async (userInfo: UserInfo) => {
       id: id,
     })
     .then(async (res) => {
-      if (res.data.r == true) return;
-      else {
-        await insertUser(userInfo);
+      if (res.data.r == true) {
+        axios.defaults.headers.common["Auth"] = token;
+        return;
+      } else {
+        // try catch 필요
+        const result = await insertUser(userInfo);
+        if (result) axios.defaults.headers.common["Auth"] = `${token}`;
+
         return;
       }
     })
@@ -91,7 +96,7 @@ const checkUser = async (userInfo: UserInfo) => {
 };
 
 // DB에 user 정보를 생성합니다.
-const insertUser = async (userInfo: UserInfo) => {
+const insertUser = async (userInfo: UserInfo): Promise<boolean> =>
   await axios
     .post("http://localhost:8000/api/insertUser", {
       uid: userInfo.id,
@@ -100,10 +105,9 @@ const insertUser = async (userInfo: UserInfo) => {
       email: userInfo.properties.email,
     })
     .then(async (res) => {
-      return;
+      return res.data.r == true ? true : false;
     })
     .catch((err) => {
       console.log(err);
       return false;
     });
-};

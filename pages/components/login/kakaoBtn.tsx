@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { Button } from '@mui/material';
 import style from '../../../styles/Login.module.css'
 import Script from 'next/script';
-import { NextRouter, useRouter } from 'next/router';
 
 declare global {
   interface Window {

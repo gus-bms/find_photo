@@ -1,8 +1,3 @@
-/*
-  1. loginHandler 재정의하기
-  2. 각 변수들 타입 재정의 필요
-*/
-
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
@@ -17,29 +12,30 @@ interface ResponseType {
   token?: string;
 }
 
-const Kakao: NextPage = () => {
+const Naver: NextPage = () => {
   const router = useRouter();
-  const { code: authCode, error: kakaoServerError } = router.query;
   const [cookies, setCookie] = useCookies(['id']); // 쿠키 훅 
+  let hash: string;
 
-  // reducer isLogin Action 사용
+  if (router.asPath.split('access_token')[1]) {
+    hash = router.asPath.split('access_token=')[1].split('&')[0]
+  }
   const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook
+
   const onloginAction = useCallback(() => { // useCallback은 최적화를 위한 hook이다 이 앱에선 굳이 사용 안 해도 되는데 습관이 들면 좋기에 사용.
     dispatch(loginAction());
   }, []);
 
-
-
   const loginHandler = useCallback(
-    async (code: string | string[]) => {
+    async (token: string | string[]) => {
 
-      const response: ResponseType = await fetch('/api/oauth/kakaoCallback', {
+      const response: ResponseType = await fetch('/api/oauth/naverCallback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          authCode: code,
+          token: token,
         }),
       }).then((res) => res.json());
 
@@ -63,19 +59,15 @@ const Kakao: NextPage = () => {
   );
 
   useEffect(() => {
-    if (authCode) {
-      loginHandler(authCode);
-
-      // 인가코드를 제대로 못 받았을 경우에 에러 페이지를 띄운다.
-    } else if (kakaoServerError) {
-      console.log(kakaoServerError)
-      router.push('/login/login');
-    }
-  }, [loginHandler, authCode, kakaoServerError, router]);
+    if (hash) {
+      loginHandler(hash)
+    } else
+      router.push('/login/login')
+  }, [loginHandler, router]);
 
   return (
     <h2>로그인 중입니다..</h2>
   );
 };
 
-export default Kakao
+export default Naver

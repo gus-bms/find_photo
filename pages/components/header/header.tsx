@@ -1,9 +1,25 @@
 import Link from "next/link";
 import style from '../../../styles/Header.module.css'
-import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
-import { useState } from "react";
+import { Grid, Typography, Divider } from '@mui/material';
+
+import { logoutAction } from '../../../store/modules/isLogin';
+import { IRootState } from '../../../store/modules'
+
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback } from "react";
+import { useCookies } from 'react-cookie'; // useCookies import
+
 export const Header = () => {
-  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const isLogin = useSelector<IRootState, boolean>(state => state.isLogin); // store의 state를 불러오는 hook   store의 state 중에서 count의 state를 불러온다.
+  // reducer isLogin Action 사용
+  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook
+  const [, , removeCookie] = useCookies(['id']);
+  const onlogoutAction = useCallback(() => { // useCallback은 최적화를 위한 hook이다 이 앱에선 굳이 사용 안 해도 되는데 습관이 들면 좋기에 사용.
+
+    removeCookie('id', { path: '/' });
+    dispatch(logoutAction());
+
+  }, []);
   return (
     <>
       <Grid
@@ -28,7 +44,7 @@ export const Header = () => {
           textAlign='right'
         >
           {isLogin
-            ? <Link className={style.login} href='/login/login'>
+            ? <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
               <Typography>로그아웃</Typography>
             </Link>
             : <Link className={style.login} href='/login/login'>

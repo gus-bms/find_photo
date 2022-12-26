@@ -20,3 +20,7 @@
 .join__btn {
   background-color: #345636ad !important;
 }
+
+.naverIdLogin {
+  display: none;
+}

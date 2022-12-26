@@ -3,8 +3,11 @@ import style from '../../styles/Login.module.css'
 import Head from 'next/head';
 import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
 import { useRouter } from 'next/router';
-import KakaoBtn from '../components/login/loginKakao';
-import NaverBtn from '../components/login/loginNaver';
+
+import KakaoBtn from '../components/login/kakaoBtn';
+import NaverBtn from '../components/login/naverBtn';
+import { useCallback, useEffect } from 'react';
+
 const Login = () => {
   const router = useRouter()
   const goJoin = () => {
