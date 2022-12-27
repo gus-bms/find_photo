@@ -1,14 +1,23 @@
-/*
-  1. userInfo 타입 정의하기
-	2. 각 변수들 타입 재정의 필요
-*/
+/**
+ * 접근토큰을 전달 받아 DB서버와 통신합니다.
+ * 네이버에서 제공해준 사용자 id 값과 DB의 uid값을 대조하여 사용자가 존재하는지 확인합니다.
+ * 사용자 조회 및 등록 후 사용자 정보(uid)를 return 합니다.
+ *
+ * @param token
+ * @returns uid
+ * @author gus-bms
+ * @version 0.5
+ * @project find-photo
+ */
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
+import { userInfo } from "os";
 const auth = require("../auth/auth");
 
 interface Data {
   ok: boolean;
-  token: string;
+  uid: string;
 }
 
 interface UserInfo {
@@ -18,13 +27,24 @@ interface UserInfo {
   email?: string;
 }
 
+/**
+ *
+ * @param req client에서 전송된 정보(접근토큰)
+ * @param res client에  리턴할 정보(uid)
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
   const token = req.body.token;
+  /**
+   * 접근토큰을 사용하여 네이버로부터 사용자 정보를 제공받습니다.
+   * 토큰 타입은 Bearer로 고정입니다.
+   *
+   * @param token 카카오에서 제공된 접근 토큰
+   * @returns userInfo
+   */
   const getUserInfo = async () =>
-    // const token = req.body.token;
     axios({
       url: "https://openapi.naver.com/v1/nid/me",
       method: "post",
@@ -41,43 +61,43 @@ export default async function handler(
         console.log(err);
       });
 
-  const user: UserInfo = await getUserInfo();
-  await checkUser(user, token);
+  const userInfo: UserInfo = await getUserInfo();
+  const isUser = await checkUser(userInfo.id);
+  // DB에 사용자가 없을 경우 생성해주는 함수를 호출합니다.
+  isUser === false ? await insertUser(userInfo) : null;
 
   res.status(200).json({
     ok: true,
-    token: token,
+    uid: userInfo.id,
   });
 }
 
-// 네이버에서 조회된 ID 값이 데이터베이스에 존재하는지 체크합니다.
-const checkUser = async (userInfo: UserInfo, token: string) => {
-  console.log("checkUser.");
-  const id = userInfo.id;
+/**
+ * DB에서 사용자 정보가 존재하는지 확인합니다.
+ * userInfo의 id값(키)을 통하여 확인합니다.
+ *
+ * @param id string
+ * @returns boolean
+ */
+const checkUser = async (id: string) =>
   await axios
     .post("http://localhost:8000/api/selectUser", {
       id: id,
     })
-    .then(async (res) => {
-      if (res.data.r == true) {
-        axios.defaults.headers.common["Auth"] = token;
-        console.log("//////////", auth.auth(id));
-        return;
-      } else {
-        // try catch 필요
-        const result = await insertUser(userInfo);
-        if (result) axios.defaults.headers.common["Auth"] = `${token}`;
-        auth.auth(id);
-        return;
-      }
+    .then((res) => {
+      return res.data.r;
     })
     .catch((err) => {
       console.log(err);
       return false;
     });
-};
-
-// DB에 user 정보를 생성합니다.
+/**
+ * DB에 사용자 정보를 insert 합니다.
+ * uid와 name은 필수값이며 그 외에는 optional 입니다.
+ *
+ * @param userInfo
+ * @returns
+ */
 const insertUser = async (userInfo: UserInfo): Promise<boolean> =>
   await axios
     .post("http://localhost:8000/api/insertUser", {

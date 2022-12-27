@@ -1,8 +1,16 @@
+/**
+ * 로고와 로그인 정보를 담고있는 Header 입니다.
+ * 로그인 성공 시 Redux를 사용하여 로그인 정보를 저장합니다.
+ *
+ * @author gus-bms
+ * @version 0.5
+ * @project find-photo
+ */
 import Link from "next/link";
 import style from '../../../styles/Header.module.css'
 import { Grid, Typography, Divider } from '@mui/material';
 
-import { logoutAction } from '../../../store/modules/isLogin';
+import { loginAction, logoutAction } from '../../../store/modules/isLogin';
 import { IRootState } from '../../../store/modules'
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,22 +18,28 @@ import { useCallback, useEffect } from "react";
 import { useCookies } from 'react-cookie'; // useCookies import
 
 export const Header = () => {
-  const isLogin = useSelector<IRootState, boolean>(state => state.isLogin); // store의 state를 불러오는 hook   store의 state 중에서 count의 state를 불러온다.
+  // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
+  const isLogin = useSelector<IRootState, boolean>(state => state.isLogin);
   // reducer isLogin Action 사용
-  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook
-  const [, , removeCookie] = useCookies(['id']);
-  const onlogoutAction = useCallback(() => { // useCallback은 최적화를 위한 hook이다 이 앱에선 굳이 사용 안 해도 되는데 습관이 들면 좋기에 사용.
+  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
+  const [cookies, , removeCookie] = useCookies(['uid']);
 
-    removeCookie('id', { path: '/' });
+  /**
+   * 로그아웃 버튼을 클릭하면 쿠키에서 uid 값을 삭제합니다.
+   * Redux의 isLogin 값을 변경해줍니다.
+   */
+  const onlogoutAction = useCallback(() => {
+    removeCookie('uid', { path: '/' });
     dispatch(logoutAction());
-
   }, []);
 
+  /**
+   * 최초 렌더링 시 쿠키에 값에 따라 헤더의 로그인 영역을 변경합니다.
+   */
   useEffect(() => {
-    console.log('hi')
-    if (document.cookie.split('id').length == 1)
-      dispatch(logoutAction());
+    cookies.uid != undefined ? dispatch(loginAction()) : dispatch(logoutAction())
   }, [])
+
   return (
     <>
       <Grid

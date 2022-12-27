@@ -10,9 +10,6 @@ import { useCallback, useEffect } from 'react';
 
 const Login = () => {
   const router = useRouter()
-  const goJoin = () => {
-    router.push('/')
-  }
 
   return (
     <>
