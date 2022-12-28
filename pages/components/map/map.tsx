@@ -13,7 +13,7 @@ import Script from 'next/script';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { Box, Button, Container, Grid, Link, TextField, Typography, Divider } from '@mui/material';
 import Search from "../search/search";
-import FolderList from '../list/folderList'
+import FolderList from '../spot/spotList'
 import axios from 'axios'
 
 declare global {
