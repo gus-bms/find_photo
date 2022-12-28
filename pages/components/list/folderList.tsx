@@ -1,7 +1,5 @@
 import React, { FunctionComponent, Dispatch, SetStateAction, useState } from 'react';
-import ImageIcon from "@mui/icons-material/Image";
 import {
-  Paper,
   List,
   ListItem,
   ListItemText,
@@ -19,10 +17,24 @@ interface Iprops {
   setSpot: Dispatch<SetStateAction<object>>;
   spotList: Spot[]
 }
-
+var selectedSpot: Spot;
 
 const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Iprops) => {
-  console.log(spotList)
+
+
+  const handleOnClick = (spot: Spot) => {
+    console.log('hi')
+    selectedSpot != spot ? (setSpot(
+      {
+        name: spot.name,
+        address: spot.address,
+        latitude: spot.latitude,
+        longitude: spot.longitude
+      })) : console.log('no changed')
+
+    selectedSpot = spot
+    console.log('same')
+  }
   return (
     <List
       sx={{
@@ -34,9 +46,7 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
     >
       {spotList.map(spot => (
         <ListItem key={spot.spot_pk}
-          onClick={() => (
-            setSpot({ name: spot.name, address: spot.address, latitude: spot.latitude, longitude: spot.longitude })
-          )}>
+          onClick={() => handleOnClick(spot)}>
           <ListItemAvatar>
             <Avatar>
               {spot.category == 'C' ? <LocalCafe /> : (

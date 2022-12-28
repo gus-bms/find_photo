@@ -1,12 +1,22 @@
-import Image from 'next/image';
+/**
+ * 로그인 화면입니다.
+ * 소셜 로그인 (카카오, 네이버)를 통해 로그인할 수 있습니다.
+ * 각 버튼 클릭 시 해당 oAuth에 등록한 redirect URL이 호출됩니다.
+ * 
+ * @type page
+ * @author gus-bms
+ * @version 0.5
+ * @project find-photo
+ * @TO_DO Google Login 추가 / 회원가입 제거 / UI 변경
+ */
+
+
 import style from '../../styles/Login.module.css'
 import Head from 'next/head';
 import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
 import { useRouter } from 'next/router';
-
 import KakaoBtn from '../components/login/kakaoBtn';
 import NaverBtn from '../components/login/naverBtn';
-import { useCallback, useEffect } from 'react';
 
 const Login = () => {
   const router = useRouter()

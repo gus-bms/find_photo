@@ -2,10 +2,12 @@
  * 로고와 로그인 정보를 담고있는 Header 입니다.
  * 로그인 성공 시 Redux를 사용하여 로그인 정보를 저장합니다.
  *
+ * @type component
  * @author gus-bms
  * @version 0.5
  * @project find-photo
  */
+
 import Link from "next/link";
 import style from '../../../styles/Header.module.css'
 import { Grid, Typography, Divider } from '@mui/material';
@@ -44,34 +46,64 @@ export const Header = () => {
     <>
       <Grid
         container
+        // justifyContent='center'
         spacing={1}
         marginTop={1}
       >
         <Grid
           item
-          xs={12}
-          md={6}
+          xs={10}
+          md={8}
           textAlign='left'
         >
           <Link className={style.logo} href='/'>
             <Typography >Find Photo</Typography>
           </Link>
         </Grid>
-        <Grid
+        {/* <Grid
           item
-          xs={12}
-          md={6}
+          xs={2}
+          md={2}
           textAlign='right'
-        >
-          {isLogin
-            ? <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
-              <Typography>로그아웃</Typography>
-            </Link>
-            : <Link className={style.login} href='/login/login'>
-              <Typography>로그인</Typography>
-            </Link>
-          }
-        </Grid>
+        > */}
+        {isLogin
+          ?
+          <>
+            <Grid
+              item
+              xs={2}
+              md={2}
+              textAlign='right'
+            >
+              <Link className={style.login} href={`/profile/${cookies.uid}`}>
+                <Typography>나의 글</Typography>
+              </Link>
+            </Grid>
+            <Grid
+              item
+              xs={2}
+              md={2}
+              textAlign='right'
+            >
+              <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
+                <Typography>로그아웃</Typography>
+              </Link>
+            </Grid>
+          </>
+          : <>
+            <Grid
+              item
+              xs={2}
+              md={4}
+              textAlign='right'
+            >
+              <Link className={style.login} href='/login/login'>
+                <Typography>로그인</Typography>
+              </Link>
+            </Grid>
+          </>
+        }
+        {/* </Grid> */}
         <Divider />
       </Grid>
     </>

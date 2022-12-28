@@ -3,6 +3,7 @@
  * 네이버 접근 토큰을 next 서버로 넘겨줍니다.
  * 서버에서 처리된 결과에 따라 화면 이동 처리합니다.
  * 
+ * @type page
  * @author gus-bms
  * @version 0.5
  * @project find-photo

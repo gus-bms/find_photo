@@ -1,3 +1,14 @@
+/**
+ * 카카오 지도 컴포넌트입니다.
+ * 지도 객체를 통하여 지도를 그리고 검색창에서 검색된 결과를 전달 받아 Next 서버로 전송합니다.
+ * 
+ *
+ * @type component
+ * @author gus-bms
+ * @version 0.5
+ * @project find-photo
+ */
+
 import Script from 'next/script';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { Box, Button, Container, Grid, Link, TextField, Typography, Divider } from '@mui/material';
@@ -26,25 +37,33 @@ export interface Spot {
   longitude?: number;
   latitude?: number;
 }
+const MARKER_WIDTH = 33, // 기본, 클릭 마커의 너비
+  MARKER_HEIGHT = 36, // 기본, 클릭 마커의 높이
+  OFFSET_X = 12, // 기본, 클릭 마커의 기준 X좌표
+  OFFSET_Y = MARKER_HEIGHT, // 기본, 클릭 마커의 기준 Y좌표
+  OVER_MARKER_WIDTH = 40, // 오버 마커의 너비
+  OVER_MARKER_HEIGHT = 42, // 오버 마커의 높이
+  OVER_OFFSET_X = 13, // 오버 마커의 기준 X좌표
+  OVER_OFFSET_Y = OVER_MARKER_HEIGHT, // 오버 마커의 기준 Y좌표
+  SPRITE_MARKER_URL = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markers_sprites2.png', // 스프라이트 마커 이미지 URL
+  SPRITE_WIDTH = 126, // 스프라이트 이미지 너비
+  SPRITE_HEIGHT = 146, // 스프라이트 이미지 높이
+  SPRITE_GAP = 10; // 스프라이트 이미지에서 마커간 간격
 
-interface GetSpotsResponse {
-  list: Spot[];
-}
+var selectedMarker: any = null
+var selectedInfowindow: any
 
 const Map = ({ latitude, longitude }: MapProps) => {
-  // keyword: Search Component에서 전달 받을 데이터
-  // spotList: 검색된 결과에 따른 장소 리스트
-  // spot: 검색된 결과내에서 선택된 장소
   const [keyword, setKeyword] = useState<string>('')
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [spot, setSpot] = useState<Spot>({})
   const [map, setMap] = useState<any>()
-  // const [infowindow, setInfowindow] = useState<any>()
 
-  // ----------------------------useEffect----------------------------
-  // 지도 initial 세팅, spot state 변경 시 지도 리셋
+  /**
+   * 카카오 지도 script가 로드 되면 수행되는 함수입니다.
+   * map id를 갖은 컨테이너에 지도를 생성해줍니다.
+   */
   const initMap = useCallback(() => {
-    // map 그릴 컨테이너 
     const container = document.getElementById("map");
     const options = {
       //center: 선택될 좌표, level: 지도의 확대 단계 (낮을수록 깊어짐)
@@ -52,13 +71,6 @@ const Map = ({ latitude, longitude }: MapProps) => {
       level: 4
     };
     setMap(new window.kakao.maps.Map(container, options))
-
-    // 마커 위치 시킬 좌표 설정
-    const markerPosition = new window.kakao.maps.LatLng(latitude, longitude);
-    const marker = new window.kakao.maps.Marker({
-      position: markerPosition,
-    });
-    marker.setMap(map);
   }, []);
 
   useEffect(() => {
@@ -69,11 +81,8 @@ const Map = ({ latitude, longitude }: MapProps) => {
 
   // 장소 클릭 시 지도 위치를 재설정합니다.
   useEffect(() => {
+    console.log('click spot')
     if (window?.kakao) {
-      // // 장소 검색 객체를 생성합니다
-      // var ps = new window.kakao.maps.services.Places();
-      // // 키워드로 장소를 검색합니다
-      // ps.keywordSearch(spot.address, placesSearchCB);
       // 주소-좌표 변환 객체를 생성합니다
       var geocoder = new window.kakao.maps.services.Geocoder();
       geocoder.addressSearch(spot.address, function (result: any, status: any) {
@@ -82,22 +91,14 @@ const Map = ({ latitude, longitude }: MapProps) => {
 
           var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
 
-          // 결과값으로 받은 위치를 마커로 표시합니다
-          var marker = new window.kakao.maps.Marker({
-            map: map,
-            position: coords
-          });
-          var infowindow = new window.kakao.maps.InfoWindow({
-            position: coords,
-          });
-          window.kakao.maps.event.addListener(marker, 'click', function () {
-            if (infowindow != undefined) {
-              // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-              infowindow.close();
-              infowindow.setContent('<div style="padding:10px;font-size:12px;">' + spot.name + '</div>');
-              infowindow.open(map, marker);
-            }
-          });
+          var gapX = (MARKER_WIDTH + SPRITE_GAP), // 스프라이트 이미지에서 마커로 사용할 이미지 X좌표 간격 값
+            originY = (MARKER_HEIGHT + SPRITE_GAP),
+            overOriginY = (OVER_MARKER_HEIGHT + SPRITE_GAP),
+            normalOrigin = new window.kakao.maps.Point(0, originY), // 스프라이트 이미지에서 기본 마커로 사용할 영역의 좌상단 좌표
+            clickOrigin = new window.kakao.maps.Point(gapX, originY), // 스프라이트 이미지에서 마우스오버 마커로 사용할 영역의 좌상단 좌표
+            overOrigin = new window.kakao.maps.Point(gapX * 2, overOriginY); // 스프라이트 이미지에서 클릭 마커로 사용할 영역의 좌상단 좌표
+          addMarker(coords, normalOrigin, overOrigin, clickOrigin)
+
           // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
           map.setCenter(coords);
         } else {
@@ -106,6 +107,101 @@ const Map = ({ latitude, longitude }: MapProps) => {
           }
         }
       });
+
+      /**
+     * marker를 등록하는 함수입니다.
+     */
+      const addMarker = (position: any, normalOrigin: number, overOrigin: number, clickOrigin: number) => {
+        const markerSize = new window.kakao.maps.Size(MARKER_WIDTH, MARKER_HEIGHT), // 기본, 클릭 마커의 크기
+          markerOffset = new window.kakao.maps.Point(OFFSET_X, OFFSET_Y), // 기본, 클릭 마커의 기준좌표
+          overMarkerSize = new window.kakao.maps.Size(OVER_MARKER_WIDTH, OVER_MARKER_HEIGHT), // 오버 마커의 크기
+          overMarkerOffset = new window.kakao.maps.Point(OVER_OFFSET_X, OVER_OFFSET_Y), // 오버 마커의 기준 좌표
+          spriteImageSize = new window.kakao.maps.Size(SPRITE_WIDTH, SPRITE_HEIGHT); // 스프라이트 이미지의 크기
+        // 기본 마커이미지, 오버 마커이미지, 클릭 마커이미지를 생성합니다
+        var normalImage = createMarkerImage(markerSize, markerOffset, normalOrigin, spriteImageSize),
+          overImage = createMarkerImage(overMarkerSize, overMarkerOffset, overOrigin, spriteImageSize),
+          clickImage = createMarkerImage(markerSize, markerOffset, clickOrigin, spriteImageSize);
+
+        // 마커를 생성하고 이미지는 기본 마커 이미지를 사용합니다
+        var marker = new window.kakao.maps.Marker({
+          map: map,
+          position: position,
+          image: normalImage
+        });
+
+        // 마커 객체에 마커아이디와 마커의 기본 이미지를 추가합니다
+        marker.normalImage = normalImage;
+
+        // 마커에 mouseover 이벤트를 등록합니다
+        window.kakao.maps.event.addListener(marker, 'mouseover', function () {
+
+          // 클릭된 마커가 없고, mouseover된 마커가 클릭된 마커가 아니면
+          // 마커의 이미지를 오버 이미지로 변경합니다
+          if (!selectedMarker || selectedMarker !== marker) {
+            marker.setImage(overImage);
+          }
+        });
+
+        // 마커에 mouseout 이벤트를 등록합니다
+        window.kakao.maps.event.addListener(marker, 'mouseout', function () {
+
+          // 클릭된 마커가 없고, mouseout된 마커가 클릭된 마커가 아니면
+          // 마커의 이미지를 기본 이미지로 변경합니다
+          if (!selectedMarker || selectedMarker !== marker) {
+            marker.setImage(normalImage);
+          }
+        });
+
+        // 마커에 click 이벤트를 등록합니다
+        window.kakao.maps.event.addListener(marker, 'click', function () {
+          // 클릭된 마커가 없고, click 마커가 클릭된 마커가 아니면
+          // 마커의 이미지를 클릭 이미지로 변경합니다
+          var infowindow = new window.kakao.maps.InfoWindow({
+            removable: false
+          });
+          console.log(selectedInfowindow == infowindow)
+          if (!selectedMarker || selectedMarker !== marker) {
+
+            if (selectedInfowindow != undefined) selectedInfowindow.close();
+            if (infowindow != undefined) {
+              infowindow.setContent('<div class ="label"><span class="left"></span><span class="center">카카오!</span><span class="right"></span></div>')
+              // infowindow.setContent('<div style="padding:10px;font-size:12px;">' + spot.name + '</div>');
+              infowindow.open(map, marker);
+            }
+
+            // 클릭된 마커 객체가 null이 아니면
+            // 클릭된 마커의 이미지를 기본 이미지로 변경하고
+            !!selectedMarker && selectedMarker.setImage(selectedMarker.normalImage);
+
+            // 현재 클릭된 마커의 이미지는 클릭 이미지로 변경합니다
+            marker.setImage(clickImage);
+          } else if (selectedMarker == marker && selectedInfowindow != undefined) {
+            // selectedInfowindow.close();
+            // selectedInfowindow.getPosition()
+            console.log(selectedInfowindow.getContent().length)
+          }
+
+
+          // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
+          selectedInfowindow = infowindow
+          selectedMarker = marker;
+        });
+      }
+
+      // MakrerImage 객체를 생성하여 반환하는 함수입니다
+      const createMarkerImage = (markerSize: number, offset: number, spriteOrigin: number, spriteImageSize: number) => {
+        var markerImage = new window.kakao.maps.MarkerImage(
+          SPRITE_MARKER_URL, // 스프라이트 마커 이미지 URL
+          markerSize, // 마커의 크기
+          {
+            offset: offset, // 마커 이미지에서의 기준 좌표
+            spriteOrigin: spriteOrigin, // 스트라이프 이미지 중 사용할 영역의 좌상단 좌표
+            spriteSize: spriteImageSize // 스프라이트 이미지의 크기
+          }
+        );
+
+        return markerImage;
+      }
     }
   }, [spot,]);
 
@@ -113,26 +209,21 @@ const Map = ({ latitude, longitude }: MapProps) => {
   useEffect(() => {
     if (keyword != '') {
       (async () => {
-        const spotList = await getSpotList();
+        await getSpotList()
       })();
     }
   }, [keyword])
 
-  // ----------------------------With Node function----------------------------
   // SpotList를 조회하는 함수 입니다.
   async function getSpotList(): Promise<any> {
     try {
-      // config 객체
-      await axios.get('http://localhost:8000/api/selectSpotList', {
-        params: { // query string
+      await axios.get('/api/spot/getSpotList', {
+        params: {
           address_dong: keyword
         },
-        // headers: { // 요청 헤더
-        //   'X-Api-Key': 'my-api-key'
-        // },
-        timeout: 3000 // 1초 이내에 응답이 오지 않으면 에러로 간주
+        timeout: 3000
       }).then(res => {
-        setSpotList(res.data.list)
+        setSpotList(res.data.spotList)
         return res.data.list;
       })
 
@@ -142,51 +233,6 @@ const Map = ({ latitude, longitude }: MapProps) => {
     }
   }
 
-  // ----------------------------With Map function----------------------------
-  // 장소 클릭 시 지도 입력
-  const searchMap = (spot: Spot) => {
-    setSpot({ name: spot.name, address: spot.address, latitude: spot.latitude, longitude: spot.longitude })
-
-  }
-  // 키워드 검색 완료 시 호출되는 콜백함수입니다
-  const placesSearchCB = (data: any, status: any, pagination: any) => {
-    if (status === window.kakao.maps.services.Status.OK) {
-
-      // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-      // LatLngBounds 객체에 좌표를 추가합니다
-      var bounds = new window.kakao.maps.LatLngBounds();
-
-      for (var i = 0; i < data.length; i++) {
-        displayMarker(data[i]);
-        bounds.extend(new window.kakao.maps.LatLng(data[i].y, data[i].x));
-      }
-
-      // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-      map.setBounds(bounds);
-    }
-  }
-
-  // 지도에 마커를 표시하는 함수입니다.
-  const displayMarker = (place: any) => {
-    // 마커를 생성하고 지도에 표시합니다
-    var marker = new window.kakao.maps.Marker({
-      map: map,
-      position: new window.kakao.maps.LatLng(place.y, place.x)
-    });
-
-
-    // 마커에 클릭이벤트를 등록합니다
-    window.kakao.maps.event.addListener(marker, 'click', function () {
-      // if (infowindow != undefined) {
-      //   // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-      //   infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
-      //   infowindow.open(map, marker);
-      // }
-    });
-  }
-
-
-  // ----------------------------Return JSX----------------------------
   return (
     <>
       <Script
@@ -200,10 +246,10 @@ const Map = ({ latitude, longitude }: MapProps) => {
         id="map"
         component='main'
         sx={{
-          height: '5vh',
+          height: '300px',
           marginTop: '5%',
           alignItems: 'center',
-          minHeight: '100%',
+          // minHeight: '100%',
           border: 'black',
           borderRadius: '10px',
         }}

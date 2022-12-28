@@ -1,8 +1,16 @@
-import { Box, Button, Container, Grid, TextField, Typography, Divider, IconButton, InputBase, Paper, Input } from '@mui/material';
+/**
+ * 사용자가 위치를 검색할 수 있는 검색창입니다.
+ * map이 부모 컴포넌트이며, 검색된 결과를 setState 를 통해 재 전달합니다.
+ *
+ * @type component
+ * @author gus-bms
+ * @version 0.5
+ * @project find-photo
+ */
+
+import { Divider, IconButton, InputBase, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import style from '../../../styles/Search.module.css'
-import { border } from '@mui/system';
 import React, { FunctionComponent, Dispatch, SetStateAction, useState } from 'react';
 
 interface Iprops {
@@ -10,9 +18,9 @@ interface Iprops {
 }
 
 const Search: FunctionComponent<Iprops> = (props: Iprops) => {
-  //검색창 변수
+  // 검색어 상태입니다.
   const [search, setSearch] = useState<string>('');
-  // 엔터 키 동작 시, 검색 버튼 클릭 시 
+  // 엔터 키 동작 시, 검색 버튼 클릭 시 실행되는 함수입니다.
   const searchMap = () => {
     props.setKeyword(search)
   }

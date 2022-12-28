@@ -3,6 +3,7 @@
  * 카카오에서 제공해준 사용자 id 값과 DB의 uid값을 대조하여 사용자가 존재하는지 확인합니다.
  * 사용자 조회 및 등록 후 사용자 정보(uid)를 return 합니다.
  *
+ * @type class
  * @param authCode
  * @returns uid
  * @author gus-bms

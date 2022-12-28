@@ -3,6 +3,7 @@
  * 네이버에서 제공해준 사용자 id 값과 DB의 uid값을 대조하여 사용자가 존재하는지 확인합니다.
  * 사용자 조회 및 등록 후 사용자 정보(uid)를 return 합니다.
  *
+ * @type class
  * @param token
  * @returns uid
  * @author gus-bms
@@ -12,8 +13,6 @@
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { userInfo } from "os";
-const auth = require("../auth/auth");
 
 interface Data {
   ok: boolean;
