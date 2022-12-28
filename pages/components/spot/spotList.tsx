@@ -162,5 +162,4 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
       </Grid >
     </>
   )
-
 }
