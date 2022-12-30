@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect } from 'react';
+import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import {
   List,
   ListItem,
@@ -20,6 +20,8 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Spot } from '../map/map'
 import { LocalCafe, LocalDining, PhotoCamera, ExpandLess, ExpandMore, StarBorder, NavigateNext } from "@mui/icons-material";
 import style from '../../../styles/Spot.module.css'
+import next from 'next';
+import Link from 'next/link';
 
 interface Iprops {
   setSpot: Dispatch<SetStateAction<object>>;
@@ -48,7 +50,7 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
           <Grid
             container
           >
-            <DetailSpot spot={spot} setSpot={setSpot} />
+            <DetailSpot key={spot.spot_pk} spot={spot} setSpot={setSpot} />
           </Grid>
         </>
       ))
@@ -66,8 +68,34 @@ export default FolderList;
  * @returns jsx
  */
 const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const cards = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [current, setCurrent] = useState<number>(0)
+  const carouselRef = useRef(null)
+  const prevRef = useRef<HTMLButtonElement | null>(null)
+  const nextRef = useRef<HTMLButtonElement | null>(null)
+  const trackRef = useRef(null)
+
+  // const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+  const cards2: { url: string, index: number }[] = [
+    {
+      url: "https://cdn.pixabay.com/photo/2014/12/08/17/52/mare-561221_960_720.jpg",
+      index: 1
+    }, {
+      url: "https://cdn.pixabay.com/photo/2014/08/29/03/02/horse-430441_960_720.jpg",
+      index: 2
+
+    }, {
+      url: "https://cdn.pixabay.com/photo/2016/08/11/23/48/italy-1587287_960_720.jpg",
+      index: 3
+    }, {
+      url: "https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_960_720.jpg",
+      index: 4
+    }, {
+      url: "https://cdn.pixabay.com/photo/2018/08/21/23/29/fog-3622519_960_720.jpg",
+      index: 5
+    }
+  ]
 
   const handleOnClick = (spot: Spot) => {
     selectedSpot != spot ? (setSpot(
@@ -81,6 +109,42 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
     selectedSpot = spot
     console.log('same')
   }
+
+  const handleClick = (position: string) => {
+    console.log(position, '!')
+    if (current > 0) {
+      position == 'prev' ? setCurrent(current - 1) : setCurrent(current + 1);
+    } else if (current == 0) {
+      position == 'next' ? setCurrent(current + 1) : null
+    }
+  }
+
+  useEffect(() => {
+    if (prevRef.current && nextRef.current) {
+      if (current > 0 && current < 4) {
+        prevRef.current.style = "display: block"
+        nextRef.current.style = "display: block"
+      }
+      if (current == 0) {
+        prevRef.current.style = 'display: none'
+        nextRef.current.style = 'display: block'
+      } else if (current == 4) {
+        prevRef.current.style = 'display: block'
+        nextRef.current.style = 'display: none'
+      }
+    }
+
+
+    // 이미지 위치 변경
+    if (trackRef.current) {
+      let move: number
+      move = current != 0 ? (current + 0.5) * 10 : current * 10
+      trackRef.current.style.transition = 'all 0.2s ease-in-out';
+      trackRef.current.style.transform = `translateX(-${move}%)`; // 백틱을 사용하여 슬라이드로 이동하는 에니메이션을 만듭니다.
+    }
+
+    console.log(current)
+  }, [current])
 
   return (
     <>
@@ -120,18 +184,18 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
         md={12}
       >
         <Collapse in={isOpen} timeout="auto" unmountOnExit>
-          <Box className={style.carousel__container}>
+          <Box ref={carouselRef} className={style.carousel__container}>
             <Box className={style.inner__carousel}>
-              <Box className={style.track}>
-                {cards.map((card, idx) =>
+              <Box ref={trackRef} className={style.track}>
+                {cards2.map((card, idx) =>
                   <Box key={idx} className={style.card__container}>
                     < Box className={style.card}
                       sx={{
-                        backgroundImage: 'url("https://img1.kakaocdn.net/cthumb/local/R0x420/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Ffiy_reboot%2Fplace%2F4A901A61AC3F4088AF2396A792DEFADA")'
-                        // background: 'black'
-                      }}>
-                      {card}
+                        backgroundImage: `url(${card.url})`,
+                        cursor: 'pointer'
+                      }} >
                     </Box>
+
                   </Box>
                 )
                 }
@@ -139,21 +203,38 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
               </Box>
               <Box>
                 <IconButton
+                  ref={prevRef}
+                  sx={{
+                    display: 'none'
+                  }}
                   className={style.button__grp}
                   type="button"
-                // onClick={() => clickPrev}
+                  onClick={() => handleClick('prev')}
                 >
-                  <NavigateBeforeIcon />
+                  <NavigateBeforeIcon
+                    sx={{
+                      color: 'white',
+                      background: 'rgb(75 75 75 / 55%)',
+                      borderRadius: '20px'
+                    }}
+                    fontSize='large' />
                 </IconButton>
                 <IconButton
+                  ref={nextRef}
                   className={style.button__grp}
                   type="button"
                   sx={{
                     left: "89.5%"
                   }}
-                // onClick={() => clickNext}
+                  onClick={() => handleClick('next')}
                 >
-                  <NavigateNextIcon />
+                  <NavigateNextIcon
+                    sx={{
+                      color: 'white',
+                      background: 'rgb(75 75 75 / 55%)',
+                      borderRadius: '20px'
+                    }}
+                    fontSize='large' />
                 </IconButton>
               </Box>
             </Box>
