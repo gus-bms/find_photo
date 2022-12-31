@@ -1,26 +1,20 @@
 import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import {
   List,
-  ListItem,
   ListItemText,
   ListItemAvatar,
   Avatar,
   ListItemButton,
   Collapse,
-  ListItemIcon,
   Grid,
-  TableRow,
   Box,
-  Button,
-  TableCell,
   IconButton,
 } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Spot } from '../map/map'
-import { LocalCafe, LocalDining, PhotoCamera, ExpandLess, ExpandMore, StarBorder, NavigateNext } from "@mui/icons-material";
+import { LocalCafe, LocalDining, PhotoCamera, ExpandLess, ExpandMore } from "@mui/icons-material";
 import style from '../../../styles/Spot.module.css'
-import next from 'next';
 import Link from 'next/link';
 
 interface Iprops {
@@ -74,8 +68,6 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef(null)
-
-  // const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
   const cards2: { url: string, index: number }[] = [
     {
@@ -188,15 +180,15 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
             <Box className={style.inner__carousel}>
               <Box ref={trackRef} className={style.track}>
                 {cards2.map((card, idx) =>
-                  <Box key={idx} className={style.card__container}>
-                    < Box className={style.card}
-                      sx={{
-                        backgroundImage: `url(${card.url})`,
-                        cursor: 'pointer'
-                      }} >
+                  <Link key={idx} href={'login/login'}>
+                    <Box className={style.card__container}>
+                      < Box className={style.card}
+                        sx={{
+                          backgroundImage: `url(${card.url})`,
+                          cursor: 'pointer'
+                        }} />
                     </Box>
-
-                  </Box>
+                  </Link>
                 )
                 }
 
