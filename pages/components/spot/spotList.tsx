@@ -1,3 +1,13 @@
+/**
+ * 검색결과로 조회되는 스팟 목록입니다.
+ * 스팟 하위에 각 스팟에 등록된 플레이스 로그를 확인할 수 있습니다.
+ * 
+ * @type component
+ * @author gus-bms
+ * @version 0.5
+ * @project find-photo
+ */
+
 import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import {
   List,
@@ -9,6 +19,8 @@ import {
   Grid,
   Box,
   IconButton,
+  Button,
+  Typography
 } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -69,6 +81,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef(null)
 
+  // TO_DO: DB에서 해당 스팟에 해당하는 게시글 사진 불러오기 (게시글 당 대표 이미지 1장)
   const cards2: { url: string, index: number }[] = [
     {
       url: "https://cdn.pixabay.com/photo/2014/12/08/17/52/mare-561221_960_720.jpg",
@@ -89,20 +102,31 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
     }
   ]
 
-  const handleOnClick = (spot: Spot) => {
+  /**
+   * 스팟 라벨을 클릭할 때 발생하는 이벤트입니다.
+   * 현재 선택한 스팟이 이전에 선택했던 스팟과 다를 경우 새로운 스팟 정보를 부모 컴포넌트로 setSpot을 통해 전달합니다.
+   * @param spot
+   */
+  const handleSpotClick = (spot: Spot) => {
     selectedSpot != spot ? (setSpot(
       {
         name: spot.name,
         address: spot.address,
         latitude: spot.latitude,
         longitude: spot.longitude
-      })) : console.log('no changed')
+      })) : null
 
     selectedSpot = spot
-    console.log('same')
   }
 
-  const handleClick = (position: string) => {
+  /**
+   * 캐로셀 슬라이드의 위치를 이동시키는 좌우 버튼을 클릭할 때 발생하는 이벤트입니다.
+   * 왼쪽 버튼을 클릭할 경우 왼쪽으로 이동하며 오른쪽 버튼을 클릴할경우 오른쪽으로 이동합니다.
+   * current state변수는 현재 카드(이미지) 중 몇번째가 앞쪽에 있는가를 의미합니다.
+   * 
+   * @param position 
+   */
+  const handleCarouselClick = (position: string) => {
     console.log(position, '!')
     if (current > 0) {
       position == 'prev' ? setCurrent(current - 1) : setCurrent(current + 1);
@@ -111,31 +135,28 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
     }
   }
 
+  /**
+   * current state 변수의 값이 변경될 때 발생하는 이벤트 훅입니다.
+   * 맨 첫번째 카드일 경우와 맨 마지막일 카드일 경우 그리고 그 외의 경우일 때 좌 우 버튼의 노출 여부를 결정합니다.
+   * 
+   * @TO_DO 카드의 개수는 동적으로 컨트롤 되어야 합니다.
+   */
   useEffect(() => {
     if (prevRef.current && nextRef.current) {
       if (current > 0 && current < 4) {
-        prevRef.current.style = "display: block"
-        nextRef.current.style = "display: block"
+        prevRef.current.classList.add(style.btn__show)
+        nextRef.current.classList.add(style.btn__show)
+        nextRef.current.classList.remove(style.btn__hide)
       }
       if (current == 0) {
-        prevRef.current.style = 'display: none'
-        nextRef.current.style = 'display: block'
+        prevRef.current.classList.remove(style.btn__show)
+        nextRef.current.classList.add(style.btn__show)
       } else if (current == 4) {
-        prevRef.current.style = 'display: block'
-        nextRef.current.style = 'display: none'
+        prevRef.current.classList.add(style.btn__show)
+        nextRef.current.classList.remove(style.btn__show)
+        nextRef.current.classList.add(style.btn__hide)
       }
     }
-
-
-    // 이미지 위치 변경
-    if (trackRef.current) {
-      let move: number
-      move = current != 0 ? (current + 0.5) * 10 : current * 10
-      trackRef.current.style.transition = 'all 0.2s ease-in-out';
-      trackRef.current.style.transform = `translateX(-${move}%)`; // 백틱을 사용하여 슬라이드로 이동하는 에니메이션을 만듭니다.
-    }
-
-    console.log(current)
   }, [current])
 
   return (
@@ -144,7 +165,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
         item
         md={11}>
         <ListItemButton key={spot.spot_pk}
-          onClick={() => handleOnClick(spot)}
+          onClick={() => handleSpotClick(spot)}
         >
           <ListItemAvatar>
             <Avatar>
@@ -178,20 +199,21 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
         <Collapse in={isOpen} timeout="auto" unmountOnExit>
           <Box ref={carouselRef} className={style.carousel__container}>
             <Box className={style.inner__carousel}>
-              <Box ref={trackRef} className={style.track}>
+              <Box ref={trackRef} className={style.track}
+                sx={{
+                  transform: `translateX(-${(current * 1.3) * 10}%)`
+                }}>
                 {cards2.map((card, idx) =>
                   <Link key={idx} href={'login/login'}>
                     <Box className={style.card__container}>
                       < Box className={style.card}
                         sx={{
                           backgroundImage: `url(${card.url})`,
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }} />
                     </Box>
                   </Link>
-                )
-                }
-
+                )}
               </Box>
               <Box>
                 <IconButton
@@ -201,7 +223,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                   }}
                   className={style.button__grp}
                   type="button"
-                  onClick={() => handleClick('prev')}
+                  onClick={() => handleCarouselClick('prev')}
                 >
                   <NavigateBeforeIcon
                     sx={{
@@ -218,7 +240,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                   sx={{
                     left: "89.5%"
                   }}
-                  onClick={() => handleClick('next')}
+                  onClick={() => handleCarouselClick('next')}
                 >
                   <NavigateNextIcon
                     sx={{
@@ -230,6 +252,20 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                 </IconButton>
               </Box>
             </Box>
+          </Box>
+          <Box sx={{
+            width: '97.5%'
+          }}>
+            <Link href={'spot/addSpot'}>
+              <Button
+                sx={{
+                  float: 'right',
+                  background: 'gray',
+                  padding: '10px',
+                  color: 'whitesmoke'
+                }}
+              >로그 남기기</Button>
+            </Link>
           </Box>
         </Collapse >
       </Grid >

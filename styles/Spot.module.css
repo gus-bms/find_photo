@@ -43,41 +43,17 @@
   background-repeat: no-repeat;
   border-radius: 10px;
 }
-.card1 {
-}
-
-.nav button {
-  /* position: absolute; */
-  top: 50%;
-  transform: translatey(-50%);
-  border-radius: 50%;
-  outline: none;
-  border: none;
-  cursor: pointer;
-}
-.nav .prev {
-  left: -30px;
-  display: none;
-  background: rgb(0 0 0 / 45%);
-  border-radius: 22px;
-  padding: 10px;
-}
-.nav .prev.show {
-  display: block;
-}
-.nav .next {
-  right: -30px;
-  background: rgb(0 0 0 / 45%);
-  border-radius: 22px;
-  padding: 10px;
-}
-.nav .next.hide {
-  display: none;
-}
 
 .button__grp {
   top: 40%;
-  /* background: black !important; */
   padding: 30px 30px !important;
   position: absolute !important;
+}
+
+.btn__show {
+  display: block !important;
+}
+
+.btn__hide {
+  display: none !important;
 }
