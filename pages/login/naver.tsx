@@ -36,7 +36,7 @@ const Naver: NextPage = () => {
     hash = router.asPath.split('access_token=')[1].split('&')[0]
   }
 
-  const [, setCookie] = useCookies(['uid']); // 쿠키 훅 
+  const [, setCookie] = useCookies(['uid', 'profilePhoto']); // 쿠키 훅 
 
   // Redux
   const dispatch = useDispatch();           // dispatch를 사용하기 쉽게 하는 hook입니다.
@@ -69,9 +69,14 @@ const Naver: NextPage = () => {
            */
           if (resp.data.ok) {
             const expireDate = new Date()
-            expireDate.setMinutes(expireDate.getMinutes() + 5)
+            expireDate.setMinutes(expireDate.getMinutes() + (60 * 24 * 7))
 
             setCookie('uid', resp.data.uid, {
+              path: '/',
+              expires: expireDate,
+            });// 쿠키에 토큰 저장
+
+            setCookie('profilePhoto', resp.data.profilePhoto, {
               path: '/',
               expires: expireDate,
             });// 쿠키에 토큰 저장

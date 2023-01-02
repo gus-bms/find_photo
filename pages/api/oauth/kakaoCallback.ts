@@ -17,6 +17,7 @@ import axios from "axios";
 interface Data {
   uid: string;
   ok: boolean;
+  profilePhoto?: string | null | undefined;
 }
 
 interface UserInfo {
@@ -69,10 +70,11 @@ export default async function handler(
   const isUser = await checkUser(userInfo.id);
   // DB에 데이터가 없을 경우 생성해주는 함수를 호출합니다.
   isUser === false ? await insertUser(userInfo) : null;
-
+  console.log(userInfo.properties.profile_image);
   res.status(200).json({
     ok: true,
     uid: userInfo.id,
+    profilePhoto: userInfo.properties.profile_image,
   });
 }
 

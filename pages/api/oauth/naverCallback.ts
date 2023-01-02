@@ -16,7 +16,8 @@ import axios from "axios";
 
 interface Data {
   ok: boolean;
-  uid: string;
+  uid?: string;
+  profilePhoto: string | null | undefined;
 }
 
 interface UserInfo {
@@ -68,6 +69,7 @@ export default async function handler(
   res.status(200).json({
     ok: true,
     uid: userInfo.id,
+    profilePhoto: userInfo.profile_image,
   });
 }
 

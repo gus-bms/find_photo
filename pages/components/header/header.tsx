@@ -75,7 +75,7 @@ export const Header = () => {
               md={2}
               textAlign='right'
             >
-              <Link className={style.login} href={`/profile/${cookies.uid}`}>
+              <Link className={style.login} href={`/profile/profile`}>
                 <Typography>나의 글</Typography>
               </Link>
             </Grid>
