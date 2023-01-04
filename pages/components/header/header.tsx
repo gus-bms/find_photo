@@ -46,33 +46,24 @@ export const Header = () => {
     <>
       <Grid
         container
-        // justifyContent='center'
         spacing={1}
         marginTop={1}
       >
         <Grid
           item
-          xs={10}
-          md={8}
+          xs={8}
           textAlign='left'
         >
           <Link className={style.logo} href='/'>
             <Typography >Find Photo</Typography>
           </Link>
         </Grid>
-        {/* <Grid
-          item
-          xs={2}
-          md={2}
-          textAlign='right'
-        > */}
         {isLogin
           ?
           <>
             <Grid
               item
               xs={2}
-              md={2}
               textAlign='right'
             >
               <Link className={style.login} href={`/profile/profile`}>
@@ -82,7 +73,6 @@ export const Header = () => {
             <Grid
               item
               xs={2}
-              md={2}
               textAlign='right'
             >
               <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
@@ -93,8 +83,7 @@ export const Header = () => {
           : <>
             <Grid
               item
-              xs={2}
-              md={4}
+              xs={4}
               textAlign='right'
             >
               <Link className={style.login} href='/login/login'>

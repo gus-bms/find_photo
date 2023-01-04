@@ -44,8 +44,8 @@ const Profile = () => {
       >
         <Grid
           item
-          xs={2}
-          md={3}
+          xs={3}
+          // md={3}
           textAlign='center'
         >
           <Grid
@@ -53,8 +53,8 @@ const Profile = () => {
             justifyContent='center'>
             <Grid
               item
-              xs={6}
-              md={12}
+              xs={12}
+              // md={12}
               textAlign='right'>
               <Box
                 sx={{
@@ -79,8 +79,8 @@ const Profile = () => {
         </Grid>
         <Grid
           item
-          xs={2}
-          md={8}
+          xs={8}
+          // md={8}
           textAlign='center'
           sx={{
             borderLeft: "0.1px solid #F1F3F5",
@@ -89,8 +89,8 @@ const Profile = () => {
         >
           <Grid
             item
-            xs={6}
-            md={12}
+            xs={12}
+            // md={12}
             textAlign='left'
             sx={{
               marginLeft: '10px'
@@ -142,8 +142,8 @@ const Profile = () => {
       >
         <Grid
           item
-          xs={2}
-          md={12}
+          xs={12}
+          // md={12}
           textAlign='center'
         >
           <Box>

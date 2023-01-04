@@ -255,7 +255,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
           <Box sx={{
             width: '97.5%'
           }}>
-            <Link href={'spot/addSpot'}>
+            <Link href={'log/addLog'}>
               <Button
                 sx={{
                   float: 'right',
