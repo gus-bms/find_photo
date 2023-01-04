@@ -8,7 +8,7 @@
  * @project find-photo
  */
 
-import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import React, { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import {
   List,
   ListItemText,
@@ -20,7 +20,6 @@ import {
   Box,
   IconButton,
   Button,
-  Typography
 } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -204,7 +203,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                   transform: `translateX(-${(current * 1.3) * 10}%)`
                 }}>
                 {cards2.map((card, idx) =>
-                  <Link key={idx} href={'login/login'}>
+                  <Link key={idx} href={'log/id'}>
                     <Box className={style.card__container}>
                       < Box className={style.card}
                         sx={{
