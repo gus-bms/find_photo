@@ -9,39 +9,14 @@
  */
 
 import React, { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
-import { Grid, Box, IconButton, Typography, Button, TextField } from "@mui/material";
-import style from '../../styles/Spot.module.css'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import { display } from '@mui/system';
-import InputUnstyled from '@mui/base/InputUnstyled';
+import { Grid, Box, Autocomplete, IconButton, Typography, Button, TextField } from "@mui/material";
 import { styled } from '@mui/system';
-
-const blue = {
-  100: '#DAECFF',
-  200: '#b6daff',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-};
-
-const grey = {
-  50: '#f6f8fa',
-  100: '#eaeef2',
-  200: '#d0d7de',
-  300: '#afb8c1',
-  400: '#8c959f',
-  500: '#6e7781',
-  600: '#57606a',
-  700: '#424a53',
-  800: '#32383f',
-  900: '#24292f',
-};
+import axios from 'axios'
 
 /**
- * 인풋 요소의 디자인을 커스텀합니다.
+ * Input 요소의 디자인을 커스텀합니다.
  */
-const StyledInputElement = styled('input')(({ theme }) => `
+const CustomInput = styled('input')(`
   width: 100%;
   margin-Top: 1.5rem;
   font-family: IBM Plex Sans, sans-serif;
@@ -51,101 +26,123 @@ const StyledInputElement = styled('input')(({ theme }) => `
   padding: 12px;
   color: dark;
   background: dark;
-  border: none
-  // box-shadow: 0px 4px 30px ${theme.palette.mode === 'dark' ? grey[900] : grey[200]};
-
-  // &:hover {
-  //   border-color: ${blue[400]};
-  // }
-
+  border: none;
   &:focus {
     border-color: none !important;
     outline: none !important;
   }
-
-
 `,
 );
-
-const CustomInput = React.forwardRef(function CustomInput(
-  props: React.InputHTMLAttributes<HTMLInputElement>,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  return (
-    <InputUnstyled slots={{ input: StyledInputElement }} {...props} ref={ref} />
-  );
-});
-
-
-
-export default function Log() {
-
-  const [current, setCurrent] = useState<number>(0)
-  const carouselRef = useRef(null)
-  const prevRef = useRef<HTMLButtonElement | null>(null)
-  const nextRef = useRef<HTMLButtonElement | null>(null)
-  const trackRef = useRef(null)
-
-  // TO_DO: DB에서 해당 스팟에 해당하는 게시글 사진 불러오기 (게시글 당 대표 이미지 1장)
-  const cards2: { url: string, index: number }[] = [
-    {
-      url: "https://cdn.pixabay.com/photo/2014/12/08/17/52/mare-561221_960_720.jpg",
-      index: 1
-    }, {
-      url: "https://cdn.pixabay.com/photo/2014/08/29/03/02/horse-430441_960_720.jpg",
-      index: 2
-
-    }, {
-      url: "https://cdn.pixabay.com/photo/2016/08/11/23/48/italy-1587287_960_720.jpg",
-      index: 3
-    }, {
-      url: "https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_960_720.jpg",
-      index: 4
-    }, {
-      url: "https://cdn.pixabay.com/photo/2018/08/21/23/29/fog-3622519_960_720.jpg",
-      index: 5
-    }
-  ]
-
-  /**
-   * 캐로셀 슬라이드의 위치를 이동시키는 좌우 버튼을 클릭할 때 발생하는 이벤트입니다.
-   * 왼쪽 버튼을 클릭할 경우 왼쪽으로 이동하며 오른쪽 버튼을 클릴할경우 오른쪽으로 이동합니다.
-   * current state변수는 현재 카드(이미지) 중 몇번째가 앞쪽에 있는가를 의미합니다.
-   * 
-   * @param position 
-   */
-  const handleCarouselClick = (position: string) => {
-    console.log(position, '!')
-    if (current > 0) {
-      position == 'prev' ? setCurrent(current - 1) : setCurrent(current + 1);
-    } else if (current == 0) {
-      position == 'next' ? setCurrent(current + 1) : null
-    }
+/**
+ * Textara 요소의 디자인을 커스텀합니다.
+ */
+const CustomTextarea = styled('textarea')(`
+  width: 100%;
+  margin-Top: 1.5rem;
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 12px;
+  color: dark;
+  background: dark;
+  border: none;
+  resize: none;
+  &:focus {
+    border-color: none !important;
+    outline: none !important;
   }
+`)
+/**
+ * Select 요소의 디자인을 커스텀합니다.
+ */
+const CustomAutoComplete = styled('select')(`
+  width: 100%;
+  margin-Top: 1.5rem;
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 12px;
+  color: dark;
+  background: dark;
+  border: none;
+  &:focus {
+    border-color: none !important;
+    outline: none !important;
+  }
+`)
+
+// Spot 객체 
+export interface Spot {
+  spot_pk?: number;
+  name?: string;
+  category?: String;
+  address?: string;
+  longitude?: number;
+  latitude?: number;
+}
+
+export default function AddLog() {
+  const [spotList, setSpotList] = useState<Spot[]>([])
+  const [title, setTitle] = useState<string>('')
+  const [content, setContent] = useState<string>('')
+  const [spotPk, setSpotPk] = useState<string>()
 
   /**
-   * current state 변수의 값이 변경될 때 발생하는 이벤트 훅입니다.
-   * 맨 첫번째 카드일 경우와 맨 마지막일 카드일 경우 그리고 그 외의 경우일 때 좌 우 버튼의 노출 여부를 결정합니다.
-   * 
-   * @TO_DO 카드의 개수는 동적으로 컨트롤 되어야 합니다.
+   * 페이지 로딩 시 현재 저장되어있는 동네를 가져옵니다.
    */
   useEffect(() => {
-    if (prevRef.current && nextRef.current) {
-      if (current > 0 && current < 4) {
-        prevRef.current.classList.add(style.btn__show)
-        nextRef.current.classList.add(style.btn__show)
-        nextRef.current.classList.remove(style.btn__hide)
-      }
-      if (current == 0) {
-        prevRef.current.classList.remove(style.btn__show)
-        nextRef.current.classList.add(style.btn__show)
-      } else if (current == 4) {
-        prevRef.current.classList.add(style.btn__show)
-        nextRef.current.classList.remove(style.btn__show)
-        nextRef.current.classList.add(style.btn__hide)
+    // SpotList를 조회하는 함수 입니다.
+    async function getSpotList(): Promise<any> {
+      try {
+        await axios.get('/api/spot/getSpotList', {
+          params: {
+            address_dong: '인현동',
+            type: 'getAllSpot'
+          },
+          timeout: 3000
+        }).then(res => {
+          setSpotList(res.data.spotList)
+          return;
+        })
+
+      } catch (err) {
+        console.log(err);
+        return [];
       }
     }
-  }, [current])
+    getSpotList();
+
+  }, [])
+
+  /**
+   * DB log 테이블에 데이터를 삽입하는 함수입니다.
+   * 제목과 spot_pk, 내용을 DB에 삽입합니다.
+   * @TO_DO 로그인된 사용자 pk 넣기
+   * @returns 
+   */
+  async function insertLog(): Promise<any> {
+    console.log(title, spotPk, content)
+    try {
+      await axios.get('/api/log/insertLog', {
+        params: {
+          title: title,
+          spotPk: spotPk,
+          content: content,
+          userPk: 1,
+          type: 'insert'
+        },
+        timeout: 3000
+      }).then(res => {
+        return;
+      })
+
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
+  }
 
   return (
     <>
@@ -156,10 +153,31 @@ export default function Log() {
           item
           xs={12}
         >
-          <CustomInput aria-label="Demo input" placeholder="제목을 입력하세요." />
-          <CustomInput aria-label="Demo input" placeholder="내용을 입력하세요." style={{
-            height: '100px'
-          }} />
+          <CustomInput value={title} placeholder="제목을 입력하세요."
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setTitle(e.target.value)
+            }} style={{
+              fontSize: 'xx-large'
+            }} >
+          </CustomInput>
+          <CustomAutoComplete onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+            setSpotPk(e.target.value)
+          }}>
+            <option value="''" disabled selected>
+              장소를 선택해주세요.
+            </option>
+            {spotList.map((item) => (
+              <option value={item.spot_pk} key={item.spot_pk}>
+                {item.name}
+              </option>
+            ))}
+          </CustomAutoComplete>
+          <CustomTextarea placeholder="내용을 입력하세요."
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              setContent(e.target.value)
+            }} style={{
+              height: '200px'
+            }} />
         </Grid>
       </Grid>
 
@@ -181,7 +199,7 @@ export default function Log() {
           <Button variant="text" sx={{
             color: 'gray'
           }}>임시저장</Button>
-          <Button variant="text" sx={{
+          <Button variant="text" onClick={(e) => insertLog()} sx={{
             color: 'gray'
           }}>로그 등록</Button>
         </Box>
