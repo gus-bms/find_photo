@@ -60,7 +60,7 @@ const Profile = () => {
                 sx={{
                   marginTop: 3,
                   height: '27vh',
-                  width: '70%',
+                  width: '100%',
                 }}
               >
                 <Box sx={{
@@ -83,7 +83,9 @@ const Profile = () => {
           // md={8}
           textAlign='center'
           sx={{
-            borderLeft: "0.1px solid #F1F3F5",
+            // borderLeft: "0.1px solid #F1F3F5",
+            margin: 'auto',
+            marginRight: 0,
             height: '15rem'
           }}
         >

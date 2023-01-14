@@ -52,7 +52,6 @@ export default function Log() {
    * @param position 
    */
   const handleCarouselClick = (position: string) => {
-    console.log(position, '!')
     if (current > 0) {
       position == 'prev' ? setCurrent(current - 1) : setCurrent(current + 1);
     } else if (current == 0) {

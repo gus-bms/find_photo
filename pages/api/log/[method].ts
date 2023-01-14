@@ -19,13 +19,14 @@ interface Data {
 }
 
 interface ExtendedNextApiRequest extends NextApiRequest {
-  query: {
+  body: {
     method: string;
     type: string;
     title?: string;
     content?: string;
     spotPk?: string;
     userPk: string;
+    images: object;
   };
 }
 /**
@@ -38,14 +39,13 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const {
-    query: { userPk, spotPk, content, title, type },
+    body: { images, userPk, spotPk, content, title, type },
   } = req;
   let resp: any;
 
-  console.log("hi");
-  console.log(spotPk);
+  console.log("heelo", userPk);
   if (type === "insert" && title && content && spotPk && userPk) {
-    resp = insertLog(title, content, spotPk, userPk);
+    resp = insertLog(title, content, spotPk, userPk, images);
   }
   res.status(200).json({
     ok: true,
@@ -68,15 +68,18 @@ async function insertLog<T>(
   title: string,
   content: string,
   spotPk: string,
-  userPk: string
+  userPk: string,
+  images: object
 ): Promise<T | unknown> {
   try {
-    console.log("hello");
+    console.log(images);
+
     await axios.post("http://localhost:8000/api/log/insertLog", {
       title: title,
       spot_pk: spotPk,
       content: content,
       user_pk: userPk,
+      images: images,
     });
     return true;
   } catch (err) {
