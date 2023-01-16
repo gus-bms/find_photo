@@ -11,49 +11,115 @@
  * @project find-photo
  */
 
-import type { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
+// import type { NextApiRequest, NextApiResponse } from "next";
+// import axios from "axios";
+// import nextConnect from "next-connect";
+// import multer from "multer";
+// import path from "path";
 
 interface Data {
   ok: boolean;
 }
 
-interface ExtendedNextApiRequest extends NextApiRequest {
-  body: {
-    method: string;
-    type: string;
-    title?: string;
-    content?: string;
-    spotPk?: string;
-    userPk: string;
-    images: object;
-  };
-}
+// interface ExtendedNextApiRequest extends NextApiRequest {
+//   body: {
+//     method: string;
+//     type: string;
+//     title?: string;
+//     content?: string;
+//     spotPk?: string;
+//     userPk: string;
+//     images: object;
+//   };
+// }
 /**
  *
  * @param req client에서 전송된 정보
  * @param res client에  리턴할 정보
  */
-export default async function handler(
-  req: ExtendedNextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  const {
-    body: { images, userPk, spotPk, content, title, type },
-  } = req;
-  let resp: any;
+// export default async function handler(
+//   req: NextApiRequest,
+//   res: NextApiResponse<Data>
+// ) {
+//   const {
+//     body: { images, userPk, spotPk, content, title, type },
+//   } = req;
+//   let resp: any;
 
-  console.log("heelo", userPk);
-  if (type === "insert" && title && content && spotPk && userPk) {
-    resp = insertLog(title, content, spotPk, userPk, images);
+//   console.log("heelo", req.body.data);
+//   // if (type === "insert" && title && content && spotPk && userPk) {
+//   //   resp = insertLog(title, content, spotPk, userPk, images);
+//   // }
+//   res.status(200).json({
+//     ok: true,
+//   });
+//   // res.status(500).json({
+//   //   ok: false,
+//   // });
+// }
+
+// }
+import { NextApiHandler, NextApiRequest } from "next";
+import formidable from "formidable";
+import path from "path";
+import fs from "fs/promises";
+import axios from "axios";
+
+// 파일형식을 읽어올 때 multipart/multi-form 형식이기 때문에 기존 바디파서를 지워줍니다.
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+/**
+ * 프로미스 공부할 것
+ * formidable 공부할 것
+ *
+ * @param req
+ * @param saveLocally
+ * @returns
+ */
+const readFile = (
+  req: NextApiRequest,
+  saveLocally?: boolean
+): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+  const options: formidable.Options = {};
+  if (saveLocally) {
+    options.uploadDir = path.join(process.cwd(), "/public/uploads");
+    options.multiples = true;
+    options.filename = (name, ext, path, form) => {
+      return Date.now().toString() + "_" + path.originalFilename;
+    };
   }
-  res.status(200).json({
-    ok: true,
+  options.maxFileSize = 4000 * 1024 * 1024;
+  const form = formidable(options);
+  // console.log(form);
+  return new Promise((resolve, reject) => {
+    form.parse(req, async (err, fields, files) => {
+      await insertLog(
+        fields.title,
+        fields.content,
+        fields.spotPk,
+        fields.userPk,
+        files.file
+      );
+
+      if (err) reject(err);
+      resolve({ fields, files });
+    });
   });
-  // res.status(500).json({
-  //   ok: false,
-  // });
-}
+};
+
+const handler: NextApiHandler = async (req, res) => {
+  try {
+    await fs.readdir(path.join(process.cwd() + "/public", "/uploads"));
+  } catch (error) {
+    await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"));
+  }
+  await readFile(req, true);
+  res.json({ done: "ok" });
+};
 
 /**
  * log DB에 log를 insert합니다.
@@ -69,17 +135,23 @@ async function insertLog<T>(
   content: string,
   spotPk: string,
   userPk: string,
-  images: object
+  images?: any[]
 ): Promise<T | unknown> {
+  let imgNames: string[] = [];
   try {
-    console.log(images);
-
+    if (images) {
+      images.map((item) => {
+        imgNames.push(item.newFilename);
+      });
+    }
+    console.log(imgNames);
+    // return true;
     await axios.post("http://localhost:8000/api/log/insertLog", {
       title: title,
       spot_pk: spotPk,
       content: content,
       user_pk: userPk,
-      images: images,
+      images: imgNames,
     });
     return true;
   } catch (err) {
@@ -87,3 +159,5 @@ async function insertLog<T>(
     return err;
   }
 }
+
+export default handler;

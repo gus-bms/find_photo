@@ -89,8 +89,9 @@ export default function AddLog() {
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
-  const [spotPk, setSpotPk] = useState<string>()
-  const [previewImg, setPreviewImg] = useState<string[]>()
+  const [spotPk, setSpotPk] = useState<string>('')
+  const [previewImg, setPreviewImg] = useState<string[]>([])
+  const [img, setImg] = useState<File[]>([])
   const [uploadCount, setUploadCount] = useState<number>(0)
 
   const [current, setCurrent] = useState<number>(0)
@@ -136,28 +137,26 @@ export default function AddLog() {
    * @returns 
    */
   async function insertLog(): Promise<any> {
-    console.log(title, spotPk, content)
     const formData = new FormData()
-    if (Array.isArray(previewImg) && previewImg.length > 1)
-      previewImg.map((img) => {
-        formData.append('file', img)
+    formData.append('title', title)
+    formData.append('content', content)
+    formData.append('spotPk', spotPk)
+    formData.append('userPk', '18')
+
+    // 업로드된 이미지를 체크합니다.
+    if (Array.isArray(img) && img.length > 0) {
+      img.map((item) => {
+        console.log(item)
+        formData.append('file', item)
       })
-    console.log(typeof (formData))
+    } else {
+      console.log('업로드된 이미지가 없습니다.')
+    }
+
+    // 서버에 업로드된 이미지와 데이터를 전송합니다.
     try {
-      await axios.post('/api/log/insertLog', {
-        title: title,
-        spotPk: spotPk,
-        content: content,
-        userPk: 18,
-        images: formData,
-        type: 'insert',
-      }, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      }).then(res => {
-        return;
-      })
+      const { data } = await axios.post("/api/log/insertLog", formData);
+      console.log(data);
 
     } catch (err) {
       console.log(err);
@@ -176,25 +175,36 @@ export default function AddLog() {
 
   /**
    * 파일이 업로드 되었을 때 호출되는 함수입니다.
+   * img는 서버에 저장될 파일이고 previewImg는 서버 전송 전 웹에서 미리볼 수 있는 URL 입니다.
+   * 파일의 수가 많아져 한 번에 보이지 않을 경우 trackRef에 접근하여 carousel 슬라이더를 생성합니다.
    */
   const changeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 현재 업로드 된 사진의 수를 증가시킵니다.
     setUploadCount(uploadCount + 1)
 
+    // 업로드된 파일이 한개인지 아닌지를 구별하여 다수일 경우 이 전 배열을 복사합니다.
     if (e.target.files) {
-      if (previewImg)
+      if (img && previewImg) {
+        setImg([...img, e.target.files[0]]);
         setPreviewImg([...previewImg, URL.createObjectURL(e.target.files[0])])
-      else
+      }
+
+      else {
+        setImg([e.target.files[0]]);
         setPreviewImg([URL.createObjectURL(e.target.files[0])])
+      }
     }
+
+    // 현재 업로드된 사진의 개수가 4개이상일 경우 슬라이더 css를 보여줍니다.
     if (trackRef.current && trackRef.current.childElementCount > 2 && nextRef.current) {
       console.log('higer than 2')
       nextRef.current.classList.remove(style.btn__hide)
       nextRef.current.classList.add(style.btn__show)
+
     } else if (trackRef.current && trackRef.current.childElementCount <= 2 && nextRef.current) {
       console.log('lower than 3')
       nextRef.current.classList.add(style.btn__hide)
     }
-
   }
 
   /**
