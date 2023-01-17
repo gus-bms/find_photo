@@ -59,10 +59,9 @@ const readFile = (
   }
   options.maxFileSize = 4000 * 1024 * 1024;
   const form = formidable(options);
-  // console.log(form);
   return new Promise((resolve, reject) => {
     form.parse(req, async (err, fields: any, files) => {
-      await insertLog(fields);
+      await insertLog(fields, files);
 
       if (err) reject(err);
       resolve({ fields, files });
@@ -89,16 +88,19 @@ const handler: NextApiHandler = async (req, res) => {
  * @param content 내용
  * @returns
  */
-async function insertLog<T>(fields: InsertLogProps): Promise<T | unknown> {
+async function insertLog<T>(
+  fields: InsertLogProps,
+  files: any
+): Promise<T | unknown> {
   let imgNames: string[] = [];
   try {
-    if (fields.images) {
-      fields.images.map((item: any) => {
+    console.log(files);
+    if (files.file) {
+      files.file.map((item: any) => {
         imgNames.push(item.newFilename);
       });
     }
     console.log(imgNames);
-    // return true;
     await axios.post("http://localhost:8000/api/log/insertLog", {
       title: fields.title,
       spot_pk: fields.spotPk,

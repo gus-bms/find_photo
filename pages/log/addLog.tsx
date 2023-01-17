@@ -15,6 +15,8 @@ import axios from 'axios'
 import style from '../../styles/Spot.module.css'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { Spot } from '../components/map/map'
+import Toast from '../components/global/toast'
 /**
  * Input 요소의 디자인을 커스텀합니다.
  */
@@ -75,14 +77,10 @@ const CustomAutoComplete = styled('select')(`
   }
 `)
 
-// Spot 객체 
-export interface Spot {
-  spot_pk?: number;
-  name?: string;
-  category?: String;
-  address?: string;
-  longitude?: number;
-  latitude?: number;
+interface FormType {
+  title?: string
+  spotPk?: string
+  content?: string
 }
 
 export default function AddLog() {
@@ -93,13 +91,14 @@ export default function AddLog() {
   const [previewImg, setPreviewImg] = useState<string[]>([])
   const [img, setImg] = useState<File[]>([])
   const [uploadCount, setUploadCount] = useState<number>(0)
-
   const [current, setCurrent] = useState<number>(0)
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-
+  // 에러 메시지 관련 스테이트입니다.
+  const [toast, setToast] = useState(false);
+  const [errMsg, setErrMsg] = useState<string>('')
   /**
    * 페이지 로딩 시 수행될 훅입니다.
    * 현재 DB에 저장되어있는 동네를 가져옵니다.
@@ -137,6 +136,23 @@ export default function AddLog() {
    * @returns 
    */
   async function insertLog(): Promise<any> {
+
+    if (!title) {
+      setToast(true)
+      setErrMsg('제목을 입력해주세요!')
+      return
+    } else if (!spotPk || spotPk == "") {
+      setToast(true)
+      setErrMsg('장소를 선택해주세요!')
+      return
+    } else if (!content) {
+      setToast(true)
+      setErrMsg('내용을 입력해주세요!')
+      return
+    } else if (title && spotPk && content) {
+      setToast(false)
+    }
+
     const formData = new FormData()
     formData.append('title', title)
     formData.append('content', content)
@@ -149,8 +165,6 @@ export default function AddLog() {
         console.log(item)
         formData.append('file', item)
       })
-    } else {
-      console.log('업로드된 이미지가 없습니다.')
     }
 
     // 서버에 업로드된 이미지와 데이터를 전송합니다.
@@ -365,12 +379,11 @@ export default function AddLog() {
             }} style={{
               fontSize: 'xx-large',
               marginTop: 0
-            }} >
-          </CustomInput>
+            }} />
           <CustomAutoComplete onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setSpotPk(e.target.value)
           }}>
-            <option defaultValue="''" >
+            <option value="" >
               장소를 선택해주세요.
             </option>
             {spotList.map((item) => (
@@ -400,6 +413,7 @@ export default function AddLog() {
           <Button variant="text" sx={{
             color: 'gray'
           }}>뒤로가기</Button>
+          {toast && <Toast setToast={setToast} text={errMsg} />}
           <Box>
             <Button variant="text" sx={{
               color: 'gray'
@@ -410,8 +424,6 @@ export default function AddLog() {
           </Box>
         </Grid>
       </Grid>
-
-
     </>
   );
 }
