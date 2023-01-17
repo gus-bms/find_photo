@@ -100,8 +100,8 @@ export default function AddLog() {
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const imgRef = useRef<HTMLImageElement>(null)
+  const trackRef = useRef<HTMLDivElement | null>(null)
+  const imgRef = useRef<HTMLImageElement[] | null[]>([])
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
@@ -219,7 +219,8 @@ export default function AddLog() {
     setUploadCount(uploadCount + 1)
 
     // 업로드된 파일이 한개인지 아닌지를 구별하여 다수일 경우 이 전 배열을 복사합니다.
-    if (e.target.files) {
+    // 파일이 선택되었을 때에만 e.target.files의 길이가 1이상이므로 체크합니다.
+    if (e.target.files && e.target.files.length != 0) {
       if (img.length != 0 && previewImg.length != 0) {
         setImg([...img, e.target.files[0]]);
         setPreviewImg([...previewImg, {
@@ -270,9 +271,17 @@ export default function AddLog() {
    * 그 전의 대표이미지는 대표여부가 false로 바뀝니다.
    */
   const handleImgClick = (e: React.MouseEvent<HTMLImageElement>) => {
-    if (e.target instanceof HTMLImageElement && imgRef.current?.classList) {
-
+    if (e.target instanceof HTMLImageElement && imgRef.current) {
       let newRepresentImg = e.target.alt
+
+      let findIdx = imgRef.current.findIndex(item => item != null && item.className == 'Spot_represent__card__cnYdn')
+      imgRef.current[findIdx]?.classList.remove(style.represent__card)
+      imgRef.current[findIdx]?.classList.add(style.represent__cancel)
+
+      findIdx = imgRef.current.findIndex(item => item != null && item.alt == newRepresentImg)
+      imgRef.current[findIdx]?.classList.add(style.represent__card)
+      imgRef.current[findIdx]?.classList.remove(style.represent__cancel)
+
       let cpPreviewImg = [...previewImg];
       let findIndex = previewImg.findIndex(item => item.isRepresent === true)
       cpPreviewImg[findIndex].isRepresent = false;
@@ -308,6 +317,11 @@ export default function AddLog() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
+
+  useEffect(() => {
+    if (previewImg.length == 1)
+      imgRef.current[0]?.classList.add(style.represent__card)
+  }, [previewImg])
 
   return (
     <>
@@ -367,9 +381,16 @@ export default function AddLog() {
                       {previewImg ? (
                         <>
                           {item.isRepresent ? (
-                            <Box>d</Box>
+                            <Box sx={{
+                              position: 'fixed',
+                              bottom: 0,
+                              marginLeft: '12.5%'
+                              // border: '1px solid #36da48',
+                            }}>V</Box>
                           ) : null}
-                          <img ref={imgRef} alt={item.name} src={item.url} style={{ width: '100%', height: '100%' }} onClick={(e: React.MouseEvent<HTMLImageElement>) => handleImgClick(e)} />
+                          <img ref={elem => (imgRef.current[idx] = elem)} alt={item.name} src={item.url} style={{
+                            paddingLeft: '1.5px', width: '100%', height: '100%'
+                          }} onClick={(e: React.MouseEvent<HTMLImageElement>) => handleImgClick(e)} />
                         </>) : null
                       }
                     </Box>
