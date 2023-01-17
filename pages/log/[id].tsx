@@ -16,7 +16,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import axios from 'axios';
 
-export async function getServerSideProps({ query: { id } }) {
+export async function getServerSideProps({ query: { id } }: { query: { id: string } }) {
   return {
     props: {
       id,
@@ -24,7 +24,7 @@ export async function getServerSideProps({ query: { id } }) {
   };
 }
 
-export default function Log({ id }) {
+export default function Log({ id }: { id: string }) {
   const router = useRouter();
   const [images, setImages] = useState<string[]>([])
   const [title, setTitle] = useState<string>('')
