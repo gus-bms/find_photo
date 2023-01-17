@@ -17,6 +17,7 @@ interface InsertLogProps {
   content: string;
   spotPk: string;
   userPk: string;
+  representImg: string;
   images?: [];
 }
 /**
@@ -128,6 +129,9 @@ async function insertLog<T>(
         })
       : imgNames.push(files.file.newFilename);
 
+    let representImg = imgNames.find(
+      (item) => item.split("_")[1] == fields.representImg
+    );
     let id;
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log pk를 전달받아 뷰단으로 return합니다.
     await axios
@@ -137,6 +141,7 @@ async function insertLog<T>(
         content: fields.content,
         user_pk: fields.userPk,
         images: imgNames,
+        representImg: representImg,
       })
       .then((resp) => {
         id = resp.data.id;

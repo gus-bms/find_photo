@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /**
  * 스팟 게시글 페이지입니다.
  * 스팟에 관한 글을 올릴 수 있고, 사진을 첨부할 수 있습니다.
@@ -91,14 +92,16 @@ export default function AddLog() {
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
   const [spotPk, setSpotPk] = useState<string>('')
-  const [previewImg, setPreviewImg] = useState<string[]>([])
+  const [previewImg, setPreviewImg] = useState<{ url: string, name: string, isRepresent: boolean }[]>([])
   const [img, setImg] = useState<File[]>([])
   const [uploadCount, setUploadCount] = useState<number>(0)
   const [current, setCurrent] = useState<number>(0)
+
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
@@ -152,7 +155,11 @@ export default function AddLog() {
       setToast(true)
       setErrMsg('내용을 입력해주세요!')
       return
-    } else if (title && spotPk && content) {
+    } else if (previewImg.length == 0) {
+      setToast(true)
+      setErrMsg('이미지를 업로드해주세요!')
+      return
+    } else if (title && spotPk && content && previewImg.length != 0) {
       setToast(false)
     }
 
@@ -161,6 +168,17 @@ export default function AddLog() {
     formData.append('content', content)
     formData.append('spotPk', spotPk)
     formData.append('userPk', '18')
+
+    let representImg = previewImg.find(item => {
+      if (item.isRepresent == true)
+        return item.name
+    })?.name
+
+    // 대표이미지 파일명입니다.
+    if (representImg) {
+      console.log("@@@@@@", representImg)
+      formData.append('representImg', representImg)
+    }
 
     // 업로드된 이미지를 체크합니다.
     if (Array.isArray(img) && img.length > 0) {
@@ -202,14 +220,21 @@ export default function AddLog() {
 
     // 업로드된 파일이 한개인지 아닌지를 구별하여 다수일 경우 이 전 배열을 복사합니다.
     if (e.target.files) {
-      if (img && previewImg) {
+      if (img.length != 0 && previewImg.length != 0) {
         setImg([...img, e.target.files[0]]);
-        setPreviewImg([...previewImg, URL.createObjectURL(e.target.files[0])])
-      }
-
-      else {
+        setPreviewImg([...previewImg, {
+          url: URL.createObjectURL(e.target.files[0]),
+          name: e.target.files[0].name,
+          isRepresent: false
+        }])
+      } else {
+        // 최초에 등록되는 프리뷰 이미지는 자동으로 대표로 선택됩니다.
         setImg([e.target.files[0]]);
-        setPreviewImg([URL.createObjectURL(e.target.files[0])])
+        setPreviewImg([{
+          url: URL.createObjectURL(e.target.files[0]),
+          name: e.target.files[0].name,
+          isRepresent: true
+        }])
       }
     }
 
@@ -239,6 +264,24 @@ export default function AddLog() {
       position == 'next' ? setCurrent(current + 1) : null
     }
   }
+  /**
+   * 프리뷰 이미지를 선택하면 발생되는 이벤트입니다.
+   * 프리뷰 이미지가 2개이상일 경우 어떠한 이미지를 클릭하게 되면 클릭된 이미지가 대표이미지로 변경되고,
+   * 그 전의 대표이미지는 대표여부가 false로 바뀝니다.
+   */
+  const handleImgClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    if (e.target instanceof HTMLImageElement && imgRef.current?.classList) {
+
+      let newRepresentImg = e.target.alt
+      let cpPreviewImg = [...previewImg];
+      let findIndex = previewImg.findIndex(item => item.isRepresent === true)
+      cpPreviewImg[findIndex].isRepresent = false;
+      findIndex = previewImg.findIndex(item => item.name === newRepresentImg)
+      cpPreviewImg[findIndex].isRepresent = true;
+
+      setPreviewImg(cpPreviewImg);
+    }
+  }
 
   /**
    * current state 변수의 값이 변경될 때 발생하는 이벤트 훅입니다.
@@ -263,6 +306,7 @@ export default function AddLog() {
         nextRef.current.classList.add(style.btn__hide)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
 
   return (
@@ -317,11 +361,16 @@ export default function AddLog() {
                       backgroundPosition: 'center bottom',
                       backgroundSize: 'center',
                       backgroundRepeat: 'no-repeat',
-                      borderRadius: '10px'
+                      borderRadius: '10px',
+                      cursor: 'pointer'
                     }}>
-                      {previewImg ?
-                        <img alt="previewImage" src={item} style={{ width: '100%', height: '100%' }} />
-                        : null
+                      {previewImg ? (
+                        <>
+                          {item.isRepresent ? (
+                            <Box>d</Box>
+                          ) : null}
+                          <img ref={imgRef} alt={item.name} src={item.url} style={{ width: '100%', height: '100%' }} onClick={(e: React.MouseEvent<HTMLImageElement>) => handleImgClick(e)} />
+                        </>) : null
                       }
                     </Box>
                   </Box>

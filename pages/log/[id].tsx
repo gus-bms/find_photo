@@ -16,6 +16,9 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import axios from 'axios';
 
+/**
+ * 사용법 숙지 필요
+ */
 export async function getServerSideProps({ query: { id } }: { query: { id: string } }) {
   return {
     props: {
@@ -94,6 +97,7 @@ export default function Log({ id }: { id: string }) {
         nextRef.current.classList.add(style.btn__hide)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
 
   useEffect(() => {
@@ -117,6 +121,7 @@ export default function Log({ id }: { id: string }) {
       }
     })
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
