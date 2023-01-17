@@ -97,7 +97,6 @@ export default function Log({ id }) {
   }, [current])
 
   useEffect(() => {
-    console.log(id);
     axios.get("/api/log/selectLog", {
       params: {
         logPk: id
@@ -109,17 +108,20 @@ export default function Log({ id }) {
         setContent(logArr[0].content)
 
         if (resp.data.isImgLog) {
+          let imgNames: string[] = [];
           logArr.map((log: { img_name: string; }) => {
-
-            images.length == 0 ? setImages([log.img_name]) : setImages([...images, log.img_name])
-            console.log(images.length)
+            imgNames.push(log.img_name)
           })
-
+          setImages(imgNames)
         }
-      } console.log(images)
+      }
     })
 
   }, [])
+
+  useEffect(() => {
+    console.log(images)
+  }, [images])
 
   return (
     <>
@@ -139,6 +141,7 @@ export default function Log({ id }) {
                         < Box className={style.card}
                           sx={{
                             backgroundImage: `url(/uploads/${img})`,
+                            backgroundSize: 'cover',
                             cursor: 'pointer',
                           }} />
                       </Box>
