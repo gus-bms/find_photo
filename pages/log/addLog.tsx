@@ -8,6 +8,7 @@
  * @project find-photo
  */
 
+import { useRouter } from 'next/router';
 import React, { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import { Grid, Box, Autocomplete, IconButton, Typography, Button, TextField } from "@mui/material";
 import { styled } from '@mui/system';
@@ -84,6 +85,8 @@ interface FormType {
 }
 
 export default function AddLog() {
+  const router = useRouter();
+
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -170,7 +173,8 @@ export default function AddLog() {
     // 서버에 업로드된 이미지와 데이터를 전송합니다.
     try {
       const { data } = await axios.post("/api/log/insertLog", formData);
-      console.log(data);
+      if (data.done == "ok")
+        router.push(`/log/${data.id}`)
 
     } catch (err) {
       console.log(err);

@@ -48,7 +48,7 @@ export const config = {
 const readFile = (
   req: NextApiRequest,
   saveLocally?: boolean
-): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+): Promise<{ fields: formidable.Fields; files: formidable.Files; id: any }> => {
   const options: formidable.Options = {};
   if (saveLocally) {
     options.uploadDir = path.join(process.cwd(), "/public/uploads");
@@ -61,22 +61,43 @@ const readFile = (
   const form = formidable(options);
   return new Promise((resolve, reject) => {
     form.parse(req, async (err, fields: any, files) => {
-      await insertLog(fields, files);
+      let id = await insertLog(fields, files);
 
       if (err) reject(err);
-      resolve({ fields, files });
+      resolve({ fields, files, id });
     });
   });
 };
 
+// const;
+
 const handler: NextApiHandler = async (req, res) => {
-  try {
-    await fs.readdir(path.join(process.cwd() + "/public", "/uploads"));
-  } catch (error) {
-    await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"));
+  let resp: any;
+  const {
+    query: { method },
+  } = req;
+  console.log("request 파라미터", method);
+  /**
+   * 파일 업로드 및 데이터를 DB서버에 전송하는 로직입니다.
+   */
+  switch (method) {
+    case "insertLog":
+      try {
+        await fs.readdir(path.join(process.cwd() + "/public", "/uploads"));
+      } catch (error) {
+        await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"));
+      }
+      resp = await readFile(req, true);
+      console.log(resp);
+      res.json({ id: resp.id, done: "ok" });
+      break;
+
+    case "selectLog":
+      resp = await selectLog(req);
+      console.log(resp);
+      res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
+      break;
   }
-  await readFile(req, true);
-  res.json({ done: "ok" });
 };
 
 /**
@@ -94,21 +115,53 @@ async function insertLog<T>(
 ): Promise<T | unknown> {
   let imgNames: string[] = [];
   try {
-    console.log(files);
-    if (files.file) {
-      files.file.map((item: any) => {
-        imgNames.push(item.newFilename);
+    // 이미지가 있는지 체크하여 있을 경우 저장될 이름만 별도의 array에 할당합니다.
+    console.log("@@@@@@@@@@@@@@@", files);
+    Array.isArray(files.file)
+      ? files.file.map((item: any) => {
+          imgNames.push(item.newFilename);
+        })
+      : imgNames.push(files.file.newFilename);
+
+    let id;
+    // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log pk를 전달받아 뷰단으로 return합니다.
+    await axios
+      .post("http://localhost:8000/api/log/insertLog", {
+        title: fields.title,
+        spot_pk: fields.spotPk,
+        content: fields.content,
+        user_pk: fields.userPk,
+        images: imgNames,
+      })
+      .then((resp) => {
+        id = resp.data.id;
       });
-    }
-    console.log(imgNames);
-    await axios.post("http://localhost:8000/api/log/insertLog", {
-      title: fields.title,
-      spot_pk: fields.spotPk,
-      content: fields.content,
-      user_pk: fields.userPk,
-      images: imgNames,
+    return id;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+}
+
+/**
+ * DB서버에 log와 image를 요청합니다.
+ *
+ * @param logPk log 테이블 pk
+ * @returns
+ */
+async function selectLog<T>(req: NextApiRequest): Promise<T | unknown> {
+  const {
+    query: { logPk },
+  } = req;
+
+  try {
+    // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
+    const log = await axios.get("http://localhost:8000/api/log/selectLog", {
+      params: {
+        logPk: logPk,
+      },
     });
-    return true;
+    return log.data;
   } catch (err) {
     console.log(err);
     return err;
