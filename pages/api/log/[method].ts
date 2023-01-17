@@ -97,6 +97,12 @@ const handler: NextApiHandler = async (req, res) => {
       console.log(resp);
       res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
       break;
+
+    case "selectListLog":
+      resp = await selectListLog(req);
+      console.log(resp);
+      res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
+      break;
   }
 };
 
@@ -116,7 +122,6 @@ async function insertLog<T>(
   let imgNames: string[] = [];
   try {
     // 이미지가 있는지 체크하여 있을 경우 저장될 이름만 별도의 array에 할당합니다.
-    console.log("@@@@@@@@@@@@@@@", files);
     Array.isArray(files.file)
       ? files.file.map((item: any) => {
           imgNames.push(item.newFilename);
@@ -162,6 +167,34 @@ async function selectLog<T>(req: NextApiRequest): Promise<T | unknown> {
       },
     });
     return log.data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+}
+
+/**
+ * DB서버에 userPk에 해당하는 로그리스트를 요청합니다.
+ *
+ * @param userPk user 테이블 pk
+ * @returns
+ */
+async function selectListLog<T>(req: NextApiRequest): Promise<T | unknown> {
+  const {
+    query: { userPk },
+  } = req;
+
+  try {
+    // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
+    const logList = await axios.get(
+      "http://localhost:8000/api/log/selectListLog",
+      {
+        params: {
+          userPk: userPk,
+        },
+      }
+    );
+    return logList.data;
   } catch (err) {
     console.log(err);
     return err;

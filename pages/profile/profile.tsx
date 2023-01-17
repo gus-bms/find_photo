@@ -2,32 +2,44 @@ import Head from 'next/head';
 import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
 import { color, width } from '@mui/system';
 import { useCookies } from 'react-cookie';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import axios from 'axios';
 
 const Profile = () => {
   const [cookies, ,] = useCookies(['uid', 'profilePhoto']);
-  const [logList, setLogList] = useState<{ imageUrl: string, title: string, text: string }[]>([])
+  const [logList, setLogList] = useState<{ title: string, content: string, url: string }[]>([])
 
-  let dummyLog = [{
-    imageUrl: 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FTEk9Q%2FbtrVe31Hlfc%2Fqk1w8wFX98UpfPCitRl9Qk%2Fimg.png',
-    title: '여행준비 (1) - Visit Japan 등록',
-    text: '일본 여행을 하기 위해선 Visit Japan Web(비짓재팬웹) 이라는 사이트에서 몇가지 정보를 기입해주고, 입국 심사 시 QR 검증을 받아야 입국이 가능하다. 또한 백신을 3차까지 맞지 않았다면, 출발 72시간 전에 PCR 검사를 받고 결과서를 비짓재팬에 등록해주어야 한다. 비짓재팬은 "Visit Japan Web"이란,',
-  }, {
-    imageUrl: 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FTEk9Q%2FbtrVe31Hlfc%2Fqk1w8wFX98UpfPCitRl9Qk%2Fimg.png',
-    title: '여행준비 (1) - Visit Japan 등록',
-    text: '일본 여행을 하기 위해선 Visit Japan Web(비짓재팬웹) 이라는 사이트에서 몇가지 정보를 기입해주고, 입국 심사 시 QR 검증을 받아야 입국이 가능하다. 또한 백신을 3차까지 맞지 않았다면, 출발 72시간 전에 PCR 검사를 받고 결과서를 비짓재팬에 등록해주어야 한다. 비짓재팬은 "Visit Japan Web"이란,',
-  }, {
-    imageUrl: 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FTEk9Q%2FbtrVe31Hlfc%2Fqk1w8wFX98UpfPCitRl9Qk%2Fimg.png',
-    title: '여행준비 (1) - Visit Japan 등록',
-    text: '일본 여행을 하기 위해선 Visit Japan Web(비짓재팬웹) 이라는 사이트에서 몇가지 정보를 기입해주고, 입국 심사 시 QR 검증을 받아야 입국이 가능하다. 또한 백신을 3차까지 맞지 않았다면, 출발 72시간 전에 PCR 검사를 받고 결과서를 비짓재팬에 등록해주어야 한다. 비짓재팬은 "Visit Japan Web"이란,',
-  }, {
-    imageUrl: 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FTEk9Q%2FbtrVe31Hlfc%2Fqk1w8wFX98UpfPCitRl9Qk%2Fimg.png',
-    title: '여행준비 (1) - Visit Japan 등록',
-    text: '일본 여행을 하기 위해선 Visit Japan Web(비짓재팬웹) 이라는 사이트에서 몇가지 정보를 기입해주고, 입국 심사 시 QR 검증을 받아야 입국이 가능하다. 또한 백신을 3차까지 맞지 않았다면, 출발 72시간 전에 PCR 검사를 받고 결과서를 비짓재팬에 등록해주어야 한다. 비짓재팬은 "Visit Japan Web"이란,',
-  }]
+  useEffect(() => {
+    axios.get("/api/log/selectListLog", {
+      params: {
+        userPk: 18
+      }
+    }).then(resp => {
+      if (resp.data.r) {
 
-  // setLogList(dummyLog)
+        let logArr = resp.data.row.map((log: { title: string; content: string; img_name: string; }) => {
+          var rObj: { title: string, content: string, url: string } = {
+            title: '',
+            content: '',
+            url: ''
+          };
+
+          rObj['title'] = log.title;
+          rObj['content'] = log.content;
+          rObj['url'] = log.img_name
+          return rObj;
+        });
+        console.log(logArr)
+        setLogList(logArr)
+      }
+
+    })
+  }, [])
+
+  useEffect(() => {
+    console.log(logList)
+  }, [logList])
   return (
     // 프로필 명과 자기소개 
     <>
@@ -149,7 +161,7 @@ const Profile = () => {
           textAlign='center'
         >
           <Box>
-            {dummyLog.map((log, idx) => (
+            {logList.map((log, idx) => (
               // 대표이미지 사진 영역
               <Grid
                 key={idx}
@@ -170,7 +182,7 @@ const Profile = () => {
                     backgroundSize: 'cover',
                     width: '10rem',
                     height: '10rem',
-                    backgroundImage: `url(${log.imageUrl})`,
+                    backgroundImage: `url(/uploads/${log.url})`,
                     backgroundRepeat: 'no-repeat',
                     borderRadius: '10px'
                   }}>
@@ -197,7 +209,7 @@ const Profile = () => {
                       WebkitBoxOrient: 'vertical',
                       color: '#868E96'
                     }}>
-                      {log.text}
+                      {log.content}
                     </Typography>
                   </Link>
                 </Grid>
