@@ -9,14 +9,15 @@
  * @project find-photo
  */
 
-import { useRouter } from 'next/router';
-import React, { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
-import { Grid, Box, Autocomplete, IconButton, Typography, Button, TextField } from "@mui/material";
-import { styled } from '@mui/system';
+import { useRouter } from 'next/router'
+import React, { useState, useEffect, useRef } from 'react'
+import { Grid, Box, IconButton, Button } from "@mui/material"
+import { styled } from '@mui/system'
 import axios from 'axios'
 import style from '../../styles/Spot.module.css'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
 /**
@@ -384,9 +385,8 @@ export default function AddLog() {
                             <Box sx={{
                               position: 'fixed',
                               bottom: 0,
-                              marginLeft: '12.5%'
-                              // border: '1px solid #36da48',
-                            }}>V</Box>
+                              marginLeft: '11.5%'
+                            }}><CheckCircleIcon color='success' fontSize="small" /></Box>
                           ) : null}
                           <img ref={elem => (imgRef.current[idx] = elem)} alt={item.name} src={item.url} style={{
                             paddingLeft: '1.5px', width: '100%', height: '100%'
