@@ -55,7 +55,11 @@ const readFile = (
     options.uploadDir = path.join(process.cwd(), "/public/uploads");
     options.multiples = true;
     options.filename = (name, ext, path, form) => {
-      return Date.now().toString() + "_" + path.originalFilename;
+      // 공백일 경우 backgroundImageUrl css가 적용이 되지않기때문에,
+      // 공백을 언더바로 치환합니다.
+      let newName = path.originalFilename?.replace(/\s/g, "_");
+
+      return Date.now().toString() + "_" + newName;
     };
   }
   options.maxFileSize = 4000 * 1024 * 1024;
@@ -186,23 +190,25 @@ async function selectLog<T>(req: NextApiRequest): Promise<T | unknown> {
  */
 async function selectListLog<T>(req: NextApiRequest): Promise<T | unknown> {
   const {
-    query: { userPk },
+    query: { userPk, spotPk, type },
   } = req;
-
-  try {
-    // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
-    const logList = await axios.get(
-      "http://localhost:8000/api/log/selectListLog",
-      {
-        params: {
-          userPk: userPk,
-        },
-      }
-    );
-    return logList.data;
-  } catch (err) {
-    console.log(err);
-    return err;
+  if (typeof type == "string") {
+    let param = userPk ? userPk : spotPk;
+    try {
+      // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
+      const logList = await axios.get(
+        "http://localhost:8000/api/log/selectListLog",
+        {
+          params: {
+            [type]: param,
+          },
+        }
+      );
+      return logList.data;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
   }
 }
 

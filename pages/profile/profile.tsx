@@ -8,29 +8,29 @@ import axios from 'axios';
 
 const Profile = () => {
   const [cookies, ,] = useCookies(['uid', 'profilePhoto']);
-  const [logList, setLogList] = useState<{ title: string, content: string, url: string }[]>([])
+  const [logList, setLogList] = useState<{ id: string, title: string, content: string, url: string }[]>([])
 
   useEffect(() => {
     axios.get("/api/log/selectListLog", {
       params: {
-        userPk: 18
+        userPk: 18,
+        type: 'user_pk'
       }
     }).then(resp => {
       if (resp.data.r) {
-
-        let logArr = resp.data.row.map((log: { title: string; content: string; img_name: string; }) => {
-          var rObj: { title: string, content: string, url: string } = {
+        let logArr = resp.data.row.map((log: { log_pk: string, title: string; content: string; img_name: string; }) => {
+          var rObj: { id: string, title: string, content: string, url: string } = {
+            id: '',
             title: '',
             content: '',
             url: ''
           };
-
-          rObj['title'] = log.title;
-          rObj['content'] = log.content;
+          rObj['id'] = log.log_pk
+          rObj['title'] = log.title
+          rObj['content'] = log.content
           rObj['url'] = log.img_name
           return rObj;
         });
-        console.log(logArr)
         setLogList(logArr)
       }
 
@@ -148,8 +148,8 @@ const Profile = () => {
       {/* 자기가 올린 게시글 리스트 나오기 + 글 작성 + 글 수정 */}
       <Grid
         sx={{
-          marginTop: '8vh',
-          borderTop: '0.1px solid #F1F3F5'
+          marginTop: '6vh',
+          // borderTop: '0.1px solid #F1F3F5'
         }}
         container
         justifyContent='center'
@@ -196,7 +196,7 @@ const Profile = () => {
                   sx={{
                     marginTop: '1rem'
                   }}>
-                  <Link href='/' style={{ textDecoration: 'none' }}>
+                  <Link href={`/log/${log.id}`} style={{ textDecoration: 'none' }}>
                     <Typography fontSize='1.2rem' fontWeight='600' color='#6c7176'>
                       {log.title}
                     </Typography>

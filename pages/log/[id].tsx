@@ -28,7 +28,6 @@ export async function getServerSideProps({ query: { id } }: { query: { id: strin
 }
 
 export default function Log({ id }: { id: string }) {
-  const router = useRouter();
   const [images, setImages] = useState<string[]>([])
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -37,27 +36,6 @@ export default function Log({ id }: { id: string }) {
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef(null)
-
-  // TO_DO: DB에서 해당 스팟에 해당하는 게시글 사진 불러오기 (게시글 당 대표 이미지 1장)
-  const cards2: { url: string, index: number }[] = [
-    {
-      url: "/asset/kakao_login_icon.png",
-      index: 1
-    }, {
-      url: "https://cdn.pixabay.com/photo/2014/08/29/03/02/horse-430441_960_720.jpg",
-      index: 2
-
-    }, {
-      url: "https://cdn.pixabay.com/photo/2016/08/11/23/48/italy-1587287_960_720.jpg",
-      index: 3
-    }, {
-      url: "https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_960_720.jpg",
-      index: 4
-    }, {
-      url: "https://cdn.pixabay.com/photo/2018/08/21/23/29/fog-3622519_960_720.jpg",
-      index: 5
-    }
-  ]
 
   /**
    * 캐로셀 슬라이드의 위치를 이동시키는 좌우 버튼을 클릭할 때 발생하는 이벤트입니다.
@@ -81,17 +59,18 @@ export default function Log({ id }: { id: string }) {
    * @TO_DO 카드의 개수는 동적으로 컨트롤 되어야 합니다.
    */
   useEffect(() => {
-    console.log(images.length, current)
-    if (prevRef.current && nextRef.current) {
-      if (current > 0 && current < 4) {
+    if (images.length > 2 && prevRef.current && nextRef.current) {
+      if (current > 0) {
         prevRef.current.classList.add(style.btn__show)
         nextRef.current.classList.add(style.btn__show)
         nextRef.current.classList.remove(style.btn__hide)
+        prevRef.current.classList.remove(style.btn__hide)
       }
       if (current == 0) {
         prevRef.current.classList.remove(style.btn__show)
         nextRef.current.classList.add(style.btn__show)
-      } else if (images.length - current == 4) {
+        nextRef.current.classList.remove(style.btn__hide)
+      } else if (current == Math.round((images.length + 1) / 1.6)) {
         prevRef.current.classList.add(style.btn__show)
         nextRef.current.classList.remove(style.btn__show)
         nextRef.current.classList.add(style.btn__hide)
@@ -99,6 +78,13 @@ export default function Log({ id }: { id: string }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current])
+
+  useEffect(() => {
+    if (images.length > 2 && prevRef.current && nextRef.current) {
+      nextRef.current.classList.add(style.btn__show)
+      nextRef.current.classList.remove(style.btn__hide)
+    }
+  }, [images])
 
   useEffect(() => {
     axios.get("/api/log/selectLog", {
@@ -139,7 +125,7 @@ export default function Log({ id }: { id: string }) {
                 <Box className={style.inner__carousel}>
                   <Box ref={trackRef} className={style.track}
                     sx={{
-                      transform: `translateX(-${(current * 1.3) * 10}%)`
+                      transform: `translateX(-${(current * 1.12) * 10}%)`
                     }}>
                     {images.map((img, idx) => (
                       <Box key={idx} className={style.card__container}>
@@ -158,7 +144,7 @@ export default function Log({ id }: { id: string }) {
                       sx={{
                         display: 'none'
                       }}
-                      className={style.button__grp}
+                      className={`${style.button__grp} ${style.btn__hide}`}
                       type="button"
                       onClick={() => handleCarouselClick('prev')}
                     >
@@ -172,7 +158,7 @@ export default function Log({ id }: { id: string }) {
                     </IconButton>
                     <IconButton
                       ref={nextRef}
-                      className={style.button__grp}
+                      className={`${style.button__grp} ${style.btn__hide}`}
                       type="button"
                       sx={{
                         left: "89.5%"

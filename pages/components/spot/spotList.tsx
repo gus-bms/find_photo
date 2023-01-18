@@ -27,6 +27,7 @@ import { Spot } from '../map/map'
 import { LocalCafe, LocalDining, PhotoCamera, ExpandLess, ExpandMore } from "@mui/icons-material";
 import style from '../../../styles/Spot.module.css'
 import Link from 'next/link';
+import axios from 'axios';
 
 interface Iprops {
   setSpot: Dispatch<SetStateAction<object>>;
@@ -75,6 +76,9 @@ export default FolderList;
 const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [current, setCurrent] = useState<number>(0)
+  const [spotPk, setSpotPk] = useState<number>()
+  const [images, setImages] = useState<{ logPk: string, url: string }[]>([])
+
   const carouselRef = useRef(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
@@ -133,6 +137,12 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
     }
   }
 
+  const handleCollapsClick = (spotPk: number) => {
+    setIsOpen(!isOpen)
+    // console.log(spotPk)
+    setSpotPk(spotPk)
+  }
+
   /**
    * current state 변수의 값이 변경될 때 발생하는 이벤트 훅입니다.
    * 맨 첫번째 카드일 경우와 맨 마지막일 카드일 경우 그리고 그 외의 경우일 때 좌 우 버튼의 노출 여부를 결정합니다.
@@ -140,22 +150,60 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
    * @TO_DO 카드의 개수는 동적으로 컨트롤 되어야 합니다.
    */
   useEffect(() => {
-    if (prevRef.current && nextRef.current) {
-      if (current > 0 && current < 4) {
+    if (images.length > 2 && prevRef.current && nextRef.current) {
+      if (current > 0) {
         prevRef.current.classList.add(style.btn__show)
         nextRef.current.classList.add(style.btn__show)
         nextRef.current.classList.remove(style.btn__hide)
+        prevRef.current.classList.remove(style.btn__hide)
       }
       if (current == 0) {
         prevRef.current.classList.remove(style.btn__show)
         nextRef.current.classList.add(style.btn__show)
-      } else if (current == 4) {
+        nextRef.current.classList.remove(style.btn__hide)
+      } else if (current == Math.round((images.length + 1) / 1.6)) {
         prevRef.current.classList.add(style.btn__show)
         nextRef.current.classList.remove(style.btn__show)
         nextRef.current.classList.add(style.btn__hide)
       }
     }
   }, [current])
+
+  useEffect(() => {
+    if (images.length > 2 && prevRef.current && nextRef.current) {
+      nextRef.current.classList.add(style.btn__show)
+      nextRef.current.classList.remove(style.btn__hide)
+    }
+  }, [images])
+
+  useEffect(() => {
+    console.log(spotPk)
+    if (spotPk == undefined) {
+      return
+    }
+    axios.get("/api/log/selectListLog", {
+      params: {
+        spotPk: spotPk,
+        type: 'spot_pk'
+      }
+    }).then(resp => {
+      if (resp.data.r) {
+        console.log(resp.data.row)
+        let logArr = resp.data.row.map((log: { log_pk: number, img_name: string; }) => {
+          var rObj: { logPk: string, url: string } = {
+            logPk: '',
+            url: ''
+          }
+          rObj['logPk'] = log.log_pk.toString()
+          rObj['url'] = log.img_name
+          return rObj
+        })
+        console.log('logArr@@@@', logArr)
+        setImages(logArr)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spotPk])
 
   return (
     <>
@@ -184,7 +232,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
         md={1}>
         <Box>
           <IconButton
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => spot.spot_pk != undefined && handleCollapsClick(spot.spot_pk)}
             style={{ color: "black" }}>
             {isOpen ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
@@ -201,12 +249,12 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                 sx={{
                   transform: `translateX(-${(current * 1.3) * 10}%)`
                 }}>
-                {cards2.map((card, idx) =>
-                  <Link key={idx} href={'log/id'}>
+                {images.map((img, idx) =>
+                  <Link key={img.logPk} href={`log/${img.logPk}`}>
                     <Box className={style.card__container}>
                       < Box className={style.card}
                         sx={{
-                          backgroundImage: `url(${card.url})`,
+                          backgroundImage: `url(/uploads/${img.url})`,
                           cursor: 'pointer',
                         }} />
                     </Box>
@@ -219,7 +267,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                   sx={{
                     display: 'none'
                   }}
-                  className={style.button__grp}
+                  className={`${style.button__grp} ${style.btn__hide}`}
                   type="button"
                   onClick={() => handleCarouselClick('prev')}
                 >
@@ -233,7 +281,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
                 </IconButton>
                 <IconButton
                   ref={nextRef}
-                  className={style.button__grp}
+                  className={`${style.button__grp} ${style.btn__hide}`}
                   type="button"
                   sx={{
                     left: "89.5%"
