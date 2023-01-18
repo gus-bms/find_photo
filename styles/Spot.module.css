@@ -57,3 +57,13 @@
 .btn__hide {
   display: none !important;
 }
+
+.represent__card {
+  transform: translateY(-20px);
+  transition: transform 450ms;
+}
+
+.represent__cancel {
+  transform: translateY(0px);
+  transition: transform 450ms;
+}
