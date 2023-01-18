@@ -133,9 +133,10 @@ async function insertLog<T>(
         })
       : imgNames.push(files.file.newFilename);
 
-    let representImg = imgNames.find(
-      (item) => item.split("_")[1] == fields.representImg
-    );
+    let representImg = imgNames.find((item) => {
+      let reg = item.split("_")[0];
+      return item.split(reg + "_")[1] == fields.representImg;
+    });
     let id;
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log pk를 전달받아 뷰단으로 return합니다.
     await axios

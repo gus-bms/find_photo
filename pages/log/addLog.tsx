@@ -175,10 +175,10 @@ export default function AddLog() {
         return item.name
     })?.name
 
-    // 대표이미지 파일명입니다.
+    // 대표이미지 파일명입니다. 공백이 있을 경우 언더바로 치환합니다.
     if (representImg) {
-      console.log("@@@@@@", representImg)
-      formData.append('representImg', representImg)
+      let newName = representImg.replace(/\s/g, "_");
+      formData.append('representImg', newName)
     }
 
     // 업로드된 이미지를 체크합니다.
