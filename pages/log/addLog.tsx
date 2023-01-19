@@ -25,12 +25,13 @@ import Toast from '../components/global/toast'
  */
 const CustomInput = styled('input')(`
   width: 100%;
-  margin-Top: 1.5rem;
+  height: 5vh;
+  padding: 0;
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
-  padding: 12px;
+  margin-bottom: 2vh;
   color: dark;
   background: dark;
   border: none;
@@ -45,12 +46,12 @@ const CustomInput = styled('input')(`
  */
 const CustomTextarea = styled('textarea')(`
   width: 100%;
-  margin-Top: 1.5rem;
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
-  padding: 12px;
+  margin-bottom: 0.4vh;
+  padding: 0;
   color: dark;
   background: dark;
   border: none;
@@ -65,12 +66,12 @@ const CustomTextarea = styled('textarea')(`
  */
 const CustomAutoComplete = styled('select')(`
   width: 100%;
-  margin-Top: 1.5rem;
+  height: 2vh;
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
-  padding: 12px;
+  margin-bottom: 2vh;
   color: dark;
   background: dark;
   border: none;
@@ -338,15 +339,12 @@ export default function AddLog() {
     <>
       {/* 이미지 업로드 */}
       <Box sx={{
-        height: '12rem',
-        marginTop: '2rem',
+        height: '25vh',
         display: 'flex'
       }}>
         <Box onClick={clickImageUpload} sx={{
           height: '100%',
           width: '20%',
-          // border: '1px dotted',
-          borderRadius: '10px',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
@@ -453,25 +451,21 @@ export default function AddLog() {
         <Grid
           item
           xs={12}
-          sx={{
-            marginTop: '1rem',
-          }}
         >
           <CustomInput value={title} placeholder="제목을 입력하세요."
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setTitle(e.target.value)
             }} style={{
               fontSize: 'xx-large',
-              marginTop: 0
             }} />
           <CustomAutoComplete ref={customAutoCompleteRef} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setSpotPk(e.target.value)
           }}>
-            <option value="" >
+            <option value="" style={{ padding: 0 }}>
               장소를 선택해주세요.
             </option>
             {spotList.map((item) => (
-              <option value={item.spot_pk} key={item.spot_pk}>
+              <option value={item.spot_pk} key={item.spot_pk} style={{ padding: 0 }}>
                 {item.name}
               </option>
             ))}
@@ -480,13 +474,13 @@ export default function AddLog() {
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
               setContent(e.target.value)
             }} style={{
-              height: '44.6vh'
+              height: '52vh'
             }} />
         </Grid>
         <Grid item sx={{
           // position: 'absolute',
           bottom: '0px', // 바닥에 고정시켜줍니다.
-          height: '4rem',
+          height: '4vh',
           width: '100%',
           display: 'flex',
           webkitBoxPack: 'justify',
@@ -498,14 +492,12 @@ export default function AddLog() {
             color: 'gray'
           }}>뒤로가기</Button>
           {toast && <Toast setToast={setToast} text={errMsg} />}
-          <Box>
-            {/* <Button variant="text" sx={{
+          {/* <Button variant="text" sx={{
               color: 'gray'
             }}>임시저장</Button> */}
-            <Button variant="text" onClick={insertLog} sx={{
-              color: 'gray'
-            }}>로그 등록</Button>
-          </Box>
+          <Button variant="text" onClick={insertLog} sx={{
+            color: 'gray'
+          }}>로그 등록</Button>
         </Grid>
       </Grid>
     </>
