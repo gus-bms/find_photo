@@ -15,6 +15,7 @@ import { Box, Button, Container, Grid, Link, TextField, Typography, Divider } fr
 import Search from "../search/search";
 import FolderList from '../spot/spotList'
 import axios from 'axios'
+import router from 'next/router'
 
 declare global {
   interface Window {
@@ -81,7 +82,6 @@ const Map = ({ latitude, longitude }: MapProps) => {
 
   // 장소 클릭 시 지도 위치를 재설정합니다.
   useEffect(() => {
-    console.log('click spot')
     if (window?.kakao) {
       // 주소-좌표 변환 객체를 생성합니다
       var geocoder = new window.kakao.maps.services.Geocoder();
@@ -209,10 +209,23 @@ const Map = ({ latitude, longitude }: MapProps) => {
   useEffect(() => {
     if (keyword != '') {
       (async () => {
+
+        router.push(`/?sKeyword=${keyword}`)
         await getSpotList()
       })();
     }
   }, [keyword])
+
+  useEffect(() => {
+
+    const { sKeyword } = router.query
+
+    typeof (sKeyword) == 'string' && (async () => {
+      setKeyword(sKeyword)
+      await getSpotList()
+    })();
+
+  },)
 
   // SpotList를 조회하는 함수 입니다.
   async function getSpotList(): Promise<any> {
@@ -241,7 +254,7 @@ const Map = ({ latitude, longitude }: MapProps) => {
         onLoad={() => window.kakao.maps.load(initMap)}
       />
       {/* Search에서 데이터 전달 받기 위해 state 함수 전달 */}
-      <Search setKeyword={setKeyword} />
+      <Search keyword={keyword} setKeyword={setKeyword} />
       <Box
         id="map"
         component='main'

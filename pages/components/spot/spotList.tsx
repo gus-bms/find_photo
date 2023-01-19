@@ -51,12 +51,13 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
         marginTop: "10px",
       }}
     >
-      {spotList.map(spot => (
+      {spotList.length > 0 && spotList.map(spot => (
         <>
           <Grid
             container
+            key={spot.spot_pk}
           >
-            <DetailSpot key={spot.spot_pk} spot={spot} setSpot={setSpot} />
+            <DetailSpot spot={spot} setSpot={setSpot} />
           </Grid>
         </>
       ))
@@ -83,27 +84,6 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef(null)
-
-  // TO_DO: DB에서 해당 스팟에 해당하는 게시글 사진 불러오기 (게시글 당 대표 이미지 1장)
-  const cards2: { url: string, index: number }[] = [
-    {
-      url: "https://cdn.pixabay.com/photo/2014/12/08/17/52/mare-561221_960_720.jpg",
-      index: 1
-    }, {
-      url: "https://cdn.pixabay.com/photo/2014/08/29/03/02/horse-430441_960_720.jpg",
-      index: 2
-
-    }, {
-      url: "https://cdn.pixabay.com/photo/2016/08/11/23/48/italy-1587287_960_720.jpg",
-      index: 3
-    }, {
-      url: "https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_960_720.jpg",
-      index: 4
-    }, {
-      url: "https://cdn.pixabay.com/photo/2018/08/21/23/29/fog-3622519_960_720.jpg",
-      index: 5
-    }
-  ]
 
   /**
    * 스팟 라벨을 클릭할 때 발생하는 이벤트입니다.
@@ -139,7 +119,6 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
 
   const handleCollapsClick = (spotPk: number) => {
     setIsOpen(!isOpen)
-    // console.log(spotPk)
     setSpotPk(spotPk)
   }
 

@@ -11,9 +11,10 @@
 import { Divider, IconButton, InputBase, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { FunctionComponent, Dispatch, SetStateAction, useState } from 'react';
+import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect } from 'react';
 
 interface Iprops {
+  keyword: string
   setKeyword: Dispatch<SetStateAction<string>>;
 }
 
@@ -24,6 +25,10 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
   const searchMap = () => {
     props.setKeyword(search)
   }
+
+  useEffect(() => {
+    props.keyword && setSearch(props.keyword)
+  }, [])
 
   return (
     <>
