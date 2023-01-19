@@ -52,16 +52,25 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
       }}
     >
       {spotList.length > 0 && spotList.map(spot => (
-        <>
-          <Grid
-            container
-            key={spot.spot_pk}
-          >
-            <DetailSpot spot={spot} setSpot={setSpot} />
-          </Grid>
-        </>
+        <Grid
+          container
+          key={spot.spot_pk}
+        >
+          <DetailSpot spot={spot} setSpot={setSpot} />
+        </Grid>
       ))
       }
+      <Box sx={{
+        width: '100%',
+        textAlign: 'center'
+      }}>
+        <Link href={'/spot/addSpot'}>
+          <Button>
+            장소 추가하기
+
+          </Button>
+        </Link>
+      </Box>
     </List >
   );
 };

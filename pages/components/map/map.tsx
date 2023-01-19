@@ -278,7 +278,7 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
         onLoad={() => window.kakao.maps.load(initMap)}
       />
       {/* Search에서 데이터 전달 받기 위해 state 함수 전달 */}
-      <Search keyword={keyword} setKeyword={setKeyword} />
+      <Search keyword={keyword} setKeyword={setKeyword} text='동을 입력해주세요!' />
       <Box
         id="map"
         component='main'

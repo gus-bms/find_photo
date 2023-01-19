@@ -16,6 +16,7 @@ import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect
 interface Iprops {
   keyword: string
   setKeyword: Dispatch<SetStateAction<string>>;
+  text: string;
 }
 
 const Search: FunctionComponent<Iprops> = (props: Iprops) => {
@@ -48,7 +49,7 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
             ml: 1,
             flex: 1
           }}
-          placeholder="동을 검색해보세요!"
+          placeholder={props.text}
           value={search}
           id='search'
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
