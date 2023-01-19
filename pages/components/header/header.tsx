@@ -47,7 +47,10 @@ export const Header = () => {
       <Grid
         container
         spacing={1}
-        marginTop={1}
+        sx={{
+          height: '5vh',
+          marginTop: '2vh'
+        }}
       >
         <Grid
           item

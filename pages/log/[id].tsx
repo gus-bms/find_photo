@@ -15,6 +15,7 @@ import style from '../../styles/Spot.module.css'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import axios from 'axios';
+import Error404 from '../error_404'
 
 /**
  * 사용법 숙지 필요
@@ -93,6 +94,7 @@ export default function Log({ id }: { id: string }) {
       }
     }).then(resp => {
       if (resp.data.r) {
+        console.log(resp.data.r)
         let logArr = resp.data.row
         setTitle(logArr[0].title)
         setContent(logArr[0].content)
@@ -116,102 +118,104 @@ export default function Log({ id }: { id: string }) {
 
   return (
     <>
-      <Grid container>
-        {/* 이미지 슬라이더 */
-          (Array.isArray(images) && images.length > 0) && (
-            <Grid item
-              md={12}>
-              <Box ref={carouselRef} className={style.carousel__container} width={'100%'}>
-                <Box className={style.inner__carousel}>
-                  <Box ref={trackRef} className={style.track}
-                    sx={{
-                      transform: `translateX(-${(current * 1.12) * 10}%)`
-                    }}>
-                    {images.map((img, idx) => (
-                      <Box key={idx} className={style.card__container}>
-                        < Box className={style.card}
+      {title ? (
+        <Grid container>
+          {/* 이미지 슬라이더 */
+            (Array.isArray(images) && images.length > 0) && (
+              <Grid item
+                md={12}>
+                <Box ref={carouselRef} className={style.carousel__container} width={'100%'}>
+                  <Box className={style.inner__carousel}>
+                    <Box ref={trackRef} className={style.track}
+                      sx={{
+                        transform: `translateX(-${(current * 1.12) * 10}%)`
+                      }}>
+                      {images.map((img, idx) => (
+                        <Box key={idx} className={style.card__container}>
+                          < Box className={style.card}
+                            sx={{
+                              backgroundImage: `url(/uploads/${img})`,
+                              backgroundSize: 'cover',
+                              cursor: 'pointer',
+                            }} />
+                        </Box>
+                      ))}
+                    </Box>
+                    <Box>
+                      <IconButton
+                        ref={prevRef}
+                        sx={{
+                          display: 'none'
+                        }}
+                        className={`${style.button__grp} ${style.btn__hide}`}
+                        type="button"
+                        onClick={() => handleCarouselClick('prev')}
+                      >
+                        <NavigateBeforeIcon
                           sx={{
-                            backgroundImage: `url(/uploads/${img})`,
-                            backgroundSize: 'cover',
-                            cursor: 'pointer',
-                          }} />
-                      </Box>
-                    ))}
-                  </Box>
-                  <Box>
-                    <IconButton
-                      ref={prevRef}
-                      sx={{
-                        display: 'none'
-                      }}
-                      className={`${style.button__grp} ${style.btn__hide}`}
-                      type="button"
-                      onClick={() => handleCarouselClick('prev')}
-                    >
-                      <NavigateBeforeIcon
+                            color: 'white',
+                            background: 'rgb(75 75 75 / 55%)',
+                            borderRadius: '20px'
+                          }}
+                          fontSize='large' />
+                      </IconButton>
+                      <IconButton
+                        ref={nextRef}
+                        className={`${style.button__grp} ${style.btn__hide}`}
+                        type="button"
                         sx={{
-                          color: 'white',
-                          background: 'rgb(75 75 75 / 55%)',
-                          borderRadius: '20px'
+                          left: "89.5%"
                         }}
-                        fontSize='large' />
-                    </IconButton>
-                    <IconButton
-                      ref={nextRef}
-                      className={`${style.button__grp} ${style.btn__hide}`}
-                      type="button"
-                      sx={{
-                        left: "89.5%"
-                      }}
-                      onClick={() => handleCarouselClick('next')}
-                    >
-                      <NavigateNextIcon
-                        sx={{
-                          color: 'white',
-                          background: 'rgb(75 75 75 / 55%)',
-                          borderRadius: '20px'
-                        }}
-                        fontSize='large' />
-                    </IconButton>
+                        onClick={() => handleCarouselClick('next')}
+                      >
+                        <NavigateNextIcon
+                          sx={{
+                            color: 'white',
+                            background: 'rgb(75 75 75 / 55%)',
+                            borderRadius: '20px'
+                          }}
+                          fontSize='large' />
+                      </IconButton>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Grid>
-          )}
-        {/* 작성자 */}
-        <Grid
-          item
-          md={12}
-          display='inline-flex'>
-          <Typography>
-            작성자 프로필 사진
-          </Typography>
-          <Typography sx={{
-            marginLeft: 1.5
-          }}>
-            작성자 이름
-          </Typography>
+              </Grid>
+            )}
+          {/* 작성자 */}
+          <Grid
+            item
+            md={12}
+            display='inline-flex'>
+            <Typography>
+              작성자 프로필 사진
+            </Typography>
+            <Typography sx={{
+              marginLeft: 1.5
+            }}>
+              작성자 이름
+            </Typography>
+          </Grid>
+          {/* 글 */}
+          <Grid
+            item
+            md={12}
+          >
+            <Typography sx={{
+              fontWeight: '600',
+              fontSize: '1.7rem'
+            }}>
+              {title}
+            </Typography>
+            <Typography sx={{
+              lineHeight: '1.9rem',
+              marginTop: '1rem',
+            }}>
+              {content}
+            </Typography>
+          </Grid>
         </Grid>
-        {/* 글 */}
-        <Grid
-          item
-          md={12}
-        >
-          <Typography sx={{
-            fontWeight: '600',
-            fontSize: '1.7rem'
-          }}>
-            {title}
-          </Typography>
-          <Typography sx={{
-            lineHeight: '1.9rem',
-            marginTop: '1rem',
-          }}>
-            {content}
-          </Typography>
-        </Grid>
-      </Grid>
+      ) : <Error404 text='로그를' />}
     </>
-  );
+  )
 }
 
