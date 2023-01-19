@@ -103,6 +103,7 @@ export default function AddLog() {
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
   const imgRef = useRef<HTMLImageElement[] | null[]>([])
+  const customAutoCompleteRef = useRef<HTMLSelectElement | null>(null)
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
@@ -111,6 +112,7 @@ export default function AddLog() {
    * 현재 DB에 저장되어있는 동네를 가져옵니다.
    */
   useEffect(() => {
+
     // SpotList를 조회하는 함수 입니다.
     if (nextRef.current)
       nextRef.current.classList.add(style.btn__hide)
@@ -324,6 +326,14 @@ export default function AddLog() {
       imgRef.current[0]?.classList.add(style.represent__card)
   }, [previewImg])
 
+  useEffect(() => {
+    // 스팟의 로그남기기를 통해 들어왔을 경우
+    const { spot } = router.query
+    spot != undefined && typeof (spot) == 'string' && customAutoCompleteRef.current != null && (
+      customAutoCompleteRef.current.value = spot
+    )
+  }, [spotList])
+
   return (
     <>
       {/* 이미지 업로드 */}
@@ -454,7 +464,7 @@ export default function AddLog() {
               fontSize: 'xx-large',
               marginTop: 0
             }} />
-          <CustomAutoComplete onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+          <CustomAutoComplete ref={customAutoCompleteRef} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setSpotPk(e.target.value)
           }}>
             <option value="" >
@@ -484,14 +494,14 @@ export default function AddLog() {
           webkitBoxAlign: 'center',
           alignItems: 'center',
         }}>
-          <Button variant="text" sx={{
+          <Button variant="text" onClick={router.back} sx={{
             color: 'gray'
           }}>뒤로가기</Button>
           {toast && <Toast setToast={setToast} text={errMsg} />}
           <Box>
-            <Button variant="text" sx={{
+            {/* <Button variant="text" sx={{
               color: 'gray'
-            }}>임시저장</Button>
+            }}>임시저장</Button> */}
             <Button variant="text" onClick={insertLog} sx={{
               color: 'gray'
             }}>로그 등록</Button>
@@ -501,4 +511,3 @@ export default function AddLog() {
     </>
   );
 }
-

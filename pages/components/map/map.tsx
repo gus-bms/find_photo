@@ -225,7 +225,7 @@ const Map = ({ latitude, longitude }: MapProps) => {
       await getSpotList()
     })();
 
-  },)
+  }, [])
 
   // SpotList를 조회하는 함수 입니다.
   async function getSpotList(): Promise<any> {
