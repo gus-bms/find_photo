@@ -27,6 +27,7 @@ declare global {
 interface MapProps {
   latitude: number; // 위도
   longitude: number; // 경도
+  pKeyword: string
 }
 
 // Spot 객체 
@@ -54,7 +55,7 @@ const MARKER_WIDTH = 33, // 기본, 클릭 마커의 너비
 var selectedMarker: any = null
 var selectedInfowindow: any
 
-const Map = ({ latitude, longitude }: MapProps) => {
+const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
   const [keyword, setKeyword] = useState<string>('')
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [spot, setSpot] = useState<Spot>({})
@@ -109,8 +110,8 @@ const Map = ({ latitude, longitude }: MapProps) => {
       });
 
       /**
-     * marker를 등록하는 함수입니다.
-     */
+       * marker를 등록하는 함수입니다.
+       */
       const addMarker = (position: any, normalOrigin: number, overOrigin: number, clickOrigin: number) => {
         const markerSize = new window.kakao.maps.Size(MARKER_WIDTH, MARKER_HEIGHT), // 기본, 클릭 마커의 크기
           markerOffset = new window.kakao.maps.Point(OFFSET_X, OFFSET_Y), // 기본, 클릭 마커의 기준좌표
@@ -203,29 +204,52 @@ const Map = ({ latitude, longitude }: MapProps) => {
         return markerImage;
       }
     }
-  }, [spot,]);
+  }, [spot]);
 
   // keyword의 변경을 감지합니다.
   useEffect(() => {
     if (keyword != '') {
       (async () => {
-
+        // 검색어의 결과를 리스트로 뿌려줍니다.
         router.push(`/?sKeyword=${keyword}`)
         await getSpotList()
+
+        // 검색어의 위치로 지도의 중심을 이동시킵니다.
+
+        if (window?.kakao) {
+          // 주소-좌표 변환 객체를 생성합니다
+          var geocoder = new window.kakao.maps.services.Geocoder();
+          geocoder.addressSearch(keyword, function (result: any, status: any) {
+            // 정상적으로 검색이 완료됐으면 
+            if (status === window.kakao.maps.services.Status.OK) {
+              console.log('kakaomap')
+              var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+              // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+              map.setCenter(coords);
+            } else {
+              if (Array.isArray(result) || result.length == 0) {
+                router.back()
+                alert('검색되지 않습니다.')
+              }
+            }
+          });
+        }
+
       })();
     }
   }, [keyword])
 
   useEffect(() => {
-
     const { sKeyword } = router.query
-
+    if (pKeyword)
+      console.log(pKeyword)
+    console.log(sKeyword)
     typeof (sKeyword) == 'string' && (async () => {
       setKeyword(sKeyword)
       await getSpotList()
     })();
 
-  }, [])
+  }, [pKeyword])
 
   // SpotList를 조회하는 함수 입니다.
   async function getSpotList(): Promise<any> {
