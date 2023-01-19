@@ -99,8 +99,9 @@ const handler: NextApiHandler = async (req, res) => {
 
     case "selectLog":
       resp = await selectLog(req);
-      console.log(resp);
-      res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
+      resp.r
+        ? res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog })
+        : res.json({ r: false });
       break;
 
     case "selectListLog":
