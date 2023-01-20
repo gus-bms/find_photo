@@ -231,62 +231,64 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
         md={12}
       >
         <Collapse in={isOpen} timeout="auto" unmountOnExit>
-          <Box ref={carouselRef} className={style.carousel__container}>
-            <Box className={style.inner__carousel}>
-              <Box ref={trackRef} className={style.track}
-                sx={{
-                  transform: `translateX(-${(current * 1.3) * 10}%)`
-                }}>
-                {images.map((img, idx) =>
-                  <Link key={img.logPk} href={`log/${img.logPk}`}>
-                    <Box className={style.card__container}>
-                      < Box className={style.card}
-                        sx={{
-                          backgroundImage: `url(/uploads/${img.url})`,
-                          cursor: 'pointer',
-                        }} />
-                    </Box>
-                  </Link>
-                )}
-              </Box>
-              <Box>
-                <IconButton
-                  ref={prevRef}
+          {images.length > 0 &&
+            <Box ref={carouselRef} className={style.carousel__container}>
+              <Box className={style.inner__carousel}>
+                <Box ref={trackRef} className={style.track}
                   sx={{
-                    display: 'none'
-                  }}
-                  className={`${style.button__grp} ${style.btn__hide}`}
-                  type="button"
-                  onClick={() => handleCarouselClick('prev')}
-                >
-                  <NavigateBeforeIcon
+                    transform: `translateX(-${(current * 1.3) * 10}%)`
+                  }}>
+                  {images.map((img, idx) =>
+                    <Link key={img.logPk} href={`log/${img.logPk}`}>
+                      <Box className={style.card__container}>
+                        < Box className={style.card}
+                          sx={{
+                            backgroundImage: `url(/uploads/${img.url})`,
+                            cursor: 'pointer',
+                          }} />
+                      </Box>
+                    </Link>
+                  )}
+                </Box>
+                <Box>
+                  <IconButton
+                    ref={prevRef}
                     sx={{
-                      color: 'white',
-                      background: 'rgb(75 75 75 / 55%)',
-                      borderRadius: '20px'
+                      display: 'none'
                     }}
-                    fontSize='large' />
-                </IconButton>
-                <IconButton
-                  ref={nextRef}
-                  className={`${style.button__grp} ${style.btn__hide}`}
-                  type="button"
-                  sx={{
-                    left: "89.5%"
-                  }}
-                  onClick={() => handleCarouselClick('next')}
-                >
-                  <NavigateNextIcon
+                    className={`${style.button__grp} ${style.btn__hide}`}
+                    type="button"
+                    onClick={() => handleCarouselClick('prev')}
+                  >
+                    <NavigateBeforeIcon
+                      sx={{
+                        color: 'white',
+                        background: 'rgb(75 75 75 / 55%)',
+                        borderRadius: '20px'
+                      }}
+                      fontSize='large' />
+                  </IconButton>
+                  <IconButton
+                    ref={nextRef}
+                    className={`${style.button__grp} ${style.btn__hide}`}
+                    type="button"
                     sx={{
-                      color: 'white',
-                      background: 'rgb(75 75 75 / 55%)',
-                      borderRadius: '20px'
+                      left: "89.5%"
                     }}
-                    fontSize='large' />
-                </IconButton>
+                    onClick={() => handleCarouselClick('next')}
+                  >
+                    <NavigateNextIcon
+                      sx={{
+                        color: 'white',
+                        background: 'rgb(75 75 75 / 55%)',
+                        borderRadius: '20px'
+                      }}
+                      fontSize='large' />
+                  </IconButton>
+                </Box>
               </Box>
             </Box>
-          </Box>
+          }
           <Box sx={{
             width: '97.5%'
           }}>

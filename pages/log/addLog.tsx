@@ -326,9 +326,12 @@ export default function AddLog() {
   useEffect(() => {
     // 스팟의 로그남기기를 통해 들어왔을 경우
     const { spot } = router.query
-    spot != undefined && typeof (spot) == 'string' && customAutoCompleteRef.current != null && (
+    if (spot != undefined && typeof (spot) == 'string' && customAutoCompleteRef.current != null) {
+      setSpotPk(spot)
       customAutoCompleteRef.current.value = spot
-    )
+    }
+
+
   }, [spotList])
 
   return (
