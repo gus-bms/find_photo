@@ -20,6 +20,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
+
 /**
  * Input 요소의 디자인을 커스텀합니다.
  */
@@ -81,12 +82,6 @@ const CustomAutoComplete = styled('select')(`
   }
 `)
 
-interface FormType {
-  title?: string
-  spotPk?: string
-  content?: string
-}
-
 export default function AddLog() {
   const router = useRouter();
 
@@ -108,36 +103,6 @@ export default function AddLog() {
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
-  /**
-   * 페이지 로딩 시 수행될 훅입니다.
-   * 현재 DB에 저장되어있는 동네를 가져옵니다.
-   */
-  useEffect(() => {
-
-    // SpotList를 조회하는 함수 입니다.
-    if (nextRef.current)
-      nextRef.current.classList.add(style.btn__hide)
-    async function getSpotList(): Promise<any> {
-      try {
-        await axios.get('/api/spot/getSpotList', {
-          params: {
-            address_dong: '인현동',
-            type: 'getAllSpot'
-          },
-          timeout: 3000
-        }).then(res => {
-          setSpotList(res.data.spotList)
-          return;
-        })
-
-      } catch (err) {
-        console.log(err);
-        return [];
-      }
-    }
-    getSpotList();
-
-  }, [])
 
   /**
    * DB log 테이블에 데이터를 삽입하는 함수입니다.
@@ -295,6 +260,37 @@ export default function AddLog() {
       setPreviewImg(cpPreviewImg);
     }
   }
+
+  /**
+   * 페이지 로딩 시 수행될 훅입니다.
+   * 현재 DB에 저장되어있는 동네를 가져옵니다.
+   */
+  useEffect(() => {
+    const { address_dong } = router.query
+    // SpotList를 조회하는 함수 입니다.
+    if (nextRef.current)
+      nextRef.current.classList.add(style.btn__hide)
+    async function getSpotList(): Promise<any> {
+      try {
+        await axios.get('/api/spot/getSpotList', {
+          params: {
+            address_dong: address_dong,
+            type: 'getAllSpot'
+          },
+          timeout: 3000
+        }).then(res => {
+          setSpotList(res.data.spotList)
+          return;
+        })
+
+      } catch (err) {
+        console.log(err);
+        return [];
+      }
+    }
+    getSpotList();
+
+  }, [])
 
   /**
    * current state 변수의 값이 변경될 때 발생하는 이벤트 훅입니다.

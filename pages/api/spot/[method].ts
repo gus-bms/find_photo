@@ -42,6 +42,7 @@ export default async function handler(
     ? await getSpotList<[] | null>(address_dong)
     : null;
   // switch keyword
+  console.log(spotList);
   if (Array.isArray(spotList)) {
     res.status(200).json({
       spotList: spotList,

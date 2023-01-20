@@ -36,6 +36,7 @@ export interface Spot {
   name?: string;
   category?: String;
   address?: string;
+  address_dong?: string;
   longitude?: number;
   latitude?: number;
 }
