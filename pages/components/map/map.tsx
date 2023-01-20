@@ -11,11 +11,12 @@
 
 import Script from 'next/script';
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Box, Button, Container, Grid, Link, TextField, Typography, Divider } from '@mui/material';
+import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
 import Search from "../search/search";
 import FolderList from '../spot/spotList'
 import axios from 'axios'
 import router from 'next/router'
+import Link from 'next/link';
 
 declare global {
   interface Window {
@@ -255,9 +256,9 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
   // SpotList를 조회하는 함수 입니다.
   async function getSpotList(): Promise<any> {
     try {
-      await axios.get('/api/spot/getSpotList', {
+      await axios.get('/api/spot/selectSpotList', {
         params: {
-          address_dong: keyword
+          address_dong: keyword,
         },
         timeout: 3000
       }).then(res => {
@@ -295,6 +296,17 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
       {!Array.isArray(spotList) || spotList.length != 0 &&
         <FolderList spotList={spotList} setSpot={setSpot} />
       }
+      <Box sx={{
+        width: '100%',
+        textAlign: 'center'
+      }}>
+        <Link href={`/spot/addSpot?sKeyword=${keyword}`}>
+          <Button>
+            장소 추가하기
+
+          </Button>
+        </Link>
+      </Box>
     </>
   )
 }

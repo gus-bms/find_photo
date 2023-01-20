@@ -11,49 +11,33 @@
  * @project find-photo
  */
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
-interface Data {
-  spotList?: any[];
-  ok: boolean;
-}
+// export default async function handler(
+//   req: ExtendedNextApiRequest,
+//   res: NextApiResponse<Data>
+// ) {
+//   const {
+//     query: { address_dong },
+//   } = req;
 
-interface ExtendedNextApiRequest extends NextApiRequest {
-  query: {
-    method: string;
-    address_dong: string;
-  };
-}
-/**
- *
- * @param req client에서 전송된 정보(검색어 keyword)
- * @param res client에  리턴할 정보(spotList)
- */
-export default async function handler(
-  req: ExtendedNextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  const {
-    query: { address_dong },
-  } = req;
-
-  const spotList = address_dong
-    ? await getSpotList<[] | null>(address_dong)
-    : null;
-  // switch keyword
-  console.log(spotList);
-  if (Array.isArray(spotList)) {
-    res.status(200).json({
-      spotList: spotList,
-      ok: true,
-    });
-  } else {
-    res.status(500).json({
-      ok: false,
-    });
-  }
-}
+//   const spotList = address_dong
+//     ? await getSpotList<[] | null>(address_dong)
+//     : null;
+//   // switch keyword
+//   console.log(spotList);
+//   if (Array.isArray(spotList)) {
+//     res.status(200).json({
+//       spotList: spotList,
+//       ok: true,
+//     });
+//   } else {
+//     res.status(500).json({
+//       ok: false,
+//     });
+//   }
+// }
 
 /**
  * DB에서 파라미터 값을 포함한 장소가 있는지 확인하여 결과를 list로 반환합니다.
@@ -62,11 +46,14 @@ export default async function handler(
  * @param address_dong 주소 '동'
  * @returns spotList
  */
-async function getSpotList<T>(address_dong: string): Promise<T | unknown> {
+async function selectListSpot<T>(req: NextApiRequest): Promise<T | unknown> {
+  const {
+    query: { address_dong },
+  } = req;
   console.log(address_dong);
   try {
     const spotList = await axios.get(
-      "http://localhost:8000/api/selectSpotList",
+      "http://localhost:8000/api/spot/selectSpotList",
       {
         params: {
           address_dong: address_dong,
@@ -80,3 +67,54 @@ async function getSpotList<T>(address_dong: string): Promise<T | unknown> {
     return err;
   }
 }
+
+async function insertSpot<T>(req: NextApiRequest): Promise<T | unknown> {
+  const {
+    body: { type, spot },
+  } = req;
+  console.log(type, spot);
+  try {
+    await axios
+      .post("http://localhost:8000/api/spot/insertSpot", {
+        name: spot.name,
+        address: spot.address,
+        address_dong: spot.address_dong,
+        type: type,
+        user_pk: 18,
+      })
+      .then((resp) => {});
+    return;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+}
+
+const handler: NextApiHandler = async (req, res) => {
+  let resp: any;
+  const {
+    query: { method },
+  } = req;
+  console.log("request 파라미터", method);
+  /**
+   * 파일 업로드 및 데이터를 DB서버에 전송하는 로직입니다.
+   */
+  switch (method) {
+    case "selectSpotList":
+      resp = await selectListSpot(req);
+      console.log(resp);
+      res.json({ ok: true, spotList: resp });
+      break;
+
+    case "selectSpot":
+      break;
+
+    case "insertSpot":
+      resp = await insertSpot(req);
+      console.log(resp);
+      res.json({ ok: true });
+      break;
+  }
+};
+
+export default handler;

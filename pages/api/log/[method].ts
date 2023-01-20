@@ -9,9 +9,12 @@
  * @project find-photo
  */
 
-interface Data {
-  ok: boolean;
-}
+import { NextApiHandler, NextApiRequest } from "next";
+import formidable from "formidable";
+import path from "path";
+import fs from "fs/promises";
+import axios from "axios";
+
 interface InsertLogProps {
   title: string;
   content: string;
@@ -20,16 +23,6 @@ interface InsertLogProps {
   representImg: string;
   images?: [];
 }
-/**
- *
- * @param req client에서 전송된 정보
- * @param res client에  리턴할 정보
- */
-import { NextApiHandler, NextApiRequest } from "next";
-import formidable from "formidable";
-import path from "path";
-import fs from "fs/promises";
-import axios from "axios";
 
 // 파일형식을 읽어올 때 multipart/multi-form 형식이기 때문에 기존 바디파서를 지워줍니다.
 export const config = {
@@ -72,44 +65,6 @@ const readFile = (
       resolve({ fields, files, id });
     });
   });
-};
-
-// const;
-
-const handler: NextApiHandler = async (req, res) => {
-  let resp: any;
-  const {
-    query: { method },
-  } = req;
-  console.log("request 파라미터", method);
-  /**
-   * 파일 업로드 및 데이터를 DB서버에 전송하는 로직입니다.
-   */
-  switch (method) {
-    case "insertLog":
-      try {
-        await fs.readdir(path.join(process.cwd() + "/public", "/uploads"));
-      } catch (error) {
-        await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"));
-      }
-      resp = await readFile(req, true);
-      console.log(resp);
-      res.json({ id: resp.id, done: "ok" });
-      break;
-
-    case "selectLog":
-      resp = await selectLog(req);
-      resp.r
-        ? res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog })
-        : res.json({ r: false });
-      break;
-
-    case "selectListLog":
-      resp = await selectListLog(req);
-      console.log(resp);
-      res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
-      break;
-  }
 };
 
 /**
@@ -213,5 +168,41 @@ async function selectListLog<T>(req: NextApiRequest): Promise<T | unknown> {
     }
   }
 }
+
+const handler: NextApiHandler = async (req, res) => {
+  let resp: any;
+  const {
+    query: { method },
+  } = req;
+  console.log("request 파라미터", method);
+  /**
+   * 파일 업로드 및 데이터를 DB서버에 전송하는 로직입니다.
+   */
+  switch (method) {
+    case "insertLog":
+      try {
+        await fs.readdir(path.join(process.cwd() + "/public", "/uploads"));
+      } catch (error) {
+        await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"));
+      }
+      resp = await readFile(req, true);
+      console.log(resp);
+      res.json({ id: resp.id, done: "ok" });
+      break;
+
+    case "selectLog":
+      resp = await selectLog(req);
+      resp.r
+        ? res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog })
+        : res.json({ r: false });
+      break;
+
+    case "selectListLog":
+      resp = await selectListLog(req);
+      console.log(resp);
+      res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
+      break;
+  }
+};
 
 export default handler;

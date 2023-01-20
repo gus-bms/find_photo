@@ -7,6 +7,7 @@ import { LocalCafe, LocalDining, PhotoCamera } from "@mui/icons-material";
 import style from '../../styles/Spot.module.css'
 import axios from "axios";
 import Toast from '../components/global/toast'
+import router from 'next/router'
 
 export default function NestedList() {
   const [keyword, setKeyword] = useState<string>('')
@@ -14,11 +15,17 @@ export default function NestedList() {
   const [spotList, setSpotList] = useState<Spot[]>([]);
   const [isSelected, setIsSelected] = useState<boolean>(false)
   const [selectedRadio, setSelectedRadio] = useState<string>('')
+  const [selectSpot, setSelectSpot] = useState<Spot>({})
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
 
-  const handleRadioBtn: ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleRadioBtn = (e: React.ChangeEvent<HTMLInputElement>, type: string, spot?: Spot) => {
+    if (type == 'spot' && spot) {
+      setSelectSpot(spot)
+      setIsSelected(true)
+      return
+    }
     setSelectedRadio(e.target.value)
   }
 
@@ -28,19 +35,22 @@ export default function NestedList() {
       setToast(true)
       setErrMsg('유형을 선택해주세요!')
       return
+    } else if (spotList.length == 0 && selectSpot.name == '') {
+      setToast(true)
+      setErrMsg('장소를 선택해주세요!')
+      return
     } else {
       setToast(false)
     }
 
-    const formData = new FormData()
-    formData.append('type', selectedRadio)
-
     // 서버에 업로드된 이미지와 데이터를 전송합니다.
     try {
-      const { data } = await axios.post("/api/spot/insert", formData);
-      if (data.done == "ok")
-        console.log(data)
-      // router.push(`/log/${data.id}`)
+      const { data } = await axios.post("/api/spot/insertSpot", {
+        type: selectedRadio,
+        spot: selectSpot
+      });
+      if (data.done == true)
+        router.push(`/?sKeyword=${selectSpot.address_dong}`)
 
     } catch (err) {
       console.log(err);
@@ -49,7 +59,6 @@ export default function NestedList() {
   }
 
   useEffect(() => {
-    console.log(keyword)
     // / 장소 검색 객체를 생성합니다
     if (window.kakao) {
       var ps = new window.kakao.maps.services.Places();
@@ -58,13 +67,19 @@ export default function NestedList() {
       ps.keywordSearch(keyword, placesSearchCB, { size: 8 });
 
       // 키워드 검색 완료 시 호출되는 콜백함수 입니다
-      function placesSearchCB(data: string | any[], status: any, pagination: any) {
+      function placesSearchCB(data: any[], status: any, pagination: any) {
         if (status === window.kakao.maps.services.Status.OK) {
 
           // TO_DO type 재정의 필요
-          setSpotList(data)
-          console.log(pagination)
-
+          let spotArr = data.map(item => {
+            const regex = /[가-힣|0-9]+.[동|리]/;
+            return {
+              name: item.place_name ? item.place_name : '',
+              address: item.road_address_name ? item.road_address_name : '',
+              address_dong: item.address_name ? item.address_name.match(regex)[0] : '',
+            }
+          })
+          setSpotList(spotArr)
         } else {
           setSpotList([])
         }
@@ -72,14 +87,9 @@ export default function NestedList() {
       }
     }
   }, [keyword])
-
-
-  useEffect(() => {
-    console.log(selectedRadio);
-
-  }, [selectedRadio])
   return (
     <>
+      <p>{keyword}</p>
       <Search keyword={keyword} setKeyword={setKeyword} text="장소를 입력해주세요!" ></Search>
       <List
         sx={{
@@ -95,13 +105,13 @@ export default function NestedList() {
           defaultValue="female"
           name="radio-buttons-group"
         >
-          {spotList.length > 0 && spotList.map(spot => (
+          {spotList.length > 0 && spotList.map((spot, idx) => (
             <>
               {/* <Box sx={{
                 display: 'inline-flex',
               }}> */}
 
-              <FormControlLabel key={spot.id} value={spot.address_name} control={<Radio onChange={() => setIsSelected(true)} />} label={spot.place_name} sx={{
+              <FormControlLabel key={idx} value={spot.name} control={<Radio onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
                 width: '40%'
               }} />
               {/* </Box> */}
@@ -135,7 +145,7 @@ export default function NestedList() {
                         type="radio"
                         value={type}
                         checked={selectedRadio === type}
-                        onChange={(e) => handleRadioBtn(e)}
+                        onChange={(e) => handleRadioBtn(e, 'type')}
                       />
                       <Box sx={{
                         backgroundColor: 'palegreen',

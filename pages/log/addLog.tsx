@@ -272,10 +272,9 @@ export default function AddLog() {
       nextRef.current.classList.add(style.btn__hide)
     async function getSpotList(): Promise<any> {
       try {
-        await axios.get('/api/spot/getSpotList', {
+        await axios.get('/api/spot/selectSpotList', {
           params: {
             address_dong: address_dong,
-            type: 'getAllSpot'
           },
           timeout: 3000
         }).then(res => {

@@ -12,7 +12,7 @@ import { Divider, IconButton, InputBase, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect } from 'react';
-
+import router from 'next/router'
 interface Iprops {
   keyword: string
   setKeyword: Dispatch<SetStateAction<string>>;
@@ -28,7 +28,11 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
   }
 
   useEffect(() => {
-    props.keyword && setSearch(props.keyword)
+    const { sKeyword } = router.query
+    if (typeof (sKeyword) == 'string') {
+      setSearch(sKeyword)
+    }
+
   }, [])
 
   return (

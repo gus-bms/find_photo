@@ -60,17 +60,6 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
         </Grid>
       ))
       }
-      <Box sx={{
-        width: '100%',
-        textAlign: 'center'
-      }}>
-        <Link href={'/spot/addSpot'}>
-          <Button>
-            장소 추가하기
-
-          </Button>
-        </Link>
-      </Box>
     </List >
   );
 };
