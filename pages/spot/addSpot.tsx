@@ -2,7 +2,7 @@
 import Search from "../components/search/search";
 import { ChangeEventHandler, useEffect, useState } from "react";
 import { Spot } from '../components/map/map'
-import { Avatar, Box, Button, FormControl, FormControlLabel, FormLabel, Grid, List, ListItemAvatar, Radio, RadioGroup, Typography } from "@mui/material";
+import { Avatar, Box, Button, FormControl, FormControlLabel, FormLabel, Grid, List, ListItemAvatar, Pagination, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import { LocalCafe, LocalDining, PhotoCamera } from "@mui/icons-material";
 import style from '../../styles/Spot.module.css'
 import axios from "axios";
@@ -16,6 +16,7 @@ export default function NestedList() {
   const [isSelected, setIsSelected] = useState<boolean>(false)
   const [selectedRadio, setSelectedRadio] = useState<string>('')
   const [selectSpot, setSelectSpot] = useState<Spot>({})
+  const [pagination, setPagination] = useState()
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
@@ -31,7 +32,7 @@ export default function NestedList() {
 
   const insertSpot = async () => {
 
-    if (!selectedRadio && selectedRadio != '') {
+    if (!selectedRadio && selectedRadio == '') {
       setToast(true)
       setErrMsg('유형을 선택해주세요!')
       return
@@ -58,8 +59,14 @@ export default function NestedList() {
     }
   }
 
+  const handleChange = (e: React.ChangeEvent<unknown>, value: number) => {
+    console.log(value, e)
+    pagination.gotoPage(value)
+  };
+
   useEffect(() => {
     // / 장소 검색 객체를 생성합니다
+    setIsSelected(false)
     if (window.kakao) {
       var ps = new window.kakao.maps.services.Places();
 
@@ -80,6 +87,8 @@ export default function NestedList() {
             }
           })
           setSpotList(spotArr)
+          setPagination(pagination)
+          console.log(pagination)
         } else {
           setSpotList([])
         }
@@ -89,46 +98,59 @@ export default function NestedList() {
   }, [keyword])
   return (
     <>
-      <p>{keyword}</p>
       <Search keyword={keyword} setKeyword={setKeyword} text="장소를 입력해주세요!" ></Search>
-      <List
-        sx={{
-          width: "100%",
-          bgcolor: "background.paper",
-          marginTop: "10px",
-        }}
-      >
-        <RadioGroup
-          row
+      {spotList.length > 0 &&
+        <>
+          <Typography sx={{
+            marginTop: "3vh",
+          }}>
+            장소
+          </Typography>
+          <List
+            sx={{
+              width: "100%",
+              bgcolor: "background.paper",
+              // marginTop: "1vh",
+            }}
+          >
+            <RadioGroup
+              row
+              name="radio-buttons-group"
+              sx={{
+                height: '25vh',
+                justifyContent: 'center'
+              }}
 
-          aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue="female"
-          name="radio-buttons-group"
-        >
-          {spotList.length > 0 && spotList.map((spot, idx) => (
-            <>
-              {/* <Box sx={{
-                display: 'inline-flex',
-              }}> */}
-
-              <FormControlLabel key={idx} value={spot.name} control={<Radio onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
-                width: '40%'
-              }} />
-              {/* </Box> */}
-            </>
-          ))
-          }
-        </RadioGroup>
-
-      </List>
-
-      <Box>
-
-        {isSelected && spotList.length > 0 ? (
-          <>
-            <Typography>
-              유형
-            </Typography>
+            >
+              {spotList.map((spot, idx) => (
+                <>
+                  <FormControlLabel key={idx} value={spot.name} control={<Radio onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
+                    width: '40%'
+                  }} />
+                  {/* </Box> */}
+                </>
+              ))
+              }
+            </RadioGroup>
+            <Stack sx={{
+              alignItems: 'center',
+              marginTop: '3vh'
+            }}>
+              <Pagination count={pagination.last} onChange={handleChange} />
+            </Stack>
+          </List>
+        </>
+      }
+      {isSelected && spotList.length > 0 ? (
+        <>
+          <Typography sx={{
+            marginTop: "1vh",
+          }}>
+            유형
+          </Typography>
+          <Box sx={{
+            textAlignLast: 'center',
+          }}>
             {
               typeList.length > 0 && typeList.map((type, idx) => (
                 <>
@@ -159,10 +181,11 @@ export default function NestedList() {
                 </>
               ))
             }
-          </>
-        ) : null}
+          </Box>
+        </>
+      ) : null}
 
-      </Box>
+
       <Box>
         <Button onClick={insertSpot}>
           추가하기
