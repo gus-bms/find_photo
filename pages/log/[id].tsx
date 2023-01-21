@@ -16,23 +16,14 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import axios from 'axios';
 import Error404 from '../error_404'
+import router from 'next/router'
 
-/**
- * 사용법 숙지 필요
- */
-export async function getServerSideProps({ query: { id } }: { query: { id: string } }) {
-  return {
-    props: {
-      id,
-    },
-  };
-}
-
-export default function Log({ id }: { id: string }) {
+export default function Log() {
   const [images, setImages] = useState<string[]>([])
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
   const [current, setCurrent] = useState<number>(0)
+  const [id, setId] = useState<string>('')
   const carouselRef = useRef(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
@@ -88,33 +79,41 @@ export default function Log({ id }: { id: string }) {
   }, [images])
 
   useEffect(() => {
-    axios.get("/api/log/selectLog", {
-      params: {
-        logPk: id
-      }
-    }).then(resp => {
-      if (resp.data.r) {
-        console.log(resp.data.r)
-        let logArr = resp.data.row
-        setTitle(logArr[0].title)
-        setContent(logArr[0].content)
-
-        if (resp.data.isImgLog) {
-          let imgNames: string[] = [];
-          logArr.map((log: { img_name: string; }) => {
-            imgNames.push(log.img_name)
-          })
-          setImages(imgNames)
-        }
-      }
-    })
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setId(window.location.pathname.split('/log/')[1])
   }, [])
 
   useEffect(() => {
-    console.log(images)
-  }, [images])
+    if (id != '') {
+      axios.get("/api/log/selectLog", {
+        params: {
+          logPk: id
+        }
+      }).then(resp => {
+        if (resp.data.r) {
+          console.log(resp.data.r)
+          let logArr = resp.data.row
+          setTitle(logArr[0].title)
+          setContent(logArr[0].content)
+
+          if (resp.data.isImgLog) {
+            let imgNames: string[] = [];
+            logArr.map((log: { img_name: string; }) => {
+              imgNames.push(log.img_name)
+            })
+            setImages(imgNames)
+          }
+        }
+      })
+    }
+
+  }, [id])
+
+  // useEffect(() => {
+  //   const { id } = router.query
+  //   console.log(id)
+  //   if (typeof (id) == 'string' && id != '')
+  //     setId(id)
+  // })
 
   return (
     <>

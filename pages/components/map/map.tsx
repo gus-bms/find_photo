@@ -63,10 +63,35 @@ const Map = ({ pKeyword }: MapProps) => {
   const [geocoder, setGeocoder] = useState<any>()
 
   /**
-   * 카카오 지도 script가 로드 되면 수행되는 함수입니다.
-   * map id를 갖은 컨테이너에 지도를 생성해줍니다.
+   * SpotList를 조회하는 함수 입니다.
+   * @returns 
    */
-  const initMap = useCallback(() => {
+  async function getSpotList(): Promise<any> {
+    try {
+      await axios.get('/api/spot/selectSpotList', {
+        params: {
+          address_dong: keyword,
+        },
+        timeout: 3000
+      }).then(res => {
+        setSpotList(res.data.spotList)
+        return res.data.list;
+      })
+
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
+  }
+
+  useEffect(() => {
+    console.log('useEffect with not')
+
+    // v3 스크립트를 동적으로 로드하기위해 사용한다.
+    // 스크립트의 로딩이 끝나기 전에 v3의 객체에 접근하려고 하면 에러가 발생하기 때문에
+    // 로딩이 끝나는 시점에 콜백을 통해 객체에 접근할 수 있도록 해 준다.
+    // 비동기 통신으로 페이지에 v3를 동적으로 삽입할 경우에 주로 사용된다.
+    // v3 로딩 스크립트 주소에 파라메터로 autoload=false 를 지정해 주어야 한다.
     window.kakao.maps.load(function () {
       const container = document.getElementById("map");
       const options = {
@@ -74,21 +99,14 @@ const Map = ({ pKeyword }: MapProps) => {
         center: new window.kakao.maps.LatLng(37.5759, 126.8129,),
         level: 4
       };
-      console.log(window.kakao)
       setMap(new window.kakao.maps.Map(container, options))
       setGeocoder(new window.kakao.maps.services.Geocoder())
     })
-
-  }, []);
-
-  useEffect(() => {
-    if (window?.kakao) {
-      initMap();
-    }
-  }, [initMap]);
+  }, [])
 
   // 장소 클릭 시 지도 위치를 재설정합니다.
   useEffect(() => {
+    console.log('useEffect with spot')
     if (geocoder != undefined) {
       // 주소-좌표 변환 객체를 생성합니다
       console.log(geocoder)
@@ -214,74 +232,59 @@ const Map = ({ pKeyword }: MapProps) => {
 
   // keyword의 변경을 감지합니다.
   useEffect(() => {
+    console.log('useEffect with keyword')
     if (keyword != '') {
       (async () => {
         // 검색어의 결과를 리스트로 뿌려줍니다.
-        router.push(`/?sKeyword=${keyword}`)
+        console.log('map change')
+        if (pKeyword != '')
+          router.push(`/?sKeyword=${keyword}`)
         await getSpotList()
 
         // 검색어의 위치로 지도의 중심을 이동시킵니다.
-
-        if (geocoder != undefined) {
-          // 주소-좌표 변환 객체를 생성합니다
-          geocoder.addressSearch(keyword, function (result: any, status: any) {
-            // 정상적으로 검색이 완료됐으면 
-            if (status === window.kakao.maps.services.Status.OK) {
-              console.log('kakaomap')
-              var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-              // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-              map.setCenter(coords);
-            } else {
-              if (Array.isArray(result) || result.length == 0) {
-                router.back()
-                alert('검색되지 않습니다.')
-              }
-            }
-          });
+        if (geocoder == undefined) {
+          if (window.kakao.maps.services != undefined) {
+            setGeocoder(new window.kakao.maps.services.Geocoder())
+            return
+          }
+          return
         }
+        if (window.kakao.maps.services != undefined && geocoder == undefined) {
+          setGeocoder(new window.kakao.maps.services.Geocoder())
+          return
+        }
+        // 주소-좌표 변환 객체를 생성합니다
+        console.log(geocoder)
+        geocoder.addressSearch(keyword, function (result: any, status: any) {
+          // 정상적으로 검색이 완료됐으면 
+          if (status === window.kakao.maps.services.Status.OK) {
+            var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+          } else {
+            if (Array.isArray(result) || result.length == 0) {
+              router.back()
+              alert('검색되지 않습니다.')
+            }
+          }
+        });
 
       })();
     }
-  }, [keyword])
+  }, [keyword, geocoder])
 
   useEffect(() => {
-    const { sKeyword } = router.query
-    if (pKeyword)
-      console.log(pKeyword)
-    console.log(sKeyword)
-    typeof (sKeyword) == 'string' && (async () => {
-      setKeyword(sKeyword)
+    console.log('useEffect with pKeyword')
+    console.log('query ==', pKeyword)
+    typeof (pKeyword) == 'string' && (async () => {
+      setKeyword(pKeyword)
       await getSpotList()
     })();
 
   }, [pKeyword])
 
-  // SpotList를 조회하는 함수 입니다.
-  async function getSpotList(): Promise<any> {
-    try {
-      await axios.get('/api/spot/selectSpotList', {
-        params: {
-          address_dong: keyword,
-        },
-        timeout: 3000
-      }).then(res => {
-        setSpotList(res.data.spotList)
-        return res.data.list;
-      })
-
-    } catch (err) {
-      console.log(err);
-      return [];
-    }
-  }
-
   return (
     <>
-      {/* <Script
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APPKEY}&libraries=services&autoload=false`}
-        strategy="lazyOnload"
-        onLoad={() => window.kakao.maps.load(initMap)}
-      /> */}
       {/* Search에서 데이터 전달 받기 위해 state 함수 전달 */}
       <Search keyword={keyword} setKeyword={setKeyword} text='동을 입력해주세요!' />
       <Box

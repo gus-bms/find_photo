@@ -24,11 +24,18 @@ export default function Home() {
 
   }
 
+  // useEffect(() => {
+
+  //   const param = router.query.sKeyword
+  //   param && typeof (param) == 'string' && setSKeyword(param)
+  // });
+
   useEffect(() => {
     authCheck(); // 로그인 체크 함수
-    const param = router.query.sKeyword
-    param && typeof (param) == 'string' && setSKeyword(param)
-  });
+    // querystring에 한글은 깨지기 때문에 변환해준다.
+    const decodeUri = decodeURI(window.location.search);
+    setSKeyword(decodeUri.split('?sKeyword=')[1])
+  }, [])
 
   useEffect(() => {
     console.log(sKeyword)
