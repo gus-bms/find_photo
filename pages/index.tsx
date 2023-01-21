@@ -42,7 +42,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Map {...{ latitude: 37.5759, longitude: 126.8129, pKeyword: sKeyword }} />
+      <Map {...{ pKeyword: sKeyword }} />
     </>
   )
 }

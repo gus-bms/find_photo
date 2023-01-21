@@ -39,7 +39,7 @@ interface Cprops {
   spot: Spot
 }
 
-var selectedSpot: Spot;
+let selectedSpot: Spot;
 
 const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Iprops) => {
 

@@ -1,6 +1,17 @@
 import Head from "next/head"
 import Link from "next/link";
+import { useEffect } from "react";
 const Join = () => {
+
+  let a = 0;
+  const handleButton = () => {
+    a = a + 1;
+    console.log(a)
+  }
+
+  useEffect(() => {
+    console.log(a)
+  }, [a])
 
   return (
     <>
@@ -12,6 +23,9 @@ const Join = () => {
           <Link href="/">
             hello{/* <a>Home</a> */}
           </Link>
+          <button onClick={handleButton}>
+
+          </button>
         </li>
       </ul>
     </>

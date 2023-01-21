@@ -16,7 +16,7 @@ export default function NestedList() {
   const [isSelected, setIsSelected] = useState<boolean>(false)
   const [selectedRadio, setSelectedRadio] = useState<string>('')
   const [selectSpot, setSelectSpot] = useState<Spot>({})
-  const [pagination, setPagination] = useState()
+  const [pagination, setPagination] = useState<any>({})
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
@@ -50,7 +50,7 @@ export default function NestedList() {
         type: selectedRadio,
         spot: selectSpot
       });
-      if (data.done == true)
+      if (data.ok == true)
         router.push(`/?sKeyword=${selectSpot.address_dong}`)
 
     } catch (err) {
@@ -67,9 +67,10 @@ export default function NestedList() {
   useEffect(() => {
     // / 장소 검색 객체를 생성합니다
     setIsSelected(false)
-    if (window.kakao) {
-      var ps = new window.kakao.maps.services.Places();
-
+    console.log(keyword)
+    if (window.kakao && keyword != '') {
+      console.log(keyword)
+      let ps = new window.kakao.maps.services.Places();
       // 키워드로 장소를 검색합니다
       ps.keywordSearch(keyword, placesSearchCB, { size: 8 });
 
@@ -80,11 +81,13 @@ export default function NestedList() {
           // TO_DO type 재정의 필요
           let spotArr = data.map(item => {
             const regex = /[가-힣|0-9]+.[동|리]/;
-            return {
+            let rObj = {
               name: item.place_name ? item.place_name : '',
-              address: item.road_address_name ? item.road_address_name : '',
+              address: item.road_address_name ? item.road_address_name : item.address_name,
               address_dong: item.address_name ? item.address_name.match(regex)[0] : '',
             }
+            console.log(item)
+            return rObj
           })
           setSpotList(spotArr)
           setPagination(pagination)
@@ -96,6 +99,11 @@ export default function NestedList() {
       }
     }
   }, [keyword])
+
+  useEffect(() => {
+    const { sKeyword } = router.query
+    sKeyword != '' && typeof (sKeyword) == 'string' && setKeyword(sKeyword)
+  }, [])
   return (
     <>
       <Search keyword={keyword} setKeyword={setKeyword} text="장소를 입력해주세요!" ></Search>

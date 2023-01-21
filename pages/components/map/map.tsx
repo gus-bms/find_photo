@@ -26,8 +26,6 @@ declare global {
 
 // 지도 좌표
 interface MapProps {
-  latitude: number; // 위도
-  longitude: number; // 경도
   pKeyword: string
 }
 
@@ -57,24 +55,30 @@ const MARKER_WIDTH = 33, // 기본, 클릭 마커의 너비
 var selectedMarker: any = null
 var selectedInfowindow: any
 
-const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
+const Map = ({ pKeyword }: MapProps) => {
   const [keyword, setKeyword] = useState<string>('')
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [spot, setSpot] = useState<Spot>({})
   const [map, setMap] = useState<any>()
+  const [geocoder, setGeocoder] = useState<any>()
 
   /**
    * 카카오 지도 script가 로드 되면 수행되는 함수입니다.
    * map id를 갖은 컨테이너에 지도를 생성해줍니다.
    */
   const initMap = useCallback(() => {
-    const container = document.getElementById("map");
-    const options = {
-      //center: 선택될 좌표, level: 지도의 확대 단계 (낮을수록 깊어짐)
-      center: new window.kakao.maps.LatLng(latitude, longitude),
-      level: 4
-    };
-    setMap(new window.kakao.maps.Map(container, options))
+    window.kakao.maps.load(function () {
+      const container = document.getElementById("map");
+      const options = {
+        //center: 선택될 좌표, level: 지도의 확대 단계 (낮을수록 깊어짐)
+        center: new window.kakao.maps.LatLng(37.5759, 126.8129,),
+        level: 4
+      };
+      console.log(window.kakao)
+      setMap(new window.kakao.maps.Map(container, options))
+      setGeocoder(new window.kakao.maps.services.Geocoder())
+    })
+
   }, []);
 
   useEffect(() => {
@@ -85,9 +89,9 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
 
   // 장소 클릭 시 지도 위치를 재설정합니다.
   useEffect(() => {
-    if (window?.kakao) {
+    if (geocoder != undefined) {
       // 주소-좌표 변환 객체를 생성합니다
-      var geocoder = new window.kakao.maps.services.Geocoder();
+      console.log(geocoder)
       geocoder.addressSearch(spot.address, function (result: any, status: any) {
         // 정상적으로 검색이 완료됐으면 
         if (status === window.kakao.maps.services.Status.OK) {
@@ -218,9 +222,8 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
 
         // 검색어의 위치로 지도의 중심을 이동시킵니다.
 
-        if (window?.kakao) {
+        if (geocoder != undefined) {
           // 주소-좌표 변환 객체를 생성합니다
-          var geocoder = new window.kakao.maps.services.Geocoder();
           geocoder.addressSearch(keyword, function (result: any, status: any) {
             // 정상적으로 검색이 완료됐으면 
             if (status === window.kakao.maps.services.Status.OK) {
@@ -274,11 +277,11 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
 
   return (
     <>
-      <Script
+      {/* <Script
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APPKEY}&libraries=services&autoload=false`}
         strategy="lazyOnload"
         onLoad={() => window.kakao.maps.load(initMap)}
-      />
+      /> */}
       {/* Search에서 데이터 전달 받기 위해 state 함수 전달 */}
       <Search keyword={keyword} setKeyword={setKeyword} text='동을 입력해주세요!' />
       <Box
@@ -300,12 +303,14 @@ const Map = ({ latitude, longitude, pKeyword }: MapProps) => {
         width: '100%',
         textAlign: 'center'
       }}>
-        <Link href={`/spot/addSpot?sKeyword=${keyword}`}>
-          <Button>
-            장소 추가하기
+        {keyword &&
+          <Link href={`/spot/addSpot?sKeyword=${keyword}`}>
+            <Button>
+              장소 추가하기
 
-          </Button>
-        </Link>
+            </Button>
+          </Link>
+        }
       </Box>
     </>
   )
