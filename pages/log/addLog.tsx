@@ -104,6 +104,10 @@ export default function AddLog() {
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
 
+  axios.create({
+    timeout: 3000
+  })
+
   /**
    * DB log 테이블에 데이터를 삽입하는 함수입니다.
    * 제목과 spot_pk, 내용을 DB에 삽입합니다.

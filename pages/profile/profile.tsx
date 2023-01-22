@@ -182,7 +182,7 @@ const Profile = () => {
                     backgroundSize: 'cover',
                     width: '10rem',
                     height: '10rem',
-                    backgroundImage: `url(/uploads/${log.url})`,
+                    backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${log.url})`,
                     backgroundRepeat: 'no-repeat',
                     borderRadius: '10px'
                   }}>

@@ -11,9 +11,10 @@
 
 import { NextApiHandler, NextApiRequest } from "next";
 import formidable from "formidable";
-import path from "path";
-import fs from "fs/promises";
+import path, { resolve } from "path";
 import axios from "axios";
+import aws from "aws-sdk";
+import fs from "fs";
 
 interface InsertLogProps {
   title: string;
@@ -32,6 +33,7 @@ export const config = {
 };
 
 /**
+ * formidable을 활용하여 AWS S3에 이미지를 업로드합니다.
  * 프로미스 공부할 것
  * formidable 공부할 것
  *
@@ -39,30 +41,92 @@ export const config = {
  * @param saveLocally
  * @returns
  */
-const readFile = (
-  req: NextApiRequest,
-  saveLocally?: boolean
-): Promise<{ fields: formidable.Fields; files: formidable.Files; id: any }> => {
-  const options: formidable.Options = {};
-  if (saveLocally) {
-    options.uploadDir = path.join(process.cwd(), "/public/uploads");
-    options.multiples = true;
-    options.filename = (name, ext, path, form) => {
-      // 공백일 경우 backgroundImageUrl css가 적용이 되지않기때문에,
-      // 공백을 언더바로 치환합니다.
-      let newName = path.originalFilename?.replace(/\s/g, "_");
+const saveS3 = async (req: NextApiRequest) => {
+  try {
+    console.log("start insert s3");
+    let fileNames = [];
+    let res;
+    const fileData: any = await new Promise((resolve, reject) => {
+      const options: formidable.Options = {};
+      options.multiples = true;
+      options.filename = (name, ext, path, form) => {
+        // 공백일 경우 backgroundImageUrl css가 적용이 되지않기때문에,
+        // 공백을 언더바로 치환합니다.
+        let newName = path.originalFilename?.replace(/\s/g, "_");
+        return Date.now().toString() + "_" + newName;
+      };
 
-      return Date.now().toString() + "_" + newName;
-    };
+      const form = new formidable.IncomingForm(options);
+      form.parse(req, (err, fields, files) => {
+        if (err) return reject(err);
+        return resolve({ fields, files });
+      });
+    });
+    if (Array.isArray(fileData.files.file)) {
+      console.log("is Array true");
+
+      const resp = fileData.files.file.map(async (file: any) => {
+        res = await uploadS3(file);
+        return res;
+      });
+      await Promise.all(resp);
+      console.log(resp);
+    } else {
+      console.log("single");
+      res = await uploadS3(fileData.files.file);
+      console.log(res);
+    }
+    if (res) {
+      let id = insertLog(fileData.fields, fileData.files);
+      return id;
+    } else {
+      console.log("@@res", res);
+    }
+  } catch (err) {
+    console.log(err);
   }
-  options.maxFileSize = 4000 * 1024 * 1024;
-  const form = formidable(options);
-  return new Promise((resolve, reject) => {
-    form.parse(req, async (err, fields: any, files) => {
-      let id = await insertLog(fields, files);
+};
 
-      if (err) reject(err);
-      resolve({ fields, files, id });
+const uploadS3 = async (file: any) => {
+  const fileBuffer = fs.createReadStream(file.filepath);
+  fileBuffer.on("error", (err) => console.log(err));
+  const fileName = "fsupload/" + file.newFilename;
+  // s3 클라이언트 연결
+  const s3 = new aws.S3({
+    credentials: {
+      accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY
+        ? process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY
+        : "",
+      secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_KEY
+        ? process.env.NEXT_PUBLIC_AWS_S3_SECRET_KEY
+        : "",
+    },
+    region: "ap-northeast-2",
+  });
+
+  const uploadParams = {
+    Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKEY_NAME
+      ? process.env.NEXT_PUBLIC_AWS_S3_BUCKEY_NAME
+      : "",
+    Key: fileName,
+    ACL: "public-read",
+    Body: fileBuffer,
+    ContentType: "img/png",
+  };
+  let res;
+
+  return new Promise((resolve, reject) => {
+    s3.upload(uploadParams, function (err: any, data: any) {
+      // err가 null 이면 성공
+      // 성공하면 maria DB에 insert
+      if (err == null) {
+        console.log("success upload s3!");
+        res = true;
+        resolve({ res, fileName });
+      } else {
+        console.log(err);
+        res = false;
+      }
     });
   });
 };
@@ -83,6 +147,7 @@ async function insertLog<T>(
   let imgNames: string[] = [];
   try {
     // 이미지가 있는지 체크하여 있을 경우 저장될 이름만 별도의 array에 할당합니다.
+    console.log("@@fields = ", fields);
     Array.isArray(files.file)
       ? files.file.map((item: any) => {
           imgNames.push(item.newFilename);
@@ -180,14 +245,9 @@ const handler: NextApiHandler = async (req, res) => {
    */
   switch (method) {
     case "insertLog":
-      try {
-        await fs.readdir(path.join(process.cwd() + "/public", "/uploads"));
-      } catch (error) {
-        await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"));
-      }
-      resp = await readFile(req, true);
-      console.log(resp);
-      res.json({ id: resp.id, done: "ok" });
+      resp = await saveS3(req);
+      console.log("@@resp", resp);
+      res.json({ done: "ok", id: resp });
       break;
 
     case "selectLog":

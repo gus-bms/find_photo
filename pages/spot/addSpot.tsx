@@ -1,9 +1,8 @@
 
 import Search from "../components/search/search";
-import { ChangeEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Spot } from '../components/map/map'
-import { Avatar, Box, Button, FormControl, FormControlLabel, FormLabel, Grid, List, ListItemAvatar, Pagination, Radio, RadioGroup, Stack, Typography } from "@mui/material";
-import { LocalCafe, LocalDining, PhotoCamera } from "@mui/icons-material";
+import { Box, Button, FormControlLabel, List, Pagination, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import style from '../../styles/Spot.module.css'
 import axios from "axios";
 import Toast from '../components/global/toast'

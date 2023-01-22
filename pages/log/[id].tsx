@@ -133,9 +133,9 @@ export default function Log() {
                         <Box key={idx} className={style.card__container}>
                           < Box className={style.card}
                             sx={{
-                              backgroundImage: `url(/uploads/${img})`,
+                              backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${img})`,
                               backgroundSize: 'cover',
-                              cursor: 'pointer',
+                              // cursor: 'pointer',
                             }} />
                         </Box>
                       ))}
