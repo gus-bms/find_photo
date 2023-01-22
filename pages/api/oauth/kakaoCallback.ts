@@ -13,11 +13,11 @@
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
+import { createJwt } from "../auth/auth";
 
 interface Data {
-  uid: string;
   ok: boolean;
-  profilePhoto?: string | null | undefined;
+  token?: any;
 }
 
 interface UserInfo {
@@ -69,13 +69,22 @@ export default async function handler(
   const userInfo: UserInfo = await getUserInfo(token);
   const isUser = await checkUser(userInfo.id);
   // DB에 데이터가 없을 경우 생성해주는 함수를 호출합니다.
-  isUser === false ? await insertUser(userInfo) : null;
-  console.log(userInfo.properties.profile_image);
-  res.status(200).json({
-    ok: true,
-    uid: userInfo.id,
-    profilePhoto: userInfo.properties.profile_image,
-  });
+  console.log("isUser == ", isUser);
+  isUser === false ? await insertUser(userInfo) : await updatePhoto(userInfo);
+  if (isUser) {
+    console.log("before jwt");
+    const jwt = await createJwt(userInfo.id, userInfo.properties.profile_image);
+    if (jwt != undefined && jwt != null)
+      // res.setHeader("access-token", jwt.accessToken ? jwt.accessToken : '');
+      res.status(200).json({
+        ok: true,
+        token: jwt,
+      });
+  } else {
+    res.status(200).json({
+      ok: false,
+    });
+  }
 }
 
 /**
@@ -109,10 +118,33 @@ const getUserInfo = async (token: string) =>
  */
 const checkUser = async (id: string) =>
   await axios
-    .post("http://localhost:8000/api/selectUser", {
-      id: id,
+    .get("http://localhost:8000/api/selectUser", {
+      params: {
+        uid: id,
+      },
     })
     .then((res) => {
+      return res.data.r;
+    })
+    .catch((err) => {
+      console.log(err);
+      return false;
+    });
+
+/**
+ * DB에 사용자 정보를 insert 합니다.
+ * uid와 name은 필수값이며 그 외에는 optional 입니다.
+ *
+ * @param userInfo
+ * @returns
+ */
+const updatePhoto = async (userInfo: UserInfo): Promise<boolean> =>
+  await axios
+    .post("http://localhost:8000/api/user/updateProfile", {
+      uid: userInfo.id,
+      url: userInfo.properties.profile_image,
+    })
+    .then(async (res) => {
       return res.data.r;
     })
     .catch((err) => {

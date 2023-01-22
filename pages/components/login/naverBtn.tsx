@@ -32,7 +32,7 @@ export default function NaverBtn() {
      */
     const naverLogin = new window.naver.LoginWithNaverId({
       clientId: 'm4dT9OXHh9kWY3Dqz1nq',
-      callbackUrl: process.env.NEXT_NAVER_CALLBACK_URL,
+      callbackUrl: process.env.NEXT_PUBLIC_NAVER_CALLBACK_URL,
       isPopup: false,
       loginButton: { color: 'green', type: 3, height: 58 },
       callbackHandle: true,

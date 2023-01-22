@@ -17,9 +17,34 @@ import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@m
 import { useRouter } from 'next/router';
 import KakaoBtn from '../components/login/kakaoBtn';
 import NaverBtn from '../components/login/naverBtn';
+import Toast from '../components/global/toast';
+
+import { logoutAction } from '../../store/modules/isLogin';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback, useEffect, useState } from "react";
+import { useCookies } from 'react-cookie'; // useCookies import
 
 const Login = () => {
+  // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
+  // reducer isLogin Action 사용
+  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
+  const [cookies, , removeCookie] = useCookies(['accessToken', 'refreshToken']);
   const router = useRouter()
+  const [toast, setToast] = useState<boolean>(false)
+  useEffect(() => {
+    const query = window.location.search.split('deleteCookie=')[1]
+    if (query == 'true') {
+      setToast(true)
+      removeCookie('accessToken', { path: '/' });
+      removeCookie('refreshToken', { path: '/' });
+      dispatch(logoutAction());
+    }
+  }, [])
+
+  useEffect(() => {
+
+  }, [toast])
 
   return (
     <>
@@ -30,13 +55,13 @@ const Login = () => {
       <Box
         component='main'
         sx={{
-          marginTop: '3%',
-          marginX: '00%',
+          marginTop: '0',
+          height: '60vh',
           alignItems: 'center',
           display: 'flex',
           flexGrow: 1,
-          minHeight: '100%',
-          border: '1px solid rgb(236, 238, 242)',
+          // minHeight: '100%',
+          // border: '1px solid rgb(236, 238, 242)',
           borderRadius: '10px',
         }}
       >
@@ -63,7 +88,7 @@ const Login = () => {
               gutterBottom
               variant="body2"
             >
-              소셜미디어로 계속하기
+              간편하게 소셜미디어로 시작해보세요
             </Typography>
           </Box>
           <Grid
@@ -90,7 +115,7 @@ const Login = () => {
               <NaverBtn />
             </Grid>
           </Grid>
-          <Box
+          {/* <Box
             sx={{
               paddingBottom: 1,
               paddingTop: 3
@@ -167,9 +192,12 @@ const Login = () => {
             >
               회원가입
             </Button>
-          </Box>
+          </Box> */}
         </Container >
       </Box >
+      <Box>
+        {toast ? <Toast text='로그인 유효기간이 만료되었습니다.' setToast={setToast} /> : null}
+      </Box>
     </>
   )
 }

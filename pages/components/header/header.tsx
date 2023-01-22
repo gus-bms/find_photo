@@ -24,14 +24,15 @@ export const Header = () => {
   const isLogin = useSelector<IRootState, boolean>(state => state.isLogin);
   // reducer isLogin Action 사용
   const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
-  const [cookies, , removeCookie] = useCookies(['uid']);
+  const [cookies, , removeCookie] = useCookies(['accessToken', 'refreshToken']);
 
   /**
    * 로그아웃 버튼을 클릭하면 쿠키에서 uid 값을 삭제합니다.
    * Redux의 isLogin 값을 변경해줍니다.
    */
   const onlogoutAction = useCallback(() => {
-    removeCookie('uid', { path: '/' });
+    removeCookie('accessToken', { path: '/' });
+    removeCookie('refreshToken', { path: '/' });
     dispatch(logoutAction());
   }, []);
 
@@ -39,7 +40,7 @@ export const Header = () => {
    * 최초 렌더링 시 쿠키에 값에 따라 헤더의 로그인 영역을 변경합니다.
    */
   useEffect(() => {
-    cookies.uid != undefined ? dispatch(loginAction()) : dispatch(logoutAction())
+    cookies.accessToken != undefined ? dispatch(loginAction()) : dispatch(logoutAction())
   }, [])
 
   return (

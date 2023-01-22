@@ -14,31 +14,6 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
-// export default async function handler(
-//   req: ExtendedNextApiRequest,
-//   res: NextApiResponse<Data>
-// ) {
-//   const {
-//     query: { address_dong },
-//   } = req;
-
-//   const spotList = address_dong
-//     ? await getSpotList<[] | null>(address_dong)
-//     : null;
-//   // switch keyword
-//   console.log(spotList);
-//   if (Array.isArray(spotList)) {
-//     res.status(200).json({
-//       spotList: spotList,
-//       ok: true,
-//     });
-//   } else {
-//     res.status(500).json({
-//       ok: false,
-//     });
-//   }
-// }
-
 /**
  * DB에서 파라미터 값을 포함한 장소가 있는지 확인하여 결과를 list로 반환합니다.
  * 결과가 없을 경우 null을 반환합니다.
@@ -50,7 +25,6 @@ async function selectListSpot<T>(req: NextApiRequest): Promise<T | unknown> {
   const {
     query: { address_dong },
   } = req;
-  console.log(address_dong);
   try {
     const spotList = await axios.get(
       "http://localhost:8000/api/spot/selectSpotList",
@@ -102,7 +76,6 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "selectSpotList":
       resp = await selectListSpot(req);
-      console.log(resp);
       res.json({ ok: true, spotList: resp });
       break;
 

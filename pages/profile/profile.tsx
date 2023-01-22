@@ -3,38 +3,49 @@ import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@m
 import { color, width } from '@mui/system';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
+import { checkJWT } from '../api/auth/auth'
 import Link from 'next/link';
 import axios from 'axios';
 
 const Profile = () => {
-  const [cookies, ,] = useCookies(['uid', 'profilePhoto']);
+  const [cookies, ,] = useCookies(['accessToken']);
   const [logList, setLogList] = useState<{ id: string, title: string, content: string, url: string }[]>([])
+  const [profileUrl, setProfileUrl] = useState<string>('')
 
   useEffect(() => {
-    axios.get("/api/log/selectListLog", {
-      params: {
-        userPk: 18,
-        type: 'user_pk'
-      }
-    }).then(resp => {
-      if (resp.data.r) {
-        let logArr = resp.data.row.map((log: { log_pk: string, title: string; content: string; img_name: string; }) => {
-          var rObj: { id: string, title: string, content: string, url: string } = {
-            id: '',
-            title: '',
-            content: '',
-            url: ''
-          };
-          rObj['id'] = log.log_pk
-          rObj['title'] = log.title
-          rObj['content'] = log.content
-          rObj['url'] = log.img_name
-          return rObj;
-        });
-        setLogList(logArr)
-      }
+    const getUser = async () => {
+      const user = await axios.get("/api/user/selectUser");
+      console.log('user', user)
+      setProfileUrl(user.data.user.profileUrl)
+      await axios.get("/api/log/selectListLog", {
+        params: {
+          userPk: user.data.user.userPk,
+          type: 'user_pk'
+        }
+      }).then(resp => {
+        if (resp.data.r) {
+          let logArr = resp.data.row.map((log: { log_pk: string, title: string; content: string; img_name: string; }) => {
+            var rObj: { id: string, title: string, content: string, url: string } = {
+              id: '',
+              title: '',
+              content: '',
+              url: ''
+            };
+            rObj['id'] = log.log_pk
+            rObj['title'] = log.title
+            rObj['content'] = log.content
+            rObj['url'] = log.img_name
+            return rObj;
+          });
+          setLogList(logArr)
+        }
+      })
 
-    })
+    }
+    getUser()
+
+
+
   }, [])
 
   useEffect(() => {
@@ -80,7 +91,7 @@ const Profile = () => {
                   backgroundSize: 'cover',
                   width: '100%',
                   height: '100%',
-                  backgroundImage: `url(${cookies.profilePhoto})`,
+                  backgroundImage: `url(${profileUrl})`,
                   backgroundRepeat: 'no-repeat',
                   borderRadius: '10px'
                 }} />

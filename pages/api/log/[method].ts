@@ -14,7 +14,6 @@ import formidable from "formidable";
 import axios from "axios";
 import aws from "aws-sdk";
 import fs from "fs";
-import { authCheck } from "../auth/auth";
 
 interface InsertLogProps {
   title: string;
@@ -214,6 +213,8 @@ async function selectListLog<T>(req: NextApiRequest): Promise<T | unknown> {
   const {
     query: { userPk, spotPk, type },
   } = req;
+  console.log("parameters", userPk, spotPk, type);
+
   if (typeof type == "string") {
     let param = userPk ? userPk : spotPk;
     try {
@@ -259,7 +260,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     case "selectListLog":
       resp = await selectListLog(req);
-      console.log(resp);
+      // console.log(resp);
       res.json({ r: true, row: resp.row, isImgLog: resp.isImgLog });
       break;
   }

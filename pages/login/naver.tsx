@@ -36,7 +36,7 @@ const Naver: NextPage = () => {
     hash = router.asPath.split('access_token=')[1].split('&')[0]
   }
 
-  const [, setCookie] = useCookies(['uid', 'profilePhoto']); // 쿠키 훅 
+  const [, setCookie] = useCookies(['accessToken', 'refreshToken']); // 쿠키 훅 
 
   // Redux
   const dispatch = useDispatch();           // dispatch를 사용하기 쉽게 하는 hook입니다.
@@ -45,6 +45,9 @@ const Naver: NextPage = () => {
   }, []);
 
 
+  useEffect(() => {
+    console.log('hi')
+  }, [])
   /**
    * 서버로 접근토큰을 전송합니다.
    * 전송된 접근토큰에 대한 사용자 정보를 응답 받는데 성공하면 uid값을 쿠키로 저장합니다.
@@ -68,21 +71,21 @@ const Naver: NextPage = () => {
            * 서버 결과(ok)가 false일 경우 로그인 화면으로 다시 이동합니다.
            */
           if (resp.data.ok) {
+            console.log(resp.data)
             const expireDate = new Date()
             expireDate.setMinutes(expireDate.getMinutes() + (60 * 24 * 7))
 
-            setCookie('uid', resp.data.uid, {
+            setCookie('accessToken', resp.data.token.accessToken, {
               path: '/',
-              expires: expireDate,
+              // expires: expireDate,
+            });// 쿠키에 토큰 저장
+            setCookie('refreshToken', resp.data.token.refreshToken, {
+              path: '/',
+              // expires: expireDate,
             });// 쿠키에 토큰 저장
 
-            setCookie('profilePhoto', resp.data.profilePhoto, {
-              path: '/',
-              expires: expireDate,
-            });// 쿠키에 토큰 저장
-
-            onloginAction()
             router.push('/');
+            dispatch(loginAction());
 
           } else {
             console.log('fail')

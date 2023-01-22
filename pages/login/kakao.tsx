@@ -32,7 +32,7 @@ const Kakao: NextPage = () => {
    * @error 에러발생 시 에러 내용
    */
   const { code: authCode, error: kakaoServerError } = router.query;
-  const [, setCookie] = useCookies(['uid', 'profilePhoto']); // 쿠키 훅 
+  const [, setCookie] = useCookies(['accessToken', 'refreshToken']); // 쿠키 훅 
 
   // Redux
   const dispatch = useDispatch();           // dispatch를 사용하기 쉽게 하는 hook입니다.
@@ -66,14 +66,13 @@ const Kakao: NextPage = () => {
             const expireDate = new Date()
             expireDate.setMinutes(expireDate.getMinutes() + (60 * 24 * 7))
 
-            setCookie('uid', resp.data.uid, {
+            setCookie('accessToken', resp.data.token.accessToken, {
               path: '/',
-              expires: expireDate,
+              // expires: expireDate,
             });// 쿠키에 토큰 저장
-
-            setCookie('profilePhoto', resp.data.profilePhoto, {
+            setCookie('refreshToken', resp.data.token.refreshToken, {
               path: '/',
-              expires: expireDate,
+              // expires: expireDate,
             });// 쿠키에 토큰 저장
 
             router.push('/');

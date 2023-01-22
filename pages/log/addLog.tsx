@@ -501,7 +501,9 @@ export default function AddLog() {
           <Button variant="text" onClick={router.back} sx={{
             color: 'gray'
           }}>뒤로가기</Button>
-          {toast && <Toast setToast={setToast} text={errMsg} />}
+          <Box>
+            {toast && <Toast setToast={setToast} text={errMsg} />}
+          </Box>
           {/* <Button variant="text" sx={{
               color: 'gray'
             }}>임시저장</Button> */}

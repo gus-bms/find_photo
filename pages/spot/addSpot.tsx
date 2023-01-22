@@ -229,7 +229,9 @@ export default function AddSpot() {
           추가하기
         </Button>
       </Box>
-      {toast && <Toast setToast={setToast} text={errMsg} />}
+      <Box>
+        {toast && <Toast setToast={setToast} text={errMsg} />}
+      </Box>
     </>
   );
 }
