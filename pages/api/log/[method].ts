@@ -11,10 +11,10 @@
 
 import { NextApiHandler, NextApiRequest } from "next";
 import formidable from "formidable";
-import path, { resolve } from "path";
 import axios from "axios";
 import aws from "aws-sdk";
 import fs from "fs";
+import { authCheck } from "../auth/auth";
 
 interface InsertLogProps {
   title: string;

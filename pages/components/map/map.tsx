@@ -61,7 +61,7 @@ var selectedInfowindow: any
 
 const Map = ({ pKeyword }: MapProps) => {
   // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
-  const isLoading = useSelector<IRootState, boolean>(state => state.isLogin);
+  const isLoading = useSelector<IRootState, boolean>(state => state.isLoading);
   // reducer isLogin Action 사용
   const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
 
@@ -95,7 +95,6 @@ const Map = ({ pKeyword }: MapProps) => {
 
   useEffect(() => {
     dispatch(loadingStartAction())
-    console.log(isLoading)
     // v3 스크립트를 동적으로 로드하기위해 사용한다.
     // 스크립트의 로딩이 끝나기 전에 v3의 객체에 접근하려고 하면 에러가 발생하기 때문에
     // 로딩이 끝나는 시점에 콜백을 통해 객체에 접근할 수 있도록 해 준다.
@@ -111,7 +110,6 @@ const Map = ({ pKeyword }: MapProps) => {
       setMap(new window.kakao.maps.Map(container, options))
       setGeocoder(new window.kakao.maps.services.Geocoder())
       dispatch(loadingEndAction())
-      console.log(isLoading)
     })
   }, [])
 

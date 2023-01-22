@@ -70,7 +70,6 @@ const Profile = () => {
               textAlign='right'>
               <Box
                 sx={{
-                  marginTop: 3,
                   height: '27vh',
                   width: '100%',
                 }}

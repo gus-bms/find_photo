@@ -36,9 +36,9 @@ const Kakao: NextPage = () => {
 
   // Redux
   const dispatch = useDispatch();           // dispatch를 사용하기 쉽게 하는 hook입니다.
-  const onloginAction = useCallback(() => {
-    dispatch(loginAction());                // 서버에서 로그인이 성공처리 되면 헤더의 로그인 State를 변경해줍니다.
-  }, []);
+  // const onloginAction = useCallback(() => {
+  //   dispatch(loginAction());                // 서버에서 로그인이 성공처리 되면 헤더의 로그인 State를 변경해줍니다.
+  // }, []);
 
   /**
    * 서버로 인가코드를 전송합니다.
@@ -76,8 +76,8 @@ const Kakao: NextPage = () => {
               expires: expireDate,
             });// 쿠키에 토큰 저장
 
-            onloginAction()
             router.push('/');
+            dispatch(loginAction());
 
           } else {
             console.log('fail')

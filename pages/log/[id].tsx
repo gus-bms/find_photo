@@ -16,9 +16,19 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import axios from 'axios';
 import Error404 from '../error_404'
-import router from 'next/router'
+import { useCookies } from 'react-cookie';
+import LoadingSpinner from '../components/global/loading';
+import { IRootState } from '../../store/modules'
+import { useDispatch, useSelector } from 'react-redux';
+import { loadingEndAction, loadingStartAction } from '../../store/modules/isLoading';
+
 
 export default function Log() {
+  // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
+  const isLoading = useSelector<IRootState, boolean>(state => state.isLoading);
+  // reducer isLogin Action 사용
+  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
+
   const [images, setImages] = useState<string[]>([])
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -28,6 +38,10 @@ export default function Log() {
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef(null)
+
+
+
+  const [cookies, , removeCookie] = useCookies(['uid']);
 
   /**
    * 캐로셀 슬라이드의 위치를 이동시키는 좌우 버튼을 클릭할 때 발생하는 이벤트입니다.
@@ -86,7 +100,8 @@ export default function Log() {
     if (id != '') {
       axios.get("/api/log/selectLog", {
         params: {
-          logPk: id
+          logPk: id,
+          uid: cookies
         }
       }).then(resp => {
         if (resp.data.r) {
@@ -102,6 +117,8 @@ export default function Log() {
             })
             setImages(imgNames)
           }
+        } else {
+
         }
       })
     }
