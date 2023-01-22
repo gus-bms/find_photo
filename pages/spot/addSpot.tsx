@@ -7,11 +7,16 @@ import style from '../../styles/Spot.module.css'
 import axios from "axios";
 import Toast from '../components/global/toast'
 import router from 'next/router'
+import Head from "next/head";
 
-export default function NestedList() {
+interface ISpot extends Spot {
+  id: string
+}
+
+export default function AddSpot() {
   const [keyword, setKeyword] = useState<string>('')
   const [typeList, setTypeList] = useState<string[]>(['C', 'R', 'H'])
-  const [spotList, setSpotList] = useState<Spot[]>([]);
+  const [spotList, setSpotList] = useState<ISpot[]>([]);
   const [isSelected, setIsSelected] = useState<boolean>(false)
   const [selectedRadio, setSelectedRadio] = useState<string>('')
   const [selectSpot, setSelectSpot] = useState<Spot>({})
@@ -59,16 +64,16 @@ export default function NestedList() {
   }
 
   const handleChange = (e: React.ChangeEvent<unknown>, value: number) => {
-    console.log(value, e)
+    // console.log(value, e)
     pagination.gotoPage(value)
   };
 
   useEffect(() => {
     // / 장소 검색 객체를 생성합니다
     setIsSelected(false)
-    console.log(keyword)
-    if (window.kakao && keyword != '') {
-      console.log(keyword)
+    console.log('@@keyword == ', keyword)
+
+    const searchPlace = () => {
       let ps = new window.kakao.maps.services.Places();
       // 키워드로 장소를 검색합니다
       ps.keywordSearch(keyword, placesSearchCB, { size: 8 });
@@ -79,32 +84,59 @@ export default function NestedList() {
 
           // TO_DO type 재정의 필요
           let spotArr = data.map(item => {
-            const regex = /[가-힣|0-9]+.[동|리]/;
+            const regex = /[가-힣|0-9]+.[동|리|가]/;
             let rObj = {
+              id: item.id,
               name: item.place_name ? item.place_name : '',
-              address: item.road_address_name ? item.road_address_name : item.address_name,
-              address_dong: item.address_name ? item.address_name.match(regex)[0] : '',
+              address: item.road_address_name != null ? item.road_address_name : item.address_name,
+              address_dong: item.address_name != null ? item.address_name.match(regex)[0] : '',
             }
-            console.log(item)
+            // console.log(item)
             return rObj
           })
           setSpotList(spotArr)
           setPagination(pagination)
-          console.log(pagination)
+          // console.log(pagination)
         } else {
           setSpotList([])
         }
         return;
       }
     }
+
+    if (keyword != '') {
+      if (window.kakao.maps.services == undefined) {
+        window.kakao.maps.load(function () {
+          searchPlace()
+        })
+      } else {
+        searchPlace()
+      }
+    }
+
   }, [keyword])
 
   useEffect(() => {
-    const { sKeyword } = router.query
-    sKeyword != '' && typeof (sKeyword) == 'string' && setKeyword(sKeyword)
+    // querystring에 한글은 깨지기 때문에 변환합니다.
+    const decodeUri = decodeURI(window.location.search);
+    setKeyword(decodeUri.split('?sKeyword=')[1])
+
+    // maps script가 모두 로딩이 되지 않을 경우 동적으로 로드합니다.
+    window.kakao.maps.load(function () {
+      console.log('load complete')
+    })
+
   }, [])
+
+  useEffect(() => {
+    console.log(toast)
+  }, [toast])
+
   return (
     <>
+      <Head>
+        <title>장소 등록 | Find Photo</title>
+      </Head>
       <Search keyword={keyword} setKeyword={setKeyword} text="장소를 입력해주세요!" ></Search>
       {spotList.length > 0 &&
         <>
@@ -127,11 +159,10 @@ export default function NestedList() {
                 height: '25vh',
                 justifyContent: 'center'
               }}
-
             >
               {spotList.map((spot, idx) => (
                 <>
-                  <FormControlLabel key={idx} value={spot.name} control={<Radio onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
+                  <FormControlLabel key={spot.id} value={spot.name} control={<Radio onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
                     width: '40%'
                   }} />
                   {/* </Box> */}

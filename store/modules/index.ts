@@ -1,6 +1,7 @@
 import { combineReducers } from "redux"; // 여러 리듀서들을 하나로 합쳐준다.
 import { configureStore } from "@reduxjs/toolkit";
 import isLogin from "./isLogin";
+import isLoading from "./isLoading";
 import {
   persistStore,
   persistReducer,
@@ -18,11 +19,12 @@ const persistConfig = {
   // localStorage에 저장합니다.
   storage,
   // whitList: 입력된 reducer를 localstorage에 저장합니다.
-  whitelist: ["isLogin"],
+  whitelist: ["isLogin", "isLoading"],
 };
 
 const rootReducer = combineReducers({
   isLogin,
+  isLoading,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

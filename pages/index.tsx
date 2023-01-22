@@ -23,16 +23,9 @@ export default function Home() {
     const uid = cookies.uid; // 쿠키에서 id 를 꺼내기
 
   }
-
-  // useEffect(() => {
-
-  //   const param = router.query.sKeyword
-  //   param && typeof (param) == 'string' && setSKeyword(param)
-  // });
-
   useEffect(() => {
     authCheck(); // 로그인 체크 함수
-    // querystring에 한글은 깨지기 때문에 변환해준다.
+    // querystring에 한글은 깨지기 때문에 변환합니다.
     const decodeUri = decodeURI(window.location.search);
     setSKeyword(decodeUri.split('?sKeyword=')[1])
   }, [])

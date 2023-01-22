@@ -108,13 +108,6 @@ export default function Log() {
 
   }, [id])
 
-  // useEffect(() => {
-  //   const { id } = router.query
-  //   console.log(id)
-  //   if (typeof (id) == 'string' && id != '')
-  //     setId(id)
-  // })
-
   return (
     <>
       {title ? (

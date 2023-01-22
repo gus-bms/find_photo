@@ -28,11 +28,11 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
   }
 
   useEffect(() => {
-    const { sKeyword } = router.query
-    if (typeof (sKeyword) == 'string') {
-      setSearch(sKeyword)
+    // querystring에 한글은 깨지기 때문에 변환합니다.
+    if (window.location.search != undefined && window.location.search != '') {
+      const decodeUri = decodeURI(window.location.search);
+      setSearch(decodeUri.split('?sKeyword=')[1])
     }
-
   }, [])
 
   return (

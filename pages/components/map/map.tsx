@@ -17,6 +17,10 @@ import FolderList from '../spot/spotList'
 import axios from 'axios'
 import router from 'next/router'
 import Link from 'next/link';
+import LoadingSpinner from '../global/loading'
+import { IRootState } from '../../../store/modules'
+import { useDispatch, useSelector } from 'react-redux';
+import { loadingEndAction, loadingStartAction } from '../../../store/modules/isLoading';
 
 declare global {
   interface Window {
@@ -56,6 +60,11 @@ var selectedMarker: any = null
 var selectedInfowindow: any
 
 const Map = ({ pKeyword }: MapProps) => {
+  // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
+  const isLoading = useSelector<IRootState, boolean>(state => state.isLogin);
+  // reducer isLogin Action 사용
+  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
+
   const [keyword, setKeyword] = useState<string>('')
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [spot, setSpot] = useState<Spot>({})
@@ -85,8 +94,8 @@ const Map = ({ pKeyword }: MapProps) => {
   }
 
   useEffect(() => {
-    console.log('useEffect with not')
-
+    dispatch(loadingStartAction())
+    console.log(isLoading)
     // v3 스크립트를 동적으로 로드하기위해 사용한다.
     // 스크립트의 로딩이 끝나기 전에 v3의 객체에 접근하려고 하면 에러가 발생하기 때문에
     // 로딩이 끝나는 시점에 콜백을 통해 객체에 접근할 수 있도록 해 준다.
@@ -101,6 +110,8 @@ const Map = ({ pKeyword }: MapProps) => {
       };
       setMap(new window.kakao.maps.Map(container, options))
       setGeocoder(new window.kakao.maps.services.Geocoder())
+      dispatch(loadingEndAction())
+      console.log(isLoading)
     })
   }, [])
 
@@ -232,11 +243,9 @@ const Map = ({ pKeyword }: MapProps) => {
 
   // keyword의 변경을 감지합니다.
   useEffect(() => {
-    console.log('useEffect with keyword')
     if (keyword != '') {
       (async () => {
         // 검색어의 결과를 리스트로 뿌려줍니다.
-        console.log('map change')
         if (pKeyword != '')
           router.push(`/?sKeyword=${keyword}`)
         await getSpotList()
@@ -298,7 +307,10 @@ const Map = ({ pKeyword }: MapProps) => {
           border: 'black',
           borderRadius: '10px',
         }}
-      />
+
+      >
+        {isLoading ? <LoadingSpinner /> : null}
+      </Box>
       {!Array.isArray(spotList) || spotList.length != 0 &&
         <FolderList spotList={spotList} setSpot={setSpot} />
       }

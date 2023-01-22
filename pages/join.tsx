@@ -1,6 +1,8 @@
 import Head from "next/head"
 import Link from "next/link";
 import { useEffect } from "react";
+import LoadingSpinner from "./components/global/loading";
+
 const Join = () => {
 
   let a = 0;
@@ -18,8 +20,10 @@ const Join = () => {
       <Head>
         <title>회원가입 | Find Photo</title>
       </Head>
+      <LoadingSpinner />
       <ul>
         <li>
+
           <Link href="/">
             hello{/* <a>Home</a> */}
           </Link>

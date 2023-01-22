@@ -20,6 +20,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
+import Head from 'next/head'
 
 /**
  * Input 요소의 디자인을 커스텀합니다.
@@ -337,9 +338,16 @@ export default function AddLog() {
 
   }, [spotList])
 
+  useEffect(() => {
+    console.log(toast)
+  }, [toast])
+
   return (
     <>
       {/* 이미지 업로드 */}
+      <Head>
+        <title>로그 남기기 | Find Photo</title>
+      </Head>
       <Box sx={{
         height: '25vh',
         display: 'flex'
