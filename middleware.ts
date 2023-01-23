@@ -8,7 +8,6 @@ export async function middleware(req: NextRequest, res: NextResponse) {
   // 엑세스 토큰이 존재할 경우
   if (accessToken != undefined) {
     const resp: any = await checkJWT(accessToken);
-    console.log(resp);
 
     // 엑세스 토큰이 만료되었을 경우
     if (resp != undefined && resp.r == false) {
@@ -53,11 +52,18 @@ export async function middleware(req: NextRequest, res: NextResponse) {
         }
       }
     } else {
-      console.log("토큰 이상 없음.", resp);
+      console.log("토큰만료시간 == ", getExp(resp.exp * 1000));
       const response = NextResponse.next();
       response.cookies.set("uid", resp.uid);
       return response;
     }
+  } else if (!accessToken) {
+    // 재로그인 필요 (토큰 없음.)
+    console.log("토큰이 만료되었습니다.");
+    const response = NextResponse.redirect(
+      new URL("/login/login?deleteCookie=true", req.url)
+    );
+    return response;
   }
 }
 
@@ -66,10 +72,50 @@ export const config = {
     "/log/addLog:path*",
     "/spot/addSpot:path*",
     "/profile/profile",
+    "/api/user/:path*",
+    "/api/log/insertLog",
+    "/api/spot/insertSpot",
     // "/login/login",
   ],
 };
 
-// export function middleware() {
-//   console.log("hi");
-// }
+const getExp = (time: number) => {
+  function pad(e: any) {
+    var t = parseInt(e);
+    return 10 > t ? "0" + t : t;
+  }
+
+  var a = new Date(time),
+    n = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ],
+    u = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    r = a.getFullYear(),
+    l = a.getMonth() + 1,
+    c = a.getDate(),
+    m = u[a.getDay()];
+
+  return `${l}.${c} ${pad(a.getHours())}:${pad(a.getMinutes())}:${pad(
+    a.getSeconds()
+  )}`;
+  // l +
+  // "." +
+  // c +
+  // " " +
+  // pad(a.getHours()) +
+  // ":" +
+  // pad(a.getMinutes()) +
+  // ":" +
+  // pad(a.getSeconds())
+};

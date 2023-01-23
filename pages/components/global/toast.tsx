@@ -27,8 +27,10 @@ const Toast: React.FunctionComponent<Iprops> = ({ setToast, text }) => {
 
   return (
     <div style={{
-      width: '250px',
-      height: '100%',
+      position: 'fixed',
+      bottom: 0,
+      right: '20vw',
+      width: '32vh',
       backgroundColor: '#e74c3c',
       color: "white",
       textAlign: 'center',
@@ -36,7 +38,7 @@ const Toast: React.FunctionComponent<Iprops> = ({ setToast, text }) => {
       flexDirection: 'column',
       justifyContent: 'center',
       fontFamily: 'IBM Plex Sans,sans-serif',
-      borderRadius: '12px'
+      borderRadius: '6px'
     }}>
       {/* <WarningAmberIcon /> */}
       <p>{text}</p>

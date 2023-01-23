@@ -504,10 +504,9 @@ export default function AddLog() {
           <Box>
             {toast && <Toast setToast={setToast} text={errMsg} />}
           </Box>
-          {/* <Button variant="text" sx={{
-              color: 'gray'
-            }}>임시저장</Button> */}
           <Button variant="text" onClick={insertLog} sx={{
+            position: 'absolute',
+            right: '20vw',
             color: 'gray'
           }}>로그 등록</Button>
         </Grid>

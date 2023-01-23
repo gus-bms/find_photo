@@ -299,7 +299,7 @@ const Map = ({ pKeyword }: MapProps) => {
         component='main'
         sx={{
           height: '300px',
-          marginTop: '5%',
+          marginTop: '2.5vh',
           alignItems: 'center',
           // minHeight: '100%',
           border: 'black',

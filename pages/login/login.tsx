@@ -29,7 +29,7 @@ const Login = () => {
   // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
   // reducer isLogin Action 사용
   const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
-  const [cookies, , removeCookie] = useCookies(['accessToken', 'refreshToken']);
+  const [cookies, , removeCookie] = useCookies(['accessToken', 'refreshToken', 'uid']);
   const router = useRouter()
   const [toast, setToast] = useState<boolean>(false)
   useEffect(() => {
@@ -38,6 +38,7 @@ const Login = () => {
       setToast(true)
       removeCookie('accessToken', { path: '/' });
       removeCookie('refreshToken', { path: '/' });
+      removeCookie('uid', { path: '/' });
       dispatch(logoutAction());
     }
   }, [])

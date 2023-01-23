@@ -20,6 +20,34 @@ import axios from "axios";
  * @param logPk log 테이블 pk
  * @returns
  */
+async function updateUser<T>(req: NextApiRequest): Promise<T | unknown> {
+  const {
+    body: { intro },
+  } = req;
+  const {
+    cookies: { uid },
+  } = req;
+  console.log(req.cookies);
+  console.log(intro);
+  try {
+    // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
+    const resp = await axios.post("http://localhost:8000/api/user/update", {
+      intro: intro,
+      uid: uid,
+    });
+    return resp.data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+}
+
+/**
+ * DB서버에 log와 image를 요청합니다.
+ *
+ * @param logPk log 테이블 pk
+ * @returns
+ */
 async function selectUser<T>(req: NextApiRequest): Promise<T | unknown> {
   const {
     cookies: { uid },
@@ -51,6 +79,12 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "selectUser":
       resp = await selectUser(req);
+      res.json({ ok: true, user: resp });
+      break;
+
+    case "updateUser":
+      resp = await updateUser(req);
+      console.log(resp);
       res.json({ ok: true, user: resp });
       break;
   }

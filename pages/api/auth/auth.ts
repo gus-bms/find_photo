@@ -56,7 +56,6 @@ export const createJwt = async (uid: any, profileImage: any, type?: string) => {
 };
 
 export const checkJWT = async (token: string, secretKey?: string) => {
-  console.log(process.env.ACCESS_TOKEN_SECRET_KEY);
   const secret =
     process.env.ACCESS_TOKEN_SECRET_KEY != undefined
       ? process.env.ACCESS_TOKEN_SECRET_KEY
@@ -67,7 +66,6 @@ export const checkJWT = async (token: string, secretKey?: string) => {
       new TextEncoder().encode(secret)
     );
 
-    console.log(jwtData.uid);
     return jwtData;
   } catch (err: any) {
     console.log(err);

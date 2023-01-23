@@ -1,22 +1,81 @@
 import Head from 'next/head';
-import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
-import { color, width } from '@mui/system';
-import { useCookies } from 'react-cookie';
-import { useEffect, useState } from 'react';
-import { checkJWT } from '../api/auth/auth'
+import { Box, Button, Container, Grid, TextField, Typography, Divider, InputBase } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 
 const Profile = () => {
-  const [cookies, ,] = useCookies(['accessToken']);
+  const [isEdit, setIsEdit] = useState<boolean>(false)
   const [logList, setLogList] = useState<{ id: string, title: string, content: string, url: string }[]>([])
-  const [profileUrl, setProfileUrl] = useState<string>('')
+  const [user, setUser] = useState<{ userPk: string, profileUrl: string, intro: string }>({
+    userPk: '',
+    profileUrl: '',
+    intro: ''
+  })
+  const [intro, setIntro] = useState<string>('')
+  const introRef = useRef<HTMLTextAreaElement | null>(null)
+  const [isError, setIsError] = useState<boolean>(false)
 
+  const handleOnChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    e.target.value.length < 351
+      ? (setIntro(e.target.value),
+        setIsError(false))
+      : setIsError(true)
+  }
+
+  /**
+   * user 정보를 가져오는 함수입니다.
+   */
+  const getUser = async () => {
+    const user = await axios.get("/api/user/selectUser")
+    console.log(user.data.user.intro)
+    setUser((prevUser) => {
+      let newUser = { ...prevUser }
+      newUser['intro'] = user.data.user.intro
+      return newUser
+    })
+    setIntro(user.data.user.intro)
+  }
+
+  /**
+   * 프로필 소개를 수정하거나 저장합니다.
+   * @param e
+   */
+  const handleBtnClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isError) {
+      const target = e.currentTarget;
+      if (target.innerText == '저장') {
+        if (user.intro.toString() !== intro.toString()) {
+          console.log('hi')
+          const resp = await axios.post('/api/user/updateUser', {
+            intro: intro
+          })
+
+          resp.data.ok &&
+            getUser()
+        }
+      }
+      setIsEdit(!isEdit)
+    }
+  }
+
+  /**
+   * 프로필 버튼이 수정으로 변경될 경우 포커싱해줍니다.
+   */
+  useEffect(() => {
+    if (introRef.current)
+      introRef.current.focus()
+  }, [isEdit])
+
+  /**
+   * 최초 접속 시 발생하는 hook입니다.
+   */
   useEffect(() => {
     const getUser = async () => {
-      const user = await axios.get("/api/user/selectUser");
-      console.log('user', user)
-      setProfileUrl(user.data.user.profileUrl)
+      const user = await axios.get("/api/user/selectUser")
+      setUser(user.data.user)
+      setIntro(user.data.user.intro)
+
       await axios.get("/api/log/selectListLog", {
         params: {
           userPk: user.data.user.userPk,
@@ -44,13 +103,8 @@ const Profile = () => {
     }
     getUser()
 
-
-
   }, [])
 
-  useEffect(() => {
-    console.log(logList)
-  }, [logList])
   return (
     // 프로필 명과 자기소개 
     <>
@@ -60,7 +114,7 @@ const Profile = () => {
       </Head>
       <Grid
         sx={{
-          marginTop: '8vh',
+          marginTop: '2.5vh',
         }}
         container
         justifyContent='center'
@@ -68,36 +122,24 @@ const Profile = () => {
         <Grid
           item
           xs={3}
-          // md={3}
           textAlign='center'
         >
-          <Grid
-            container
-            justifyContent='center'>
-            <Grid
-              item
-              xs={12}
-              // md={12}
-              textAlign='right'>
-              <Box
-                sx={{
-                  height: '27vh',
-                  width: '100%',
-                }}
-              >
-                <Box sx={{
-                  marginLeft: 4,
-                  display: 'block',
-                  backgroundSize: 'cover',
-                  width: '100%',
-                  height: '100%',
-                  backgroundImage: `url(${profileUrl})`,
-                  backgroundRepeat: 'no-repeat',
-                  borderRadius: '10px'
-                }} />
-              </Box>
-            </Grid>
-          </Grid>
+          <Box
+            sx={{
+              height: '27vh',
+              width: '100%',
+            }}
+          >
+            <Box sx={{
+              display: 'block',
+              backgroundSize: 'cover',
+              width: '100%',
+              height: '100%',
+              backgroundImage: `url(${user.profileUrl})`,
+              backgroundRepeat: 'no-repeat',
+              borderRadius: '10px'
+            }} />
+          </Box>
         </Grid>
         <Grid
           item
@@ -117,7 +159,9 @@ const Profile = () => {
             // md={12}
             textAlign='left'
             sx={{
-              marginLeft: '10px'
+              marginLeft: '10px',
+              height: '27vh',
+              position: 'relative'
             }}
           >
             <Typography sx={{
@@ -127,15 +171,47 @@ const Profile = () => {
             }}>
               Gus-Bms
             </Typography>
-            <Typography sx={{
-              fontSize: 16,
-              fontWeight: 100,
-              color: 'darkgray',
-              minHeight: 10
-            }}>
-              안녕하세요, 파인드포토입니다. 파인드포토는 국내에 사진 찍기 좋은 명소를 게시할 수 있고, 여러 사람들이 찍은 추천 장소를 확인할 수 있습니다.
-            </Typography>
-            <Box sx={{
+            {!isEdit ?
+              <Typography sx={{
+                fontSize: 16,
+                fontWeight: 100,
+                color: 'darkgray',
+                minHeight: 10,
+                wordWrap: 'break-word'
+              }}>
+                {user.intro}
+              </Typography>
+              : <><textarea ref={introRef} onChange={handleOnChange} style={{
+                width: '100%',
+                lineHeight: '1.5',
+                fontSize: 16,
+                fontWeight: 100,
+                color: 'black',
+                fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+                minHeight: 10,
+                border: 'none',
+                // outline: 'none',
+                resize: 'none'
+              }} name="Text1" cols={0} rows={6} value={intro}></textarea></>}
+            {isError ?
+              <Box onClick={(e) => handleBtnClick(e)} sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                color: 'red',
+                marginTop: '6rem',
+                height: '1.5rem',
+                borderRadius: '10px',
+                padding: '10px',
+              }}>
+                <Typography>글자수는 350자 이내로 작성해주세요!</Typography>
+              </Box>
+              : null}
+            <Box onClick={(e) => handleBtnClick(e)} sx={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
               width: '3rem',
               display: 'flex',
               alignItems: 'center',
@@ -145,11 +221,12 @@ const Profile = () => {
               marginTop: '6rem',
               height: '1.5rem',
               borderRadius: '10px',
-              padding: '10px'
+              padding: '10px',
+              cursor: 'pointer'
             }}>
               <Typography sx={{
                 margin: 'auto',
-              }}>수정</Typography>
+              }}>{!isEdit ? '수정' : '저장'}</Typography>
             </Box>
           </Grid>
         </Grid>
