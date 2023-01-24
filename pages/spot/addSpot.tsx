@@ -8,6 +8,7 @@ import axios from "axios";
 import Toast from '../components/global/toast'
 import router from 'next/router'
 import Head from "next/head";
+import { LocalCafe, LocalDining, PhotoCamera } from "@mui/icons-material";
 
 interface ISpot extends Spot {
   id: string
@@ -29,6 +30,7 @@ export default function AddSpot() {
     if (type == 'spot' && spot) {
       setSelectSpot(spot)
       setIsSelected(true)
+      setSelectedRadio('')
       return
     }
     setSelectedRadio(e.target.value)
@@ -142,6 +144,9 @@ export default function AddSpot() {
         <>
           <Typography sx={{
             marginTop: "3vh",
+            borderBottom: '1px solid #F1F3F5',
+            width: '5vw',
+            color: '#3b3b3ba8',
           }}>
             장소
           </Typography>
@@ -182,7 +187,10 @@ export default function AddSpot() {
       {isSelected && spotList.length > 0 ? (
         <>
           <Typography sx={{
-            marginTop: "1vh",
+            marginTop: "3vh",
+            borderBottom: '1px solid #F1F3F5',
+            color: '#3b3b3ba8',
+            width: '5vw',
           }}>
             유형
           </Typography>
@@ -208,12 +216,20 @@ export default function AddSpot() {
                         onChange={(e) => handleRadioBtn(e, 'type')}
                       />
                       <Box sx={{
-                        backgroundColor: 'palegreen',
+                        backgroundColor: 'lightgray',
+                        borderRadius: '10px',
                         width: '20vh',
                         textAlign: 'center',
                         height: '50px',
                         marginRight: '3vh',
-                      }}>{type}</Box>
+                        marginTop: '2vh',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>{type == 'C' ? <LocalCafe /> : (
+                        type == 'R' ? <LocalDining /> :
+                          <PhotoCamera />)}</Box>
                     </label>
                   </Box>
                 </>
@@ -221,11 +237,19 @@ export default function AddSpot() {
             }
           </Box>
         </>
-      ) : null}
+      ) : null
+      }
 
 
       <Box>
-        <Button onClick={insertSpot}>
+        <Button onClick={insertSpot} sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: '2vh',
+          backgroundColor: '#3b3b3b',
+          color: 'papayawhip',
+          width: '9vw',
+        }}>
           추가하기
         </Button>
       </Box>

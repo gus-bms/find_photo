@@ -12,7 +12,8 @@ import { Divider, IconButton, InputBase, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import React, { FunctionComponent, Dispatch, SetStateAction, useState, useEffect } from 'react';
-import router from 'next/router'
+import Toast from '../global/toast';
+
 interface Iprops {
   keyword: string
   setKeyword: Dispatch<SetStateAction<string>>;
@@ -20,11 +21,20 @@ interface Iprops {
 }
 
 const Search: FunctionComponent<Iprops> = (props: Iprops) => {
+  // 에러 메시지 관련 스테이트입니다.
+  const [toast, setToast] = useState(false);
+  const [errMsg, setErrMsg] = useState<string>('')
   // 검색어 상태입니다.
   const [search, setSearch] = useState<string>('');
   // 엔터 키 동작 시, 검색 버튼 클릭 시 실행되는 함수입니다.
   const searchMap = () => {
-    props.setKeyword(search)
+    const regex = /[가-힣|0-9]+.[동|리|가]/
+    if (search.match(regex) != null)
+      props.setKeyword(search)
+    else {
+      setToast(true)
+      setErrMsg('동으로 검색해주세요!')
+    }
   }
 
   useEffect(() => {
@@ -91,6 +101,7 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
           <SearchIcon />
         </IconButton>
       </Paper>
+      {toast && <Toast setToast={setToast} text={errMsg} />}
     </>
   )
 }

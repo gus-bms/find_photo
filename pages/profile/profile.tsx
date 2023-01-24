@@ -254,21 +254,23 @@ const Profile = () => {
                 key={idx}
                 container
                 sx={{
-                  margin: 3,
-                  borderTop: '0.1px solid #F1F3F5'
+                  borderTop: '0.1px solid #F1F3F5',
+                  marginTop: '3vh'
                 }}>
                 <Grid
                   item
                   alignItems='left'
                   xs={3}
                   sx={{
+                    width: '20vw',
+                    height: '22vh',
+                    marginTop: '1.4vh'
                   }}>
                   <Box sx={{
-                    marginTop: '0.8rem',
                     display: 'block',
                     backgroundSize: 'cover',
-                    width: '10rem',
-                    height: '10rem',
+                    width: '100%',
+                    height: '100%',
                     backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${log.url})`,
                     backgroundRepeat: 'no-repeat',
                     borderRadius: '10px'
@@ -281,10 +283,12 @@ const Profile = () => {
                   textAlign='left'
                   xs={9}
                   sx={{
-                    marginTop: '1rem'
+                    marginTop: '1.4vh',
+                    // marginLeft: '2vw',
+                    // width:
                   }}>
                   <Link href={`/log/${log.id}`} style={{ textDecoration: 'none' }}>
-                    <Typography fontSize='1.2rem' fontWeight='600' color='#6c7176'>
+                    <Typography fontSize='1.2rem' fontWeight='600' color='#6c7176' sx={{ marginLeft: '2vw' }}>
                       {log.title}
                     </Typography>
                     <Typography sx={{
@@ -294,7 +298,9 @@ const Profile = () => {
                       WebkitLineClamp: 3,
                       display: '-webkit-inline-box',
                       WebkitBoxOrient: 'vertical',
-                      color: '#868E96'
+                      color: '#868E96',
+                      height: '100%',
+                      marginLeft: '2vw'
                     }}>
                       {log.content}
                     </Typography>

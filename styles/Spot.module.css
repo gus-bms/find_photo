@@ -71,12 +71,7 @@
   transition: transform 450ms;
 }
 
-/* addSpot - 라디오 버튼
-label > input[type="radio"]:checked {
-  border: 1px solid black;
-} */
-
 .select input[type="radio"]:checked + div {
-  background-color: #333;
+  background-color: indigo;
   color: #fff;
 }

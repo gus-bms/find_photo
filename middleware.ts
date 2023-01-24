@@ -60,9 +60,7 @@ export async function middleware(req: NextRequest, res: NextResponse) {
   } else if (!accessToken) {
     // 재로그인 필요 (토큰 없음.)
     console.log("토큰이 만료되었습니다.");
-    const response = NextResponse.redirect(
-      new URL("/login/login?deleteCookie=true", req.url)
-    );
+    const response = NextResponse.redirect(new URL("/login/login", req.url));
     return response;
   }
 }
