@@ -162,12 +162,19 @@ export default function AddSpot() {
               name="radio-buttons-group"
               sx={{
                 height: '25vh',
-                justifyContent: 'center'
+                justifyContent: 'space-between',
+                marginTop: '2vh',
+                color: '#3b3b3ba8',
               }}
             >
               {spotList.map((spot, idx) => (
                 <>
-                  <FormControlLabel key={spot.id} value={spot.name} control={<Radio onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
+                  <FormControlLabel key={spot.id} value={spot.name} control={<Radio sx={{
+                    color: '#3b3b3ba8',
+                    '&.Mui-checked': {
+                      color: 'indigo',
+                    },
+                  }} onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
                     width: '40%'
                   }} />
                   {/* </Box> */}

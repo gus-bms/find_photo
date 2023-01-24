@@ -186,8 +186,12 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
     <>
       <Grid
         item
+        sx={{
+          width: '54vw',
+          marginBottom: '3vh'
+        }}
         md={11}>
-        <ListItemButton key={spot.spot_pk}
+        <ListItemButton sx={{ padding: 0 }} key={spot.spot_pk}
           onClick={() => handleSpotClick(spot)}
         >
           <ListItemAvatar>
@@ -206,6 +210,10 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
       </Grid>
       <Grid
         item
+        sx={{
+          justifyContent: 'center',
+          display: 'flex',
+        }}
         md={1}>
         <Box>
           <IconButton

@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 export default function Home() {
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [cookies, ,] = useCookies(['uid']);
   const [sKeyword, setSKeyword] = useState<string>('');
   const authCheck = () => { // 페이지에 들어올때 쿠키로 사용자 체크

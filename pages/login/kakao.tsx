@@ -16,6 +16,7 @@ import axios from 'axios'
 import { useDispatch } from 'react-redux';
 import { loginAction } from '../../store/modules/isLogin';
 import { useCookies } from 'react-cookie'; // useCookies import
+import Loading from '../components/global/loading';
 
 interface ResponseType {
   ok: boolean;
@@ -111,7 +112,7 @@ const Kakao: NextPage = () => {
    * @TO_DO 로그인 중입니다. 페이지 예쁘게 변경 필요함.
    */
   return (
-    <h2>로그인 중입니다..</h2>
+    <Loading />
   );
 };
 
