@@ -14,6 +14,8 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
+const host = process.env.HOST_IP;
+console.log(host);
 /**
  * DB에서 파라미터 값을 포함한 장소가 있는지 확인하여 결과를 list로 반환합니다.
  * 결과가 없을 경우 null을 반환합니다.
@@ -26,15 +28,12 @@ async function selectListSpot<T>(req: NextApiRequest): Promise<T | unknown> {
     query: { address_dong },
   } = req;
   try {
-    const spotList = await axios.get(
-      "http://localhost:8000/api/spot/selectSpotList",
-      {
-        params: {
-          address_dong: address_dong,
-        },
-        timeout: 3000,
-      }
-    );
+    const spotList = await axios.get(`${host}/api/spot/selectSpotList`, {
+      params: {
+        address_dong: address_dong,
+      },
+      timeout: 3000,
+    });
     return spotList.data.list;
   } catch (err) {
     console.log(err);
@@ -49,7 +48,7 @@ async function insertSpot<T>(req: NextApiRequest): Promise<T | unknown> {
   console.log(type, spot);
   try {
     await axios
-      .post("http://localhost:8000/api/spot/insertSpot", {
+      .post(`${host}/api/spot/insertSpot`, {
         name: spot.name,
         address: spot.address,
         address_dong: spot.address_dong,

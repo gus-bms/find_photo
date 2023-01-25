@@ -15,6 +15,8 @@ import axios from "axios";
 import aws from "aws-sdk";
 import fs from "fs";
 
+const host = process.env.HOST_IP;
+
 interface InsertLogProps {
   title: string;
   content: string;
@@ -160,7 +162,7 @@ async function insertLog<T>(
     let id;
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log pk를 전달받아 뷰단으로 return합니다.
     await axios
-      .post("http://localhost:8000/api/log/insertLog", {
+      .post(`${host}/api/log/insertLog`, {
         title: fields.title,
         spot_pk: fields.spotPk,
         content: fields.content,
@@ -191,7 +193,7 @@ async function selectLog<T>(req: NextApiRequest): Promise<T | unknown> {
 
   try {
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
-    const log = await axios.get("http://localhost:8000/api/log/selectLog", {
+    const log = await axios.get(`${host}/api/log/selectLog`, {
       params: {
         logPk: logPk,
       },
@@ -219,14 +221,11 @@ async function selectListLog<T>(req: NextApiRequest): Promise<T | unknown> {
     let param = userPk ? userPk : spotPk;
     try {
       // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
-      const logList = await axios.get(
-        "http://localhost:8000/api/log/selectListLog",
-        {
-          params: {
-            [type]: param,
-          },
-        }
-      );
+      const logList = await axios.get(`${host}/api/log/selectListLog`, {
+        params: {
+          [type]: param,
+        },
+      });
       return logList.data;
     } catch (err) {
       console.log(err);

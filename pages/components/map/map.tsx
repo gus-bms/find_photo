@@ -318,10 +318,20 @@ const Map = ({ pKeyword }: MapProps) => {
       }}>
         {keyword &&
           <Link href={`/spot/addSpot?sKeyword=${keyword}`}>
-            <Button>
-              장소 추가하기
-
-            </Button>
+            <Box sx={{
+              textAlign: '-webkit-center',
+            }}>
+              <Button sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '2vh',
+                backgroundColor: '#3b3b3b',
+                color: 'papayawhip',
+                width: '9vw',
+              }}>
+                추가하기
+              </Button>
+            </Box>
           </Link>
         }
       </Box>

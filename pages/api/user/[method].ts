@@ -14,6 +14,8 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
+const host = process.env.HOST_IP;
+
 /**
  * DB서버에 log와 image를 요청합니다.
  *
@@ -31,7 +33,7 @@ async function updateUser<T>(req: NextApiRequest): Promise<T | unknown> {
   console.log(intro);
   try {
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
-    const resp = await axios.post("http://localhost:8000/api/user/update", {
+    const resp = await axios.post(`${host}/api/user/update`, {
       intro: intro,
       uid: uid,
     });
@@ -55,7 +57,7 @@ async function selectUser<T>(req: NextApiRequest): Promise<T | unknown> {
   console.log(req.cookies);
   try {
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
-    const log = await axios.get("http://localhost:8000/api/selectUser", {
+    const log = await axios.get(`${host}/api/selectUser`, {
       params: {
         uid: uid,
       },

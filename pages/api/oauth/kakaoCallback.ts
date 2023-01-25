@@ -15,6 +15,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import { createJwt } from "../auth/auth";
 
+const host = process.env.HOST_IP;
+
 interface Data {
   ok: boolean;
   token?: any;
@@ -118,7 +120,7 @@ const getUserInfo = async (token: string) =>
  */
 const checkUser = async (id: string) =>
   await axios
-    .get("http://localhost:8000/api/selectUser", {
+    .get(`${host}/api/selectUser`, {
       params: {
         uid: id,
       },
@@ -140,7 +142,7 @@ const checkUser = async (id: string) =>
  */
 const updatePhoto = async (userInfo: UserInfo): Promise<boolean> =>
   await axios
-    .post("http://localhost:8000/api/user/updateProfile", {
+    .post(`${host}/api/user/updateProfile`, {
       uid: userInfo.id,
       url: userInfo.properties.profile_image,
     })
@@ -161,7 +163,7 @@ const updatePhoto = async (userInfo: UserInfo): Promise<boolean> =>
  */
 const insertUser = async (userInfo: UserInfo): Promise<boolean> =>
   await axios
-    .post("http://localhost:8000/api/insertUser", {
+    .post(`${host}/api/insertUser`, {
       uid: userInfo.id,
       name: userInfo.properties.nickname,
       profile_image: userInfo.properties.profile_image,

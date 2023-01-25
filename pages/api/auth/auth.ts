@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import axios from "axios";
 import * as jose from "jose";
 
+const host = process.env.HOST_IP;
+
 /**
  * JWT를 발행합니다.
  * Access Token의 유효시간은 5분이며, Refresh Token의 유효기간은 31일입니다.
@@ -39,7 +41,7 @@ export const createJwt = async (uid: any, profileImage: any, type?: string) => {
           .setExpirationTime("5m") // token expiration time, e.g., "1 day"
           .sign(new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET_KEY)); // secretKey generated from previous step
         console.log(token); // log token to console
-        await axios.post("http://localhost:8000/api/user/updateRefreshToken", {
+        await axios.post(`${host}/api/user/updateRefreshToken`, {
           uid: uid,
           refreshToken: token,
         });
@@ -100,7 +102,7 @@ export const refreshJWT = async (token: string) => {
   try {
     // const user = await checkUser(token);
     const user: any = await fetch(
-      `http://localhost:8000/api/selectUser?refresh_token=${token}`,
+      `${host}/api/selectUser?refresh_token=${token}`,
       {
         method: "GET",
       }
@@ -128,7 +130,7 @@ export const refreshJWT = async (token: string) => {
 };
 const checkUser = async (token: string) =>
   await axios
-    .get("http://localhost:8000/api/selectUser", {
+    .get(`${host}/api/selectUser`, {
       params: {
         refresh_token: token,
       },
