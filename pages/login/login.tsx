@@ -53,147 +53,25 @@ const Login = () => {
         <title>로그인 | Find Photo</title>
         <meta name="description" content='로그인 페이지입니다.' />
       </Head>
-      <Box
-        component='main'
-        sx={{
-          marginTop: '0',
-          height: '60vh',
-          alignItems: 'center',
-          display: 'flex',
-          flexGrow: 1,
-          // minHeight: '100%',
-          // border: '1px solid rgb(236, 238, 242)',
-          borderRadius: '10px',
-        }}
-      >
+      <Box className={style.login__box} component='main'>
         {/* Container를 사용하여 중앙에 위치 시킴 */}
-        <Container maxWidth="sm">
-          <Box sx={{
-            marginY: 3,
-            // height: '40%',
-
-            textAlign: 'center'
-          }}>
-            <Typography
-              color='textPrimary'
-              variant='h4'
-              fontWeight='500'
-              fontSize='2vw'
-              padding='1%'
-              paddingBottom='3%'
-            >
+        <Container>
+          <Box>
+            <Typography className={style.login__text} fontSize='x-large'>
               Find Photo.
             </Typography>
-            <Typography
-              color="textSecondary"
-              gutterBottom
-              variant="body2"
-            >
+            <Typography className={style.login__text} sx={{ paddingBottom: '3vh' }}>
               간편하게 소셜미디어로 시작해보세요
             </Typography>
           </Box>
-          <Grid
-            container
-            justifyContent='center'
-            spacing={1}
-          >
-            <Grid
-              item
-              xs={2}
-              md={2}
-              overflow="hidden"
-              textAlign='right'
-            >
+          <Grid container justifyContent='center' spacing={1} >
+            <Grid item overflow="hidden" textAlign='right' >
               <KakaoBtn />
             </Grid>
-            <Grid
-              item
-              xs={2}
-              md={2}
-              overflow="hidden"
-              textAlign="left"
-            >
+            <Grid item overflow="hidden" textAlign="left" >
               <NaverBtn />
             </Grid>
           </Grid>
-          {/* <Box
-            sx={{
-              paddingBottom: 1,
-              paddingTop: 3
-            }}
-          >
-            <Typography
-              align="center"
-              color="textSecondary"
-              variant="body2"
-            >
-              이메일로 계속하기
-            </Typography>
-          </Box>
-          <TextField
-            // error={true}
-            fullWidth
-            // helperText
-            label="Email Address"
-            margin="normal"
-            name="email"
-            // onBlur={ }
-            // onChange={ }
-            type="email"
-            // value={ }
-            variant="outlined"
-          />
-          <TextField
-            // error={true}
-            fullWidth
-            // helperText
-            label="Password"
-            margin="normal"
-            name="password"
-            // onBlur={ }
-            // onChange={ }
-            type="password"
-            // value={ }
-            variant="outlined"
-          />
-          <Box sx={{ paddingY: 2 }}>
-            <Button
-              className={style.login__btn}
-              // disabled={formik.isSubmitting}
-              fullWidth
-              size="large"
-              type="submit"
-              variant="contained"
-              onClick={() => {
-                router.push({
-                  pathname: '/',
-                })
-              }}
-            >
-              로그인
-            </Button>
-          </Box>
-          <Divider variant="middle" />
-          <Box sx={{
-            paddingY: 2,
-            marginBottom: '3.2vh'
-          }}>
-            <Button
-              className={style.join__btn}
-              // disabled={formik.isSubmitting}
-              fullWidth
-              size="large"
-              type="submit"
-              variant="contained"
-              onClick={() => {
-                router.push({
-                  pathname: '/join',
-                })
-              }}
-            >
-              회원가입
-            </Button>
-          </Box> */}
         </Container >
       </Box >
       <Box>

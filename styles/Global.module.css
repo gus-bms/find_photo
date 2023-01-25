@@ -1,3 +1,4 @@
+/* Loading Spinner 모듈 CSS */
 @keyframes spinner {
   0% {
     transform: rotate(0deg);
@@ -25,4 +26,24 @@
   z-index: 3333333;
   background-color: white;
   position: absolute;
+}
+
+/* Toast 모듈 CSS */
+.toast__box {
+  position: fixed;
+  bottom: 0;
+  right: 20vw;
+  width: 32vh;
+  background-color: #e74c3c;
+  color: white;
+  text-align: center;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: IBM, Plex, Sans, sans-serif;
+  border-radius: 6px;
+}
+
+.progress__bar {
+  margin-bottom: 2vh;
 }

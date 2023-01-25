@@ -45,19 +45,8 @@ export const Header = () => {
 
   return (
     <>
-      <Grid
-        container
-        spacing={1}
-        sx={{
-          height: '5vh',
-          marginTop: '2vh'
-        }}
-      >
-        <Grid
-          item
-          xs={8}
-          textAlign='left'
-        >
+      <Grid container spacing={1} className={style.header__box} >
+        <Grid item xs={7} textAlign='left' >
           <Link className={style.logo} href='/'>
             <Typography >Find Photo</Typography>
           </Link>
@@ -65,38 +54,25 @@ export const Header = () => {
         {isLogin
           ?
           <>
-            <Grid
-              item
-              xs={2}
-              textAlign='right'
-            >
+            <Grid item xs={2} textAlign='right'>
               <Link className={style.login} href={`/profile/profile`}>
                 <Typography>나의 글</Typography>
               </Link>
             </Grid>
-            <Grid
-              item
-              xs={2}
-              textAlign='right'
-            >
+            <Grid item xs={3} textAlign='right' >
               <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
                 <Typography>로그아웃</Typography>
               </Link>
             </Grid>
           </>
           : <>
-            <Grid
-              item
-              xs={4}
-              textAlign='right'
-            >
+            <Grid item xs={4} textAlign='right' >
               <Link className={style.login} href='/login/login'>
                 <Typography>로그인</Typography>
               </Link>
             </Grid>
           </>
         }
-        {/* </Grid> */}
         <Divider />
       </Grid>
     </>

@@ -1,0 +1,19 @@
+.none__underline {
+  text-decoration: none !important;
+  width: 100px !important;
+  display: flex;
+}
+
+.none__underline > button {
+  display: flex;
+  justify-content: center;
+  margin-top: 2vh;
+  background-color: #3b3b3b;
+  color: papayawhip;
+  width: 100px !important;
+}
+
+.none__underline > button:hover {
+  background-color: #3b3b3b !important;
+  box-shadow: none !important;
+}

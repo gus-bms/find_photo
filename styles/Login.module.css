@@ -1,4 +1,17 @@
-/* rgb(255 212 127 / 38%); */
+.login__box {
+  margin-top: 0;
+  height: 74vh;
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.login__text {
+  color: #3b3b3ba8;
+  padding-bottom: 2vh;
+}
 
 .sso__btn {
   background-size: cover;

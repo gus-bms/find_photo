@@ -1,10 +1,14 @@
 .logo {
   text-decoration: none;
   color: black;
-  font-size: x-large;
 }
 
 .login {
   text-decoration: none;
-  color: black;
+  color: #3b3b3bd1;
+}
+
+.header__box {
+  height: 5vh;
+  margin-top: 2vh !important;
 }

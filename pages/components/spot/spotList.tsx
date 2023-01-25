@@ -184,13 +184,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
 
   return (
     <>
-      <Grid
-        item
-        sx={{
-          width: '54vw',
-          marginBottom: '3vh'
-        }}
-        md={11}>
+      <Grid item className={style.spot__list__Box} sx={{ marginBottom: '3vh' }} md={11}>
         <ListItemButton sx={{ padding: 0 }} key={spot.spot_pk}
           onClick={() => handleSpotClick(spot)}
         >

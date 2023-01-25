@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LinearProgress from '@mui/material/LinearProgress';
+import style from '../../../styles/Global.module.css'
 
 interface Iprops {
   text: string
@@ -26,25 +26,10 @@ const Toast: React.FunctionComponent<Iprops> = ({ setToast, text }) => {
   }, [setToast]);
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: 0,
-      right: '20vw',
-      width: '32vh',
-      backgroundColor: '#e74c3c',
-      color: "white",
-      textAlign: 'center',
-      display: 'inline-flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      fontFamily: 'IBM Plex Sans,sans-serif',
-      borderRadius: '6px'
-    }}>
+    <div className={style.toast__box}>
       {/* <WarningAmberIcon /> */}
       <p>{text}</p>
-      <div style={{
-        marginBottom: 15
-      }}>
+      <div className={style.progress__bar}>
         <LinearProgress color="inherit" variant="determinate" value={progress} />
       </div>
     </div>

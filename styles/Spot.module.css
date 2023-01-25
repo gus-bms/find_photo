@@ -75,3 +75,20 @@
   background-color: indigo;
   color: #fff;
 }
+
+@media (min-width: 0px) {
+  .spot__list__Box {
+    width: 76vw;
+  }
+}
+@media (min-width: 1000px) {
+  .spot__list__Box {
+    width: 75vw;
+  }
+}
+@media (min-width: 1200px) {
+  .spot__list__Box {
+    width: 55vw;
+  }
+}
+/* Spot List 모듈 CSS */

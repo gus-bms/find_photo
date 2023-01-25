@@ -9,9 +9,8 @@
  * @project find-photo
  */
 
-import Script from 'next/script';
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Box, Button, Container, Grid, TextField, Typography, Divider } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Search from "../search/search";
 import FolderList from '../spot/spotList'
 import axios from 'axios'
@@ -21,6 +20,7 @@ import LoadingSpinner from '../global/loading'
 import { IRootState } from '../../../store/modules'
 import { useDispatch, useSelector } from 'react-redux';
 import { loadingEndAction, loadingStartAction } from '../../../store/modules/isLoading';
+import style from '../../../styles/Map.module.css'
 
 declare global {
   interface Window {
@@ -301,7 +301,6 @@ const Map = ({ pKeyword }: MapProps) => {
           height: '300px',
           marginTop: '2.5vh',
           alignItems: 'center',
-          // minHeight: '100%',
           border: 'black',
           borderRadius: '10px',
         }}
@@ -317,22 +316,16 @@ const Map = ({ pKeyword }: MapProps) => {
         textAlign: 'center'
       }}>
         {keyword &&
-          <Link href={`/spot/addSpot?sKeyword=${keyword}`}>
-            <Box sx={{
-              textAlign: '-webkit-center',
-            }}>
-              <Button sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginTop: '2vh',
-                backgroundColor: '#3b3b3b',
-                color: 'papayawhip',
-                width: '9vw',
-              }}>
+
+          <Box sx={{
+            textAlign: '-webkit-center',
+          }}>
+            <Link href={`/spot/addSpot?sKeyword=${keyword}`} className={style.none__underline}>
+              <Button >
                 추가하기
               </Button>
-            </Box>
-          </Link>
+            </Link>
+          </Box>
         }
       </Box>
     </>
