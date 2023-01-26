@@ -1,4 +1,4 @@
-/* Loading Spinner 모듈 CSS */
+/* Loading Spinner module */
 @keyframes spinner {
   0% {
     transform: rotate(0deg);
@@ -44,7 +44,7 @@
   }
 }
 
-/* Toast 모듈 CSS */
+/* Toast module */
 .toast__box {
   position: fixed;
   bottom: 0;
@@ -62,4 +62,36 @@
 
 .progress__bar {
   margin-bottom: 2vh;
+}
+
+/* Slider module */
+.slider__wrapper {
+  width: 300px;
+  overflow: hidden;
+}
+
+.image__wrapper {
+  /* width: 100%; */
+  display: inline-flex;
+  transition: transform 0.2s ease-in-out;
+}
+
+.image__wrapper > .image__box {
+  width: 300px;
+  height: 500px;
+  background-size: cover;
+}
+
+.button__wrapper {
+  position: relative;
+  top: -250px;
+}
+
+.button__wrapper > button {
+  background-color: white;
+}
+
+.button__wrapper > .next__button {
+  position: absolute;
+  right: 0;
 }

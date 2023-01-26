@@ -8,9 +8,8 @@
  * @project find-photo
  */
 
-import { useRouter } from 'next/router'
 import React, { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
-import { Grid, Box, IconButton, Typography } from "@mui/material";
+import { Grid, Box, IconButton, Typography, Avatar } from "@mui/material";
 import style from '../../styles/Spot.module.css'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -18,30 +17,22 @@ import axios from 'axios';
 import Error404 from '../error_404'
 import { useCookies } from 'react-cookie';
 import LoadingSpinner from '../components/global/loading';
-import { IRootState } from '../../store/modules'
-import { useDispatch, useSelector } from 'react-redux';
-import { loadingEndAction, loadingStartAction } from '../../store/modules/isLoading';
-
+import style2 from '../../styles/Log.module.css'
+import Slider from '../components/global/slider';
 
 export default function Log() {
-  // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
-  const isLoading = useSelector<IRootState, boolean>(state => state.isLoading);
-  // reducer isLogin Action 사용
-  const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
 
   const [images, setImages] = useState<string[]>([])
-  const [title, setTitle] = useState<string>('')
-  const [content, setContent] = useState<string>('')
   const [current, setCurrent] = useState<number>(0)
+  const [log, setLog] = useState<{ name: string, profile_url: string, title: string, content: string }>()
   const [id, setId] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const carouselRef = useRef(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
   const trackRef = useRef(null)
 
-
-
-  const [cookies, , removeCookie] = useCookies(['uid']);
+  const [cookies, ,] = useCookies(['uid']);
 
   /**
    * 캐로셀 슬라이드의 위치를 이동시키는 좌우 버튼을 클릭할 때 발생하는 이벤트입니다.
@@ -105,11 +96,12 @@ export default function Log() {
         }
       }).then(resp => {
         if (resp.data.r) {
-          console.log(resp.data.r)
           let logArr = resp.data.row
-          setTitle(logArr[0].title)
-          setContent(logArr[0].content)
-
+          setLog(logArr[0]);
+          console.log(logArr)
+          // setTitle(logArr[0].title)
+          // setContent(logArr[0].content)
+          setIsLoading(false)
           if (resp.data.isImgLog) {
             let imgNames: string[] = [];
             logArr.map((log: { img_name: string; }) => {
@@ -127,102 +119,91 @@ export default function Log() {
 
   return (
     <>
-      {title ? (
-        <Grid container>
+      {isLoading ? <LoadingSpinner /> : null}
+      {log ? (
+        <>
           {/* 이미지 슬라이더 */
             (Array.isArray(images) && images.length > 0) && (
-              <Grid item
-                md={12}>
-                <Box ref={carouselRef} className={style.carousel__container} width={'100%'}>
-                  <Box className={style.inner__carousel}>
-                    <Box ref={trackRef} className={style.track}
-                      sx={{
-                        transform: `translateX(-${(current * 1.12) * 10}%)`
-                      }}>
-                      {images.map((img, idx) => (
-                        <Box key={idx} className={style.card__container}>
-                          < Box className={style.card}
-                            sx={{
-                              backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${img})`,
-                              backgroundSize: 'cover',
-                              // cursor: 'pointer',
-                            }} />
-                        </Box>
-                      ))}
-                    </Box>
-                    <Box>
-                      <IconButton
-                        ref={prevRef}
-                        sx={{
-                          display: 'none'
-                        }}
-                        className={`${style.button__grp} ${style.btn__hide}`}
-                        type="button"
-                        onClick={() => handleCarouselClick('prev')}
-                      >
-                        <NavigateBeforeIcon
-                          sx={{
-                            color: 'white',
-                            background: 'rgb(75 75 75 / 55%)',
-                            borderRadius: '20px'
-                          }}
-                          fontSize='large' />
-                      </IconButton>
-                      <IconButton
-                        ref={nextRef}
-                        className={`${style.button__grp} ${style.btn__hide}`}
-                        type="button"
-                        sx={{
-                          left: "89.5%"
-                        }}
-                        onClick={() => handleCarouselClick('next')}
-                      >
-                        <NavigateNextIcon
-                          sx={{
-                            color: 'white',
-                            background: 'rgb(75 75 75 / 55%)',
-                            borderRadius: '20px'
-                          }}
-                          fontSize='large' />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                </Box>
-              </Grid>
+              <Slider images={images}></Slider>
+              // <Grid item
+              //   md={12}>
+              //   <Box ref={carouselRef} className={style.carousel__container} width={'100%'}>
+              //     <Box className={style.inner__carousel}>
+              //       <Box ref={trackRef} className={style.track}
+              //         sx={{
+              //           transform: `translateX(-${(current * 1.12) * 10}%)`
+              //         }}>
+              //         {images.map((img, idx) => (
+              //           <Box key={idx} className={style.card__container}>
+              //             < Box className={style.card}
+              //               sx={{
+              //                 backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${img})`,
+              //                 backgroundSize: 'cover',
+              //                 // cursor: 'pointer',
+              //               }} />
+              //           </Box>
+              //         ))}
+              //       </Box>
+              //       <Box>
+              //         <IconButton
+              //           ref={prevRef}
+              //           sx={{
+              //             display: 'none'
+              //           }}
+              //           className={`${style.button__grp} ${style.btn__hide}`}
+              //           type="button"
+              //           onClick={() => handleCarouselClick('prev')}
+              //         >
+              //           <NavigateBeforeIcon
+              //             sx={{
+              //               color: 'white',
+              //               background: 'rgb(75 75 75 / 55%)',
+              //               borderRadius: '20px'
+              //             }}
+              //             fontSize='large' />
+              //         </IconButton>
+              //         <IconButton
+              //           ref={nextRef}
+              //           className={`${style.button__grp} ${style.btn__hide}`}
+              //           type="button"
+              //           sx={{
+              //             left: "89.5%"
+              //           }}
+              //           onClick={() => handleCarouselClick('next')}
+              //         >
+              //           <NavigateNextIcon
+              //             sx={{
+              //               color: 'white',
+              //               background: 'rgb(75 75 75 / 55%)',
+              //               borderRadius: '20px'
+              //             }}
+              //             fontSize='large' />
+              //         </IconButton>
+              //       </Box>
+              //     </Box>
+              //   </Box>
+              // </Grid>
             )}
           {/* 작성자 */}
-          <Grid
-            item
-            md={12}
-            display='inline-flex'>
-            <Typography>
-              작성자 프로필 사진
-            </Typography>
-            <Typography sx={{
-              marginLeft: 1.5
-            }}>
-              작성자 이름
-            </Typography>
-          </Grid>
+          <Box className={style2.profile__wrapper}>
+            <Avatar alt="Remy Sharp" src={log.profile_url} />
+            <Typography> {log.name} </Typography>
+          </Box>
+
           {/* 글 */}
-          <Grid
-            item
-            md={12}
-          >
-            <Typography sx={{
-              fontWeight: '600',
-              fontSize: '1.7rem'
-            }}>
-              {title}
-            </Typography>
-            <Typography sx={{
-              lineHeight: '1.9rem',
-              marginTop: '1rem',
-            }}>
-              {content}
-            </Typography>
-          </Grid>
-        </Grid>
+          <Typography sx={{
+            fontWeight: '600',
+            fontSize: '1.7rem'
+          }}>
+            {log.title}
+          </Typography>
+          <Typography sx={{
+            lineHeight: '1.9rem',
+            marginTop: '1rem',
+          }}>
+            {log.content}
+          </Typography>
+        </>
       ) : <Error404 text='로그를' />}
     </>
   )

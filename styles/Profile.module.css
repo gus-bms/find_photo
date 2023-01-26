@@ -89,6 +89,10 @@
 .log__wrapper > a > p {
   color: #868e96;
   margin-left: 2vw;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  display: -webkit-box;
 }
 /* 모바일 / 좁은 화면 환경 */
 @media (max-width: 800px) {

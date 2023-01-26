@@ -2,7 +2,7 @@ import Head from "next/head"
 import Link from "next/link";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/global/loading";
-
+import Slider from "./components/global/slider";
 const Join = () => {
 
   let a = 0;
@@ -20,7 +20,7 @@ const Join = () => {
       <Head>
         <title>회원가입 | Find Photo</title>
       </Head>
-      <LoadingSpinner />
+      {/* <Slider /> */}
       <ul>
         <li>
 

@@ -1,92 +1,71 @@
-import { Box, IconButton } from "@mui/material";
-import style from "styled-jsx/style";
+import { FC, useEffect, useState } from "react"
+import Image from "next/image"
+import { Box, Button, LinearProgress } from "@mui/material"
+import style from '../../../styles/Global.module.css'
+interface Iprops {
+  images: string[]
+}
 
-export default function Slider() {
-  <>
-    {/* <Box sx={{ position: 'relative', width: '100%' }}>
-      <Box sx={{ width: '100%', overflow: 'hidden', height: '100%' }}>
-        <Box ref={trackRef} sx={{
-          transform: `translateX(-${(current * 2.55) * 10}%)`,
-          display: 'inline-flex',
-          width: '100%',
-          height: '100%',
-          transition: 'transform 0.2s ease-in-out'
-        }}>
-          {previewImg ?
-            previewImg.map((item, idx) => (
-              <Box key={idx} sx={{
-                width: '25%',
-                height: '100%',
-                flexShrink: 0,
-                display: 'flex',
-                marginRight: '10px',
-                transition: 'all 0.1s linear',
-              }}>
-                <Box sx={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundPosition: 'center bottom',
-                  backgroundSize: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  borderRadius: '10px',
-                  cursor: 'pointer'
-                }}>
-                  {previewImg ? (
-                    <>
-                      {item.isRepresent ? (
-                        <Box sx={{
-                          position: 'fixed',
-                          bottom: 0,
-                          marginLeft: '11.5%'
-                        }}><CheckCircleIcon color='success' fontSize="small" /></Box>
-                      ) : null}
-                      <img ref={elem => (imgRef.current[idx] = elem)} alt={item.name} src={item.url} style={{
-                        paddingLeft: '1.5px', width: '100%', height: '100%'
-                      }} onClick={(e: React.MouseEvent<HTMLImageElement>) => handleImgClick(e)} />
-                    </>) : null
-                  }
-                </Box>
-              </Box>
-            ))
-            : null}
-        </Box>
-        <Box>
-          <IconButton
-            ref={prevRef}
-            sx={{
-              display: 'none'
-            }}
-            className={style.button__grp}
-            type="button"
-            onClick={() => handleCarouselClick('prev')}
-          >
-            <NavigateBeforeIcon
-              sx={{
-                color: 'white',
-                background: 'rgb(75 75 75 / 55%)',
-                borderRadius: '20px'
-              }}
-              fontSize='large' />
-          </IconButton>
-          <IconButton
-            ref={nextRef}
-            className={style.button__grp}
-            type="button"
-            sx={{
-              left: "89.5%"
-            }}
-            onClick={() => handleCarouselClick('next')}
-          >
-            <NavigateNextIcon
-              sx={{
-                color: 'white',
-                background: 'rgb(75 75 75 / 55%)',
-                borderRadius: '20px'
-              }}
-              fontSize='large' />
-          </IconButton>
+function Slider(props: Iprops) {
+  const [current, setCurrent] = useState<number>(0)
+  useEffect(() => {
+    console.log(props.images)
+  }, [])
+
+  const handleCarouselClick = (position: string) => {
+    console.log(props.images.length)
+    if (current > 0 && current != props.images.length - 1) {
+      position == 'prev' ? setCurrent((current => current - 1)) : setCurrent((current => current + 1))
+    } else if (current == 0) {
+      position == 'next' ? setCurrent((current => current + 1)) : null
+    } else if (position == 'prev' && current == props.images.length - 1) {
+      setCurrent((current => current - 1))
+    }
+  }
+
+  useEffect(() => {
+    console.log(current)
+  }, [current])
+  return (
+    <>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box className={style.slider__wrapper}>
+          <Box className={style.image__wrapper} sx={{
+            transform: `translateX(-${(current * 33.333)}%)`
+          }}>
+            {
+              props.images.length > 0 && (
+                props.images.map((img, idx) => (
+                  <Box className={style.image__box} key={idx} sx={{ backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${img})` }} />
+                ))
+              )
+            }
+
+          </Box>
         </Box>
       </Box>
-    </Box> */}
-  </>
+      {
+        props.images.length > 0 &&
+        <Box>
+          <LinearProgress variant="determinate" value={(current + 1) / props.images.length * 100} sx={{
+            backgroundColor: '#f3f3f3',
+            // color: 'black',
+            '.css-5xe99f-MuiLinearProgress-bar1': {
+              backgroundColor: '#868e96',
+            }
+          }} />
+        </Box>
+      }
+      <Box className={style.button__wrapper}>
+        <Button onClick={() => handleCarouselClick('prev')}>
+          test
+        </Button>
+        <Button className={style.next__button} onClick={() => handleCarouselClick('next')}>
+          test
+        </Button>
+      </Box>
+    </>
+  )
 }
+
+export default Slider

@@ -1,3 +1,4 @@
+/* Add Log module */
 .log__footer {
   position: fixed;
   bottom: 0px;
@@ -25,4 +26,16 @@
   .log__footer {
     width: 60vw;
   }
+}
+
+/* log module */
+.profile__wrapper {
+  margin-top: 3vh;
+  margin-bottom: 1vh;
+  display: inline-flex;
+}
+
+.profile__wrapper > p {
+  margin-left: 2vw;
+  align-self: center;
 }
