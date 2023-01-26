@@ -1,0 +1,152 @@
+.profile__wrapper {
+  display: flex;
+}
+
+.image__box {
+  background-size: cover;
+  width: 240px;
+  height: 240px;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  justify-self: center;
+}
+
+.intro__box {
+  margin-left: 3vw;
+  position: relative;
+}
+
+.intro__box > .title {
+  font-size: 30px;
+  font-weight: 400;
+  color: #6c7176;
+}
+
+.intro__box > p {
+  width: 58vw;
+  color: #6c7176;
+  font-weight: 200;
+  text-align: left;
+  word-break: break-all;
+}
+
+.intro__box > textarea {
+  width: 58vw;
+  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 100;
+  color: black;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  min-height: 10;
+  border: none;
+  resize: none;
+}
+
+.error__text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: red;
+  margin-top: 6rem;
+  height: 1.5rem;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.edit__button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  float: right;
+  background-color: #f1f3f5;
+  color: black;
+  margin-top: 6rem;
+  height: 1.5rem;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.log__wrapper {
+  margin-top: 0.1vh;
+  margin-bottom: 3vh;
+  width: 100%;
+  display: inline-flex;
+}
+
+.log__wrapper > .image__wrapper {
+}
+
+.log__wrapper > .image__wrapper > .image__box {
+  width: 200px;
+  height: 200px;
+}
+
+.log__wrapper > a > p {
+  color: #868e96;
+  margin-left: 2vw;
+}
+/* 모바일 / 좁은 화면 환경 */
+@media (max-width: 800px) {
+  .profile__wrapper {
+    margin-top: 2.5vh;
+    display: grid !important;
+  }
+
+  .image__wrapper {
+    display: contents;
+  }
+
+  .image__box {
+    justify-content: center;
+  }
+
+  .intro__box {
+    margin-top: 2vh;
+    text-align: center;
+  }
+
+  .intro__box > p {
+    width: 82vw;
+  }
+
+  .intro__box > textarea {
+    width: 100%;
+  }
+  .error__text {
+    bottom: -9vh;
+    font-size: 10px !important;
+    text-align: left;
+  }
+  .edit__button {
+    bottom: -9vh;
+  }
+
+  .log__wrapper {
+    display: inline-flex;
+    /* margin */
+  }
+
+  /* .log__wrapper > .image__wrapper {
+    width: ;
+  } */
+
+  .log__wrapper > .image__wrapper > .image__box {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* 넓은 화면 */
+@media (min-width: 1200px) {
+  .intro__box > p {
+    width: 40vw;
+  }
+  .intro__box > textarea {
+    width: 40vw;
+  }
+}

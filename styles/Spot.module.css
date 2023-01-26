@@ -76,19 +76,47 @@
   color: #fff;
 }
 
+.spot__footer {
+  position: fixed;
+  bottom: 0px;
+}
+
+.spot__footer > button {
+  color: gray;
+}
+.add__btn {
+  position: absolute !important;
+  right: 0;
+}
+
 @media (min-width: 0px) {
   .spot__list__Box {
     width: 76vw;
+  }
+  .spot__footer {
+    width: 90vw;
+  }
+}
+
+@media (min-width: 600px) {
+  .spot__list__Box {
+    width: 82vw;
   }
 }
 @media (min-width: 1000px) {
   .spot__list__Box {
     width: 75vw;
   }
+  .spot__footer {
+    width: 80vw;
+  }
 }
 @media (min-width: 1200px) {
   .spot__list__Box {
     width: 55vw;
+  }
+  .spot__footer {
+    width: 60vw;
   }
 }
 /* Spot List 모듈 CSS */

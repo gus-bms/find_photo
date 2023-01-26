@@ -21,11 +21,27 @@
   justify-content: center;
   align-items: center;
   height: 350px;
-  width: 60vw;
+  /* width: 60vw; */
   height: 93vh;
   z-index: 3333333;
   background-color: white;
   position: absolute;
+}
+
+@media (min-width: 0px) {
+  .spinner__container {
+    width: 90vw;
+  }
+}
+@media (min-width: 1000px) {
+  .spinner__container {
+    width: 80vw;
+  }
+}
+@media (min-width: 1200px) {
+  .spinner__container {
+    width: 60vw;
+  }
 }
 
 /* Toast 모듈 CSS */

@@ -15,7 +15,6 @@ const FixedWidth = styled('div')`
   @media (min-width: 1200px){
     width: 60vw;
   }
-    
 `
 
 const AppLayout = (props: { children: React.ReactNode }) => {

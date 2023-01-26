@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { Box, Button } from '@mui/material';
 import Search from "../search/search";
-import FolderList from '../spot/spotList'
+import SpotList from '../spot/spotList'
 import axios from 'axios'
 import router from 'next/router'
 import Link from 'next/link';
@@ -309,14 +309,10 @@ const Map = ({ pKeyword }: MapProps) => {
         {isLoading ? <LoadingSpinner /> : null}
       </Box>
       {!Array.isArray(spotList) || spotList.length != 0 &&
-        <FolderList spotList={spotList} setSpot={setSpot} />
+        <SpotList spotList={spotList} setSpot={setSpot} />
       }
-      <Box sx={{
-        width: '100%',
-        textAlign: 'center'
-      }}>
+      <Box sx={{ width: '100%', textAlign: 'center' }}>
         {keyword &&
-
           <Box sx={{
             textAlign: '-webkit-center',
           }}>

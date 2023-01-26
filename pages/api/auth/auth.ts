@@ -23,7 +23,7 @@ export const createJwt = async (uid: any, profileImage: any, type?: string) => {
       }) // details to  encode in the token
         .setProtectedHeader({ alg: "HS256" }) // algorithm
         .setIssuedAt()
-        .setExpirationTime("1m") // token expiration time, e.g., "1 day"
+        .setExpirationTime("1d") // token expiration time, e.g., "1 day"
         .sign(new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET_KEY)); // secretKey generated from previous step
       console.log(token); // log token to console
       resolve(token);
@@ -38,7 +38,7 @@ export const createJwt = async (uid: any, profileImage: any, type?: string) => {
         const token = await new jose.SignJWT({}) // details to  encode in the token
           .setProtectedHeader({ alg: "HS256" }) // algorithm
           .setIssuedAt()
-          .setExpirationTime("5m") // token expiration time, e.g., "1 day"
+          .setExpirationTime("2w") // token expiration time, e.g., "1 day"
           .sign(new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET_KEY)); // secretKey generated from previous step
         console.log(token); // log token to console
         await axios.post(`${host}/api/user/updateRefreshToken`, {

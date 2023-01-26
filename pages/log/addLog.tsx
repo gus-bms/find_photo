@@ -21,7 +21,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
 import Head from 'next/head'
-
+import style2 from '../../styles/Log.module.css'
 /**
  * Input 요소의 디자인을 커스텀합니다.
  */
@@ -487,29 +487,15 @@ export default function AddLog() {
               height: '52vh'
             }} />
         </Grid>
-        <Grid item sx={{
-          // position: 'absolute',
-          bottom: '0px', // 바닥에 고정시켜줍니다.
-          height: '4vh',
-          width: '100%',
-          display: 'flex',
-          webkitBoxPack: 'justify',
-          justifyContent: 'space-between', // 가운데 영역을 비고 양옆으로 밀착시킵니다.
-          webkitBoxAlign: 'center',
-          alignItems: 'center',
-        }}>
-          <Button variant="text" onClick={router.back} sx={{
-            color: 'gray'
-          }}>뒤로가기</Button>
-          <Box>
-            {toast && <Toast setToast={setToast} text={errMsg} />}
-          </Box>
-          <Button variant="text" onClick={insertLog} sx={{
-            position: 'absolute',
-            right: '20vw',
-            color: 'gray'
-          }}>로그 등록</Button>
-        </Grid>
+        <Box className={style2.log__footer} >
+          <Button variant="text" onClick={router.back}>뒤로가기</Button>
+          {toast &&
+            <Box>
+              <Toast setToast={setToast} text={errMsg} />
+            </Box>
+          }
+          <Button className={style2.add__btn} variant="text" onClick={insertLog}>로그 등록</Button>
+        </Box>
       </Grid>
     </>
   );

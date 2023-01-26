@@ -41,7 +41,7 @@ interface Cprops {
 
 let selectedSpot: Spot;
 
-const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Iprops) => {
+const SpotList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Iprops) => {
 
   return (
     <List
@@ -55,6 +55,7 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
         <Grid
           container
           key={spot.spot_pk}
+          marginBottom='2vh'
         >
           <DetailSpot spot={spot} setSpot={setSpot} />
         </Grid>
@@ -64,7 +65,7 @@ const FolderList: React.FunctionComponent<Iprops> = ({ spotList, setSpot }: Ipro
   );
 };
 
-export default FolderList;
+export default SpotList;
 
 /**
  * 스팟 리스트를 반환합니다.
@@ -184,7 +185,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
 
   return (
     <>
-      <Grid item className={style.spot__list__Box} sx={{ marginBottom: '3vh' }} md={11}>
+      <Grid item className={style.spot__list__Box} sx={{ marginBottom: '' }} md={11}>
         <ListItemButton sx={{ padding: 0 }} key={spot.spot_pk}
           onClick={() => handleSpotClick(spot)}
         >
@@ -220,8 +221,9 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
       <Grid
         item
         md={12}
+        width={'100%'}
       >
-        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+        <Collapse in={isOpen} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
           {images.length > 0 &&
             <Box ref={carouselRef} className={style.carousel__container}>
               <Box className={style.inner__carousel}>
@@ -281,7 +283,7 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
             </Box>
           }
           <Box sx={{
-            width: '97.5%'
+            marginRight: '4vw'
           }}>
             <Link href={`log/addLog?address_dong=${spot.address_dong}&spot=${spotPk}`}>
               <Button

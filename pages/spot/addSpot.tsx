@@ -2,13 +2,14 @@
 import Search from "../components/search/search";
 import { useEffect, useState } from "react";
 import { Spot } from '../components/map/map'
-import { Box, Button, FormControlLabel, List, Pagination, Radio, RadioGroup, Stack, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, Grid, List, Pagination, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import style from '../../styles/Spot.module.css'
 import axios from "axios";
 import Toast from '../components/global/toast'
 import router from 'next/router'
 import Head from "next/head";
 import { LocalCafe, LocalDining, PhotoCamera } from "@mui/icons-material";
+import { indigo } from "@mui/material/colors";
 
 interface ISpot extends Spot {
   id: string
@@ -145,7 +146,7 @@ export default function AddSpot() {
           <Typography sx={{
             marginTop: "3vh",
             borderBottom: '1px solid #F1F3F5',
-            width: '5vw',
+            width: '10vw',
             color: '#3b3b3ba8',
           }}>
             장소
@@ -184,9 +185,17 @@ export default function AddSpot() {
             </RadioGroup>
             <Stack sx={{
               alignItems: 'center',
-              marginTop: '3vh'
+              marginTop: '7vh'
             }}>
-              <Pagination count={pagination.last} onChange={handleChange} />
+              <Pagination count={pagination.last} onChange={handleChange} sx={{
+                '.MuiPaginationItem-root': {
+                  '&.Mui-selected': {
+                    backgroundColor: 'indigo',
+                    color: '#fff'
+                  }
+
+                }
+              }} />
             </Stack>
           </List>
         </>
@@ -197,7 +206,7 @@ export default function AddSpot() {
             marginTop: "3vh",
             borderBottom: '1px solid #F1F3F5',
             color: '#3b3b3ba8',
-            width: '5vw',
+            width: '10vw',
           }}>
             유형
           </Typography>
@@ -225,7 +234,7 @@ export default function AddSpot() {
                       <Box sx={{
                         backgroundColor: 'lightgray',
                         borderRadius: '10px',
-                        width: '20vh',
+                        width: '20vw',
                         textAlign: 'center',
                         height: '50px',
                         marginRight: '3vh',
@@ -246,22 +255,14 @@ export default function AddSpot() {
         </>
       ) : null
       }
-
-
-      <Box>
-        <Button onClick={insertSpot} sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '2vh',
-          backgroundColor: '#3b3b3b',
-          color: 'papayawhip',
-          width: '9vw',
-        }}>
-          추가하기
-        </Button>
-      </Box>
-      <Box>
-        {toast && <Toast setToast={setToast} text={errMsg} />}
+      <Box className={style.spot__footer} >
+        <Button variant="text" onClick={router.back}>뒤로가기</Button>
+        {toast &&
+          <Box>
+            <Toast setToast={setToast} text={errMsg} />
+          </Box>
+        }
+        <Button className={style.add__btn} variant="text" onClick={insertSpot}>추가하기</Button>
       </Box>
     </>
   );

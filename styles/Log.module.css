@@ -1,0 +1,28 @@
+.log__footer {
+  position: fixed;
+  bottom: 0px;
+}
+
+.log__footer > button {
+  color: gray;
+}
+.add__btn {
+  position: absolute !important;
+  right: 0;
+}
+
+@media (min-width: 0px) {
+  .log__footer {
+    width: 90vw;
+  }
+}
+@media (min-width: 1000px) {
+  .log__footer {
+    width: 80vw;
+  }
+}
+@media (min-width: 1200px) {
+  .log__footer {
+    width: 60vw;
+  }
+}

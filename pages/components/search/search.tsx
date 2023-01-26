@@ -49,23 +49,10 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
     <>
       {/* 흰 여백  */}
       <Paper
-        sx={{
-          marginTop: '2.5vh',
-          padding: '2px 4px',
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%'
-        }}
-      >
+        sx={{ marginTop: '2.5vh', padding: '2px 4px', display: 'flex', alignItems: 'center', width: '100%' }} >
         {/* 인풋 값  */}
         <InputBase
-          sx={{
-            ml: 1,
-            flex: 1
-          }}
-          placeholder={props.text}
-          value={search}
-          id='search'
+          sx={{ ml: 1, flex: 1 }} placeholder={props.text} value={search} id='search'
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setSearch(e.target.value)
           }}
@@ -75,29 +62,13 @@ const Search: FunctionComponent<Iprops> = (props: Iprops) => {
           }}
         />
         {/* 취소 버튼 */}
-        <IconButton
-          type="button"
-          sx={{
-            p: '10px'
-          }}
-          aria-label="search"
-          onClick={() => setSearch('')}
-        >
+        <IconButton type="button" sx={{ p: '10px' }} onClick={() => setSearch('')} >
           <ClearIcon />
         </IconButton>
         {/* 수직선 */}
-        <Divider sx={{
-          height: 28, m: 0.5
-        }}
-          orientation="vertical"
-        />
+        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
         {/* 검색 버튼 */}
-        <IconButton
-          color="primary"
-          sx={{ p: '10px' }}
-          aria-label="directions"
-          onClick={searchMap}
-        >
+        <IconButton color="primary" sx={{ p: '10px' }} onClick={searchMap} >
           <SearchIcon />
         </IconButton>
       </Paper>
