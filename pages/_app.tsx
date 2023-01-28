@@ -10,6 +10,15 @@ import HeaderLayout from './components/layout/headerLayout'
 
 import type { AppProps } from 'next/app'
 import Loading from './components/global/loading';
+import '../public/font/font.css'
+import { createTheme, ThemeProvider } from '@mui/material'
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "twayair"
+  }
+})
+
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
@@ -26,9 +35,11 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
   return getLayout(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <AppLayout>
-          <HeaderLayout>{isLoading ? <Loading /> : null} <Component {...pageProps} /></HeaderLayout>
-        </AppLayout>
+        <ThemeProvider theme={theme}>
+          <AppLayout>
+            <HeaderLayout>{isLoading ? <Loading /> : null} <Component {...pageProps} /></HeaderLayout>
+          </AppLayout>
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   )

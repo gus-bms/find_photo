@@ -17,7 +17,7 @@ const Profile = () => {
   const [isError, setIsError] = useState<boolean>(false)
 
   const handleOnChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    e.target.value.length < 351
+    e.target.value.length < 251
       ? (setIntro(e.target.value),
         setIsError(false))
       : setIsError(true)
@@ -46,7 +46,6 @@ const Profile = () => {
       const target = e.currentTarget;
       if (target.innerText == '저장') {
         if (user.intro.toString() !== intro.toString()) {
-          console.log('hi')
           const resp = await axios.post('/api/user/updateUser', {
             intro: intro
           })
@@ -129,7 +128,7 @@ const Profile = () => {
             : <textarea ref={introRef} onChange={handleOnChange} cols={0} rows={6} value={intro}></textarea>}
           {isError ?
             <Box className={style.error__text} onClick={(e) => handleBtnClick(e)} >
-              <Typography>글자수는 350자 이내로 작성해주세요!</Typography>
+              <Typography>글자수는 250자 이내로 작성해주세요!</Typography>
             </Box>
             : null}
           <Box className={style.edit__button} onClick={(e) => handleBtnClick(e)} >

@@ -316,10 +316,8 @@ const Map = ({ pKeyword }: MapProps) => {
           <Box sx={{
             textAlign: '-webkit-center',
           }}>
-            <Link href={`/spot/addSpot?sKeyword=${keyword}`} className={style.none__underline}>
-              <Button >
-                추가하기
-              </Button>
+            <Link href={`/spot/addSpot?sKeyword=${keyword}`} className={style.none__underline} >
+              <Button>추가하기</Button>
             </Link>
           </Box>
         }

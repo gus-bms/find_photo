@@ -29,7 +29,6 @@ const CustomInput = styled('input')(`
   width: 100%;
   height: 5vh;
   padding: 0;
-  font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
@@ -48,7 +47,6 @@ const CustomInput = styled('input')(`
  */
 const CustomTextarea = styled('textarea')(`
   width: 100%;
-  font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
@@ -69,7 +67,6 @@ const CustomTextarea = styled('textarea')(`
 const CustomAutoComplete = styled('select')(`
   width: 100%;
   height: 2vh;
-  font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;

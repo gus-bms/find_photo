@@ -6,6 +6,8 @@ const Centering = styled('div')`
   justify-content: center;
 `
 const FixedWidth = styled('div')`
+  margin-top: 7vh;
+  
   @media (min-width: 0px) {
     width:90vw;
   }

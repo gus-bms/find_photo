@@ -3,12 +3,50 @@
   color: black;
 }
 
-.login {
+.login,
+.profile {
   text-decoration: none;
   color: #3b3b3bd1;
+  position: absolute !important;
+}
+.profile {
+  right: 10vw !important;
+}
+.login {
+  right: 0;
 }
 
 .header__box {
-  height: 5vh;
-  margin-top: 2vh !important;
+  display: flex;
+  align-items: center;
+  height: 8vh;
+  position: fixed;
+  top: 0;
+  z-index: 9;
+  background-color: white;
+}
+
+@media (min-width: 0px) {
+  .header__box {
+    width: 90vw;
+  }
+  .profile {
+    right: 20vw !important;
+  }
+}
+@media (min-width: 1000px) {
+  .header__box {
+    width: 80vw;
+  }
+  .profile {
+    right: 10vw !important;
+  }
+}
+@media (min-width: 1200px) {
+  .header__box {
+    width: 60vw;
+  }
+  .profile {
+    right: 10vw !important;
+  }
 }

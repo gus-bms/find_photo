@@ -10,7 +10,7 @@
 
 import Link from "next/link";
 import style from '../../../styles/Header.module.css'
-import { Grid, Typography, Divider } from '@mui/material';
+import { Grid, Typography, Divider, Box } from '@mui/material';
 
 import { loginAction, logoutAction } from '../../../store/modules/isLogin';
 import { IRootState } from '../../../store/modules'
@@ -44,38 +44,28 @@ export const Header = () => {
   }, [])
 
   return (
-    <>
-      <Grid container spacing={1} className={style.header__box} >
-        <Grid item xs={7} textAlign='left' >
-          <Link className={style.logo} href='/'>
-            <Typography >Find Photo</Typography>
+    <Box className={style.header__box}>
+      <Link className={style.logo} href='/'>
+        <Typography >Find Photo</Typography>
+      </Link>
+      {isLogin
+        ?
+        <>
+          <Link className={style.profile} href={`/profile/profile`}>
+            <Typography>나의 글</Typography>
           </Link>
-        </Grid>
-        {isLogin
-          ?
-          <>
-            <Grid item xs={2} textAlign='right'>
-              <Link className={style.login} href={`/profile/profile`}>
-                <Typography>나의 글</Typography>
-              </Link>
-            </Grid>
-            <Grid item xs={3} textAlign='right' >
-              <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
-                <Typography>로그아웃</Typography>
-              </Link>
-            </Grid>
-          </>
-          : <>
-            <Grid item xs={4} textAlign='right' >
-              <Link className={style.login} href='/login/login'>
-                <Typography>로그인</Typography>
-              </Link>
-            </Grid>
-          </>
-        }
-        <Divider />
-      </Grid>
-    </>
+          <Link onClick={onlogoutAction} className={style.login} href='/login/login'>
+            <Typography>로그아웃</Typography>
+          </Link>
+        </>
+        : <>
+          <Link className={style.login} href='/login/login'>
+            <Typography>로그인</Typography>
+          </Link>
+        </>
+      }
+      <Divider />
+    </Box>
   )
 }
 
