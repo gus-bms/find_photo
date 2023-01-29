@@ -14,7 +14,7 @@ interface Iprops {
 function Slider(props: Iprops) {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const [current, setCurrent] = useState<number>(0)
-  const [xValue, setXValue] = useState<number>(!isMobile ? -530 : -605)
+  const [xValue, setXValue] = useState<number>(props.images.length == 1 ? 0 : (!isMobile ? -530 : -543))
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLDivElement | null>(null);
 
@@ -31,9 +31,9 @@ function Slider(props: Iprops) {
       wrapperRef.current.append(secondNode.cloneNode(true));
       wrapperRef.current.insertBefore(lastNode.cloneNode(true), wrapperRef.current.firstElementChild);
       wrapperRef.current.insertBefore(thirdNode.cloneNode(true), wrapperRef.current.firstElementChild);
-      // }
-    } else {
-      setXValue(90)
+      // 이미지가 한 장일 경우
+    } else if (wrapperRef.current != null && props.images.length == 1) {
+      setXValue(0)
     }
 
   }, [])
@@ -54,11 +54,11 @@ function Slider(props: Iprops) {
       wrapperRef.current.style.transition = '0.5s ease-out'
       position == 'prev'
         ? (
-          setXValue((x => x + 310)),
+          setXValue((x => x + (!isMobile ? 310 : 280))),
           setCurrent((current => current - 1))
         ) : (
           setCurrent((current => current + 1)),
-          setXValue((x => x - 310))
+          setXValue((x => x - (!isMobile ? 310 : 280)))
         )
     }
   }
@@ -68,7 +68,7 @@ function Slider(props: Iprops) {
     console.log(current)
 
     if (current == -1) {
-      let lVar = (!isMobile ? 530 : 605) + ((props.images.length - 1) * 310)
+      let lVar = (!isMobile ? 530 : 543) + ((props.images.length - 1) * (!isMobile ? 310 : 280))
       setTimeout(function () {
         if (wrapperRef.current != null) {
           //0.5초동안 복사한 첫번째 이미지에서, 진짜 첫번째 위치로 이동
@@ -85,7 +85,7 @@ function Slider(props: Iprops) {
         if (wrapperRef.current != null) {
           //0.5초동안 복사한 첫번째 이미지에서, 진짜 첫번째 위치로 이동
           wrapperRef.current.style.transition = `${0}s ease-out`;
-          setXValue(!isMobile ? -530 : -605)
+          setXValue(!isMobile ? -530 : -543)
           setCurrent(0)
         }
       }, 500);
@@ -94,24 +94,37 @@ function Slider(props: Iprops) {
 
   if (props.page == 'log') {
     return (
-      <>
+      <div>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box className={style.slider__wrapper} width='300px'>
+          <Box className={style.slider__wrapper} width={'300px'} sx={{ textAlign: 'center' }}>
             <Box className={style.image__wrapper} sx={{
-              transform: `translateX(-${(current * (1 / props.images.length * 100))}%)`
+              transform: `translateX(-${(current * (1 / props.images.length * 100))}%)`,
+              position: 'relative',
             }}>
               {
                 props.images.length > 0 && (
                   props.images.map((img, idx) => (
                     <Box className={style.image__box} key={idx} sx={{
+                      width: '300px !important',
                       backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${img})`
                     }} />
                   ))
                 )
               }
-
             </Box>
+            <Button disableRipple className={isMobile ? style.mobile__prev : ''} onClick={() => handleLogCarousel('prev')} sx={{
+              left: 0,
+              display: props.images.length > 1 ? '' : 'none',
+
+            }}>
+              <NavigateBeforeIcon color="action" /></Button>
+            <Button disableRipple className={isMobile ? style.mobile__next : ''} onClick={() => handleLogCarousel('next')} sx={{
+              right: 0,
+              display: props.images.length > 1 ? '' : 'none'
+            }}>
+              <NavigateNextIcon color="action" /></Button>
           </Box>
+
         </Box>
         {
           props.images.length > 0 &&
@@ -126,7 +139,7 @@ function Slider(props: Iprops) {
             </Box>
           </Box>
         }
-        <Box className={style.button__wrapper}>
+        {/* <Box className={style.button__wrapper}>
           <Button disableRipple className={style.prev__button} onClick={() => handleLogCarousel('prev')}
             sx={{
               ':hover': {
@@ -143,14 +156,18 @@ function Slider(props: Iprops) {
             }}>
             <NavigateNextIcon />
           </Button>
-        </Box>
-      </>
+        </Box> */}
+      </div>
     )
   } else if (props.page == 'index') {
     return (
-      <>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box className={style.slider__wrapper} width='500px'>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', width: !isMobile ? '100%' : '324px' }}>
+          <Box className={style.slider__wrapper} sx={{
+            width: !isMobile ? '500px' : '100%',
+            display: props.images.length > 1 ? 'block' : 'flex',
+            justifyContent: props.images.length > 1 ? '' : 'center',
+          }}>
             <Box ref={wrapperRef} className={style.image__wrapper} sx={{
               transform: `translateX(${xValue}px)`
             }}>
@@ -183,7 +200,7 @@ function Slider(props: Iprops) {
             }} />
           </Box>
         </Box>
-      </>
+      </div>
     )
   } else {
     return (

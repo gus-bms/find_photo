@@ -73,7 +73,7 @@
 
 .image__wrapper {
   display: inline-flex;
-  position: relative;
+  /* position: relative; */
   transition: transform 0.5s ease-in-out;
 }
 
@@ -83,6 +83,12 @@
   background-size: cover;
   image-rendering: pixelated;
   cursor: pointer;
+}
+
+@media (max-width: 500px) {
+  .image__box {
+    width: 270px !important;
+  }
 }
 
 .profile__wrapper {
@@ -127,6 +133,16 @@
   background-color: white;
   border-radius: 0;
 }
+
+.mobile__prev,
+.mobile__next {
+  position: absolute !important;
+  top: 0;
+  height: 100%;
+  opacity: 0.4;
+  background-color: white !important;
+}
+
 .slider__wrapper > button:hover {
   height: 100%;
   opacity: 0.4;
