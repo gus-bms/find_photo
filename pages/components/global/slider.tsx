@@ -8,7 +8,7 @@ import Link from "next/link";
 import router from "next/router";
 
 interface Iprops {
-  images: string[] | { url: string, logPk: string, title?: string, name: string, profile_url: string }[],
+  images: string[] | { url: string, logPk?: string, title?: string, name?: string, profile_url?: string }[],
   page: string,
 }
 function Slider(props: Iprops) {
@@ -139,24 +139,6 @@ function Slider(props: Iprops) {
             </Box>
           </Box>
         }
-        {/* <Box className={style.button__wrapper}>
-          <Button disableRipple className={style.prev__button} onClick={() => handleLogCarousel('prev')}
-            sx={{
-              ':hover': {
-                bgcolor: '#00ff0000', // theme.palette.primary.main
-              },
-            }}>
-            <NavigateBeforeIcon />
-          </Button>
-          <Button disableRipple className={style.next__button} onClick={() => handleLogCarousel('next')}
-            sx={{
-              ':hover': {
-                bgcolor: '#00ff0000', // theme.palette.primary.main
-              },
-            }}>
-            <NavigateNextIcon />
-          </Button>
-        </Box> */}
       </div>
     )
   } else if (props.page == 'index') {

@@ -1,4 +1,72 @@
 /* Add Log module */
+.title {
+  width: 100%;
+  height: 5vh;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 2vh;
+  color: dark;
+  background: dark;
+  border: none;
+  font-family: "twayair" !important;
+}
+
+.title:focus {
+  border-color: none !important;
+  outline: none !important;
+}
+
+.spot__list {
+  width: 100%;
+  height: 2vh;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 2vh;
+  color: dark;
+  background: dark;
+  border: none;
+  font-family: "twayair";
+}
+
+.spot__list:focus {
+  border-color: none !important;
+  outline: none !important;
+}
+
+.content {
+  width: 100%;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 0.4vh;
+  padding: 0;
+  color: dark;
+  background: dark;
+  border: none;
+  resize: none;
+  font-family: "twayair";
+}
+
+.content:focus {
+  border-color: none !important;
+  outline: none !important;
+}
+
+.upload__button {
+  height: 100%;
+  width: 20%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: xx-large;
+  color: gray;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
 .log__footer {
   position: fixed;
   bottom: 0px;
@@ -38,4 +106,43 @@
 .profile__wrapper > p {
   margin-left: 2vw;
   align-self: center;
+}
+
+/* 모달창 */
+.modal__box {
+  z-index: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+/* 모달창을 화면 중앙. 최상단에 노출 */
+.container {
+  /* 모달창 크기 */
+  width: 350px;
+  height: 350px;
+
+  /* 최상단 위치 */
+  z-index: 2;
+
+  /* 중앙 배치 */
+  /* top, bottom, left, right 는 브라우저 기준으로 작동한다. */
+  /* translate는 본인의 크기 기준으로 작동한다. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /* 모달창 디자인 */
+  background-color: gray;
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+/* 모달창 내부 X버튼 */
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }

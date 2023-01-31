@@ -19,7 +19,7 @@
 .header__box {
   display: flex;
   align-items: center;
-  height: 8vh;
+  height: 7vh;
   position: fixed;
   top: 0;
   z-index: 9;

@@ -10,8 +10,8 @@
  */
 
 import { useRouter } from 'next/router'
-import React, { useState, useEffect, useRef } from 'react'
-import { Grid, Box, IconButton, Button } from "@mui/material"
+import React, { useState, useEffect, useRef, Dispatch, SetStateAction, use } from 'react'
+import { Grid, Box, IconButton, Button, Typography } from "@mui/material"
 import { styled } from '@mui/system'
 import axios from 'axios'
 import style from '../../styles/Spot.module.css'
@@ -22,66 +22,11 @@ import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
 import Head from 'next/head'
 import style2 from '../../styles/Log.module.css'
-/**
- * Input 요소의 디자인을 커스텀합니다.
- */
-const CustomInput = styled('input')(`
-  width: 100%;
-  height: 5vh;
-  padding: 0;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  margin-bottom: 2vh;
-  color: dark;
-  background: dark;
-  border: none;
-  &:focus {
-    border-color: none !important;
-    outline: none !important;
-  }
-`,
-);
-/**
- * Textara 요소의 디자인을 커스텀합니다.
- */
-const CustomTextarea = styled('textarea')(`
-  width: 100%;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  margin-bottom: 0.4vh;
-  padding: 0;
-  color: dark;
-  background: dark;
-  border: none;
-  resize: none;
-  &:focus {
-    border-color: none !important;
-    outline: none !important;
-  }
-`)
-/**
- * Select 요소의 디자인을 커스텀합니다.
- */
-const CustomAutoComplete = styled('select')(`
-  width: 100%;
-  height: 2vh;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  margin-bottom: 2vh;
-  color: dark;
-  background: dark;
-  border: none;
-  &:focus {
-    border-color: none !important;
-    outline: none !important;
-  }
-`)
+import { stringMap } from 'aws-sdk/clients/backup'
 
 export default function AddLog() {
   const router = useRouter();
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [title, setTitle] = useState<string>('')
@@ -91,13 +36,17 @@ export default function AddLog() {
   const [img, setImg] = useState<File[]>([])
   const [uploadCount, setUploadCount] = useState<number>(0)
   const [current, setCurrent] = useState<number>(0)
-
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [url, setUrl] = useState<string>('');
   const fileUploadRef = useRef<HTMLInputElement>(null)
   const prevRef = useRef<HTMLButtonElement | null>(null)
   const nextRef = useRef<HTMLButtonElement | null>(null)
+  const carouselRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
   const imgRef = useRef<HTMLImageElement[] | null[]>([])
   const customAutoCompleteRef = useRef<HTMLSelectElement | null>(null)
+
+
   // 에러 메시지 관련 스테이트입니다.
   const [toast, setToast] = useState(false);
   const [errMsg, setErrMsg] = useState<string>('')
@@ -176,6 +125,7 @@ export default function AddLog() {
    * Input의 디자인을 사용하지 않고, 커스텀된 버튼을 클릭하면 Input의 버튼이 클릭되게 합니다.
    */
   const clickImageUpload = () => {
+    console.log('hi2')
     if (fileUploadRef.current)
       fileUploadRef.current.click();
   }
@@ -188,7 +138,7 @@ export default function AddLog() {
   const changeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 현재 업로드 된 사진의 수를 증가시킵니다.
     setUploadCount(uploadCount + 1)
-
+    console.log(uploadCount)
     // 업로드된 파일이 한개인지 아닌지를 구별하여 다수일 경우 이 전 배열을 복사합니다.
     // 파일이 선택되었을 때에만 e.target.files의 길이가 1이상이므로 체크합니다.
     if (e.target.files && e.target.files.length != 0) {
@@ -211,13 +161,12 @@ export default function AddLog() {
     }
 
     // 현재 업로드된 사진의 개수가 4개이상일 경우 슬라이더 css를 보여줍니다.
-    if (trackRef.current && trackRef.current.childElementCount > 2 && nextRef.current) {
-      console.log('higer than 2')
+    if (trackRef.current && trackRef.current.childElementCount > 1 && nextRef.current) {
+
       nextRef.current.classList.remove(style.btn__hide)
       nextRef.current.classList.add(style.btn__show)
 
     } else if (trackRef.current && trackRef.current.childElementCount <= 2 && nextRef.current) {
-      console.log('lower than 3')
       nextRef.current.classList.add(style.btn__hide)
     }
   }
@@ -230,6 +179,7 @@ export default function AddLog() {
      * @param position 
      */
   const handleCarouselClick = (position: string) => {
+
     if (current > 0) {
       position == 'prev' ? setCurrent(current - 1) : setCurrent(current + 1);
     } else if (current == 0) {
@@ -263,12 +213,31 @@ export default function AddLog() {
     }
   }
 
+  // 화면 사이즈가 작아져서 프리뷰 이미지가 적은 경우에도 안 보일 때 실행됩니다.
+  const resizeListener = (e: any) => {
+    if (trackRef.current && nextRef.current) {
+      if (e.target.visualViewport.width < 851 && trackRef.current.childElementCount > 1) {
+        if (trackRef.current.childElementCount > 1) {
+          nextRef.current.classList.remove(style.btn__hide)
+          nextRef.current.classList.add(style.btn__show)
+        }
+      } else if (e.target.visualViewport.width > 850 && trackRef.current.childElementCount < 3) {
+        console.log(trackRef.current.childElementCount)
+        nextRef.current.classList.remove(style.btn__hide)
+        nextRef.current.classList.add(style.btn__hide)
+        setCurrent(0)
+      }
+    }
+  };
+
   /**
    * 페이지 로딩 시 수행될 훅입니다.
    * 현재 DB에 저장되어있는 동네를 가져옵니다.
    */
   useEffect(() => {
-    const { address_dong } = router.query
+    const decodeUri = decodeURI(window.location.search);
+    const address_dong = (decodeUri.split('?address_dong=')[1].split('&')[0])
+
     // SpotList를 조회하는 함수 입니다.
     if (nextRef.current)
       nextRef.current.classList.add(style.btn__hide)
@@ -280,6 +249,7 @@ export default function AddLog() {
           },
           timeout: 3000
         }).then(res => {
+          console.log("@@@@", address_dong)
           setSpotList(res.data.spotList)
           return;
         })
@@ -302,7 +272,7 @@ export default function AddLog() {
   useEffect(() => {
     console.log(uploadCount, current)
     if (prevRef.current && nextRef.current) {
-      if (current > 0 && current < 4) {
+      if (current > 0 && current < 2) {
         prevRef.current.classList.add(style.btn__show)
         nextRef.current.classList.add(style.btn__show)
         nextRef.current.classList.remove(style.btn__hide)
@@ -310,7 +280,7 @@ export default function AddLog() {
       if (current == 0) {
         prevRef.current.classList.remove(style.btn__show)
         nextRef.current.classList.add(style.btn__show)
-      } else if (uploadCount - current == 3) {
+      } else if (uploadCount - 1 == current) {
         prevRef.current.classList.add(style.btn__show)
         nextRef.current.classList.remove(style.btn__show)
         nextRef.current.classList.add(style.btn__hide)
@@ -320,6 +290,7 @@ export default function AddLog() {
   }, [current])
 
   useEffect(() => {
+    console.log(previewImg)
     if (previewImg.length == 1)
       imgRef.current[0]?.classList.add(style.represent__card)
   }, [previewImg])
@@ -331,14 +302,15 @@ export default function AddLog() {
       setSpotPk(spot)
       customAutoCompleteRef.current.value = spot
     }
-
-
   }, [spotList])
 
   useEffect(() => {
     console.log(toast)
   }, [toast])
 
+  useEffect(() => {
+    window.addEventListener("resize", resizeListener);
+  }, [])
   return (
     <>
       {/* 이미지 업로드 */}
@@ -347,110 +319,129 @@ export default function AddLog() {
       </Head>
       <Box sx={{
         height: '25vh',
-        display: 'flex'
+        display: 'flex',
+        width: '100%'
       }}>
-        <Box onClick={clickImageUpload} sx={{
-          height: '100%',
-          width: '20%',
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          fontSize: 'xx-large',
-          color: 'gray',
-          cursor: 'pointer',
-          marginRight: '15px',
+        <Box width={!isMobile ? '200px' : "100px"} className={style2.upload__button} onClick={(e) => {
+          clickImageUpload()
         }}>
           <input ref={fileUploadRef} type='file' accept='image/*' onChange={(e) => { changeImageUpload(e) }} style={{
-            display: 'none'
+            display: 'none',
+            userSelect: 'none'
           }} />
           +
         </Box>
-        <Box sx={{ position: 'relative', width: '100%' }}>
-          <Box sx={{ width: '100%', overflow: 'hidden', height: '100%' }}>
-            <Box ref={trackRef} sx={{
-              transform: `translateX(-${(current * 2.55) * 10}%)`,
-              display: 'inline-flex',
-              width: '100%',
-              height: '100%',
-              transition: 'transform 0.2s ease-in-out'
-            }}>
-              {previewImg ?
-                previewImg.map((item, idx) => (
-                  <Box key={idx} sx={{
-                    width: '25%',
-                    height: '100%',
-                    flexShrink: 0,
-                    display: 'flex',
-                    marginRight: '10px',
-                    transition: 'all 0.1s linear',
-                  }}>
-                    <Box sx={{
-                      width: '100%',
+        {!isMobile ?
+          <Box sx={{ position: 'relative', width: 'calc(100% - 215px)' }}>
+            <Box ref={carouselRef} className={style2.carousel__box} sx={{ width: '100%', overflow: 'hidden', height: '100%' }}>
+              <Box className={style2.track__box} ref={trackRef} sx={{
+                transform: `translateX(-${current * 310}px)`,
+                display: 'inline-flex',
+                width: '100%',
+                height: '100%',
+                transition: 'transform 0.2s ease-in-out'
+              }}>
+                {previewImg ?
+                  previewImg.map((item, idx) => (
+                    <Box key={idx} sx={{
+                      width: '300px',
                       height: '100%',
-                      backgroundPosition: 'center bottom',
-                      backgroundSize: 'center',
-                      backgroundRepeat: 'no-repeat',
-                      borderRadius: '10px',
-                      cursor: 'pointer'
+                      flexShrink: 0,
+                      display: 'flex',
+                      marginRight: '10px',
+                      transition: 'all 0.1s linear',
                     }}>
-                      {previewImg ? (
-                        <>
-                          {item.isRepresent ? (
-                            <Box sx={{
-                              position: 'fixed',
-                              bottom: 0,
-                              marginLeft: '11.5%'
-                            }}><CheckCircleIcon color='success' fontSize="small" /></Box>
-                          ) : null}
-                          <img ref={elem => (imgRef.current[idx] = elem)} alt={item.name} src={item.url} style={{
-                            paddingLeft: '1.5px', width: '100%', height: '100%'
-                          }} onClick={(e: React.MouseEvent<HTMLImageElement>) => handleImgClick(e)} />
-                        </>) : null
-                      }
+                      <Box sx={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        backgroundPosition: 'center bottom',
+                        backgroundSize: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        borderRadius: '10px',
+                        cursor: 'pointer'
+                      }}>
+                        {item.isRepresent ? (
+                          <Box sx={{
+                            position: 'absolute',
+                            bottom: '-5px',
+                            left: 'calc(50% - 10px)'
+                          }}><CheckCircleIcon color='success' fontSize="small" /></Box>
+                        ) : null}
+                        <img ref={elem => (imgRef.current[idx] = elem)} alt={item.name} src={item.url} style={{
+                          width: '100%', height: '100%'
+                        }} onClick={(e: React.MouseEvent<HTMLImageElement>) => handleImgClick(e)} />
+                      </Box>
                     </Box>
-                  </Box>
-                ))
-                : null}
-            </Box>
-            <Box>
-              <IconButton
-                ref={prevRef}
-                sx={{
-                  display: 'none'
-                }}
-                className={style.button__grp}
-                type="button"
-                onClick={() => handleCarouselClick('prev')}
-              >
-                <NavigateBeforeIcon
+                  ))
+                  : null}
+              </Box>
+              <Box>
+                <IconButton
+                  ref={prevRef}
                   sx={{
-                    color: 'white',
-                    background: 'rgb(75 75 75 / 55%)',
-                    borderRadius: '20px'
+                    display: 'none'
                   }}
-                  fontSize='large' />
-              </IconButton>
-              <IconButton
-                ref={nextRef}
-                className={style.button__grp}
-                type="button"
-                sx={{
-                  left: "89.5%"
-                }}
-                onClick={() => handleCarouselClick('next')}
-              >
-                <NavigateNextIcon
+                  className={style.button__grp}
+                  type="button"
+                  onClick={() => handleCarouselClick('prev')}
+                >
+                  <NavigateBeforeIcon
+                    sx={{
+                      color: 'white',
+                      background: 'rgb(75 75 75 / 55%)',
+                      borderRadius: '20px'
+                    }}
+                    fontSize='large' />
+                </IconButton>
+                <IconButton
+                  ref={nextRef}
+                  className={style.button__grp}
+                  type="button"
                   sx={{
-                    color: 'white',
-                    background: 'rgb(75 75 75 / 55%)',
-                    borderRadius: '20px'
+                    left: "89.5%"
                   }}
-                  fontSize='large' />
-              </IconButton>
+                  onClick={() => handleCarouselClick('next')}
+                >
+                  <NavigateNextIcon
+                    sx={{
+                      color: 'white',
+                      background: 'rgb(75 75 75 / 55%)',
+                      borderRadius: '20px'
+                    }}
+                    fontSize='large' />
+                </IconButton>
+              </Box>
             </Box>
           </Box>
-        </Box>
+          :
+          <>
+            <Box width={'calc(100% - 115px)'} sx={{
+              overflow: 'scroll',
+            }}>
+              {
+                // previewImg &&
+                previewImg.map((item, idx) => {
+                  return (
+                    <Box sx={{
+                      width: '100%',
+                      display: 'inline-flex',
+                      height: '35px',
+                      alignItems: 'center'
+                    }} key={idx}>
+                      <p style={{ width: '65%' }} onClick={() => console.log('hi')}> {item.name} </p>
+                      <Button sx={{ width: '35% ' }} onClick={() => {
+                        setIsOpen(true)
+                        setUrl(item.url)
+                      }}>미리보기</Button>
+                    </Box>
+                  )
+                })
+              }
+            </Box>
+            {isOpen && <Modal img={url} setIsOpen={setIsOpen} isOpen={isOpen} />}
+          </>
+        }
       </Box>
 
       <Grid container>
@@ -459,13 +450,12 @@ export default function AddLog() {
           item
           xs={12}
         >
-          <CustomInput value={title} placeholder="제목을 입력하세요."
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setTitle(e.target.value)
-            }} style={{
-              fontSize: 'xx-large',
-            }} />
-          <CustomAutoComplete ref={customAutoCompleteRef} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+          <input className={style2.title} value={title} placeholder="제목을 입력하세요." onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setTitle(e.target.value)
+          }} style={{
+            fontSize: 'xx-large',
+          }} />
+          <select className={style2.spot__list} ref={customAutoCompleteRef} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setSpotPk(e.target.value)
           }}>
             <option value="" style={{ padding: 0 }}>
@@ -476,8 +466,8 @@ export default function AddLog() {
                 {item.name}
               </option>
             ))}
-          </CustomAutoComplete>
-          <CustomTextarea placeholder="내용을 입력하세요."
+          </select>
+          <textarea className={style2.content} placeholder="내용을 입력하세요."
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
               setContent(e.target.value)
             }} style={{
@@ -496,4 +486,36 @@ export default function AddLog() {
       </Grid>
     </>
   );
+}
+
+interface Iprops {
+  text?: string;
+  img?: string;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isOpen: any;
+}
+
+
+const Modal = (props: Iprops) => {
+  const modalRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    console.log('hi')
+  }, [])
+
+  return (
+    <Box id='modalBox' ref={modalRef} className={style2.modal__box} onClick={e => (e)}>
+      <Box className={style2.container}>
+        <button className={style2.close} onClick={() => props.setIsOpen(false)}>
+          X
+        </button>
+        <Box sx={{
+          width: '300px',
+          height: '100%',
+          backgroundRepeat: 'no-repeat',
+          backgroundImage: `url(${props.img})`
+        }}
+        />
+      </Box>
+    </Box>
+  )
 }
