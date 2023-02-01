@@ -19,7 +19,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
 import Head from 'next/head'
-import style2 from '../../styles/Log.module.css'
+import style from '../../styles/Log.module.css'
 
 let isTransition = false
 
@@ -183,15 +183,15 @@ export default function AddLog() {
 
     if (nextRef.current != null && prevRef.current != null) {
       if (position == 'next') {
-        prevRef.current.classList.remove(style2.btn__hide)
-        prevRef.current.classList.add(style2.btn__show)
+        prevRef.current.classList.remove(style.btn__hide)
+        prevRef.current.classList.add(style.btn__show)
         // 마지막 이미지가 슬라이드 보다 클 경우
         if (lastImgR > imgSliderR) {
           lastImgR - imgSliderR > 309 ? setXValue(x => x + 310) : setXValue(x => x + (lastImgR - imgSliderR))
         }
       } else if (position == 'prev') {
-        nextRef.current.classList.remove(style2.btn__hide)
-        nextRef.current.classList.add(style2.btn__show)
+        nextRef.current.classList.remove(style.btn__hide)
+        nextRef.current.classList.add(style.btn__show)
         // firstImgL < 0 && (firstImgL -= 310)
         if (firstImgL > imgSliderL) {
           firstImgL - Math.abs(imgSliderL) > 309 ? setXValue(x => x + 310) : setXValue(0)
@@ -213,13 +213,13 @@ export default function AddLog() {
 
       // 이벤트 발생 전 대표이미지를 찾아 css를 없애줍니다.
       let findIdx = imgRef.current.findIndex(item => item != null && item.className == 'Log_represent__card__x1yf4')
-      imgRef.current[findIdx]?.classList.remove(style2.represent__card)
-      imgRef.current[findIdx]?.classList.add(style2.represent__cancel)
+      imgRef.current[findIdx]?.classList.remove(style.represent__card)
+      imgRef.current[findIdx]?.classList.add(style.represent__cancel)
 
       // 이벤트를 발생 시킨 이미지를 찾아 대표 이미지 css를 추가합니다.
       findIdx = imgRef.current.findIndex(item => item != null && item.alt == newRepresentImg)
-      imgRef.current[findIdx]?.classList.add(style2.represent__card)
-      imgRef.current[findIdx]?.classList.remove(style2.represent__cancel)
+      imgRef.current[findIdx]?.classList.add(style.represent__card)
+      imgRef.current[findIdx]?.classList.remove(style.represent__cancel)
 
       // 프리뷰이미지 집합내의 대표이미지 설정값을 변환합니다.
       let findIndex = previewImg.findIndex(item => item.isRepresent === true)
@@ -232,12 +232,12 @@ export default function AddLog() {
       let newRepresentImg = e.target.innerText.split('\n')[0]
 
       let findIdx = boxRef.current.findIndex(item => item != null && item.className == 'Log_represent__text__GL7zg')
-      boxRef.current[findIdx]?.classList.remove(style2.represent__text)
-      boxRef.current[findIdx]?.classList.add(style2.represent__text__cancel)
+      boxRef.current[findIdx]?.classList.remove(style.represent__text)
+      boxRef.current[findIdx]?.classList.add(style.represent__text__cancel)
 
       findIdx = boxRef.current.findIndex(item => item != null && item.innerText.split('\n')[0] == newRepresentImg)
-      boxRef.current[findIdx]?.classList.add(style2.represent__text)
-      boxRef.current[findIdx]?.classList.remove(style2.represent__text__cancel)
+      boxRef.current[findIdx]?.classList.add(style.represent__text)
+      boxRef.current[findIdx]?.classList.remove(style.represent__text__cancel)
 
       let findIndex = previewImg.findIndex(item => item.isRepresent === true)
       cpPreviewImg[findIndex].isRepresent = false;
@@ -254,8 +254,8 @@ export default function AddLog() {
     if (trackRef.current && nextRef.current) {
       if (e.target.visualViewport.width < 851 && trackRef.current.childElementCount > 1) {
         if (trackRef.current.childElementCount > 1) {
-          nextRef.current.classList.remove(style2.btn__hide)
-          nextRef.current.classList.add(style2.btn__show)
+          nextRef.current.classList.remove(style.btn__hide)
+          nextRef.current.classList.add(style.btn__show)
         }
       } else {
 
@@ -263,8 +263,8 @@ export default function AddLog() {
         let lastImgX = trackRef.current?.lastElementChild?.getBoundingClientRect().right
         if (nextRef.current != null) {
           if (lastImgX && imgSliderX && lastImgX > imgSliderX) {
-            nextRef.current.classList.remove(style2.btn__hide)
-            nextRef.current.classList.add(style2.btn__show)
+            nextRef.current.classList.remove(style.btn__hide)
+            nextRef.current.classList.add(style.btn__show)
           }
         }
         setXValue(0)
@@ -279,19 +279,19 @@ export default function AddLog() {
     let firstImgL: number = trackRef.current?.firstElementChild ? Math.round(trackRef.current?.firstElementChild?.getBoundingClientRect().left) : 0;
     if (prevRef.current && nextRef.current) {
       if (firstImgL < imgSliderL) {
-        prevRef.current.classList.remove(style2.btn__hide)
-        prevRef.current.classList.add(style2.btn__show)
+        prevRef.current.classList.remove(style.btn__hide)
+        prevRef.current.classList.add(style.btn__show)
       } else if (firstImgL == imgSliderL) {
-        prevRef.current.classList.add(style2.btn__hide)
-        prevRef.current.classList.remove(style2.btn__show)
+        prevRef.current.classList.add(style.btn__hide)
+        prevRef.current.classList.remove(style.btn__show)
       }
 
       if (lastImgR > imgSliderR) {
-        nextRef.current.classList.remove(style2.btn__hide)
-        nextRef.current.classList.add(style2.btn__show)
+        nextRef.current.classList.remove(style.btn__hide)
+        nextRef.current.classList.add(style.btn__show)
       } else if (lastImgR == imgSliderR) {
-        nextRef.current.classList.add(style2.btn__hide)
-        nextRef.current.classList.remove(style2.btn__show)
+        nextRef.current.classList.add(style.btn__hide)
+        nextRef.current.classList.remove(style.btn__show)
       }
     }
     isTransition = false
@@ -309,7 +309,7 @@ export default function AddLog() {
     window.addEventListener("resize", resizeListener);
     // SpotList를 조회하는 함수 입니다.
     if (nextRef.current)
-      nextRef.current.classList.add(style2.btn__hide)
+      nextRef.current.classList.add(style.btn__hide)
     async function getSpotList(): Promise<any> {
       try {
         await axios.get('/api/spot/selectSpotList', {
@@ -334,8 +334,8 @@ export default function AddLog() {
   useEffect(() => {
     if (previewImg.length == 1) {
       imgRef.current.length > 0
-        ? imgRef.current[0]?.classList.add(style2.represent__card)
-        : boxRef.current[0]?.classList.add(style2.represent__text)
+        ? imgRef.current[0]?.classList.add(style.represent__card)
+        : boxRef.current[0]?.classList.add(style.represent__text)
     } else {
       if (trackRef.current) {
         trackRef.current.addEventListener("transitionend", changedTransition);
@@ -346,8 +346,8 @@ export default function AddLog() {
       if (nextRef.current != null) {
         console.log('슬라이드, 이미지 ===', imgSliderX, lastImgX)
         if (lastImgX > imgSliderX) {
-          nextRef.current.classList.remove(style2.btn__hide)
-          nextRef.current.classList.add(style2.btn__show)
+          nextRef.current.classList.remove(style.btn__hide)
+          nextRef.current.classList.add(style.btn__show)
         }
       }
     }
@@ -361,14 +361,16 @@ export default function AddLog() {
       customAutoCompleteRef.current.value = spot
     }
   }, [spotList])
+
+
   return (
     <>
       {/* 이미지 업로드 */}
       <Head>
         <title>로그 남기기 | Find Photo</title>
       </Head>
-      <Box className={style2.upload__box} height={!isMobile ? '350px' : '150px'}>
-        <Box width={!isMobile ? '200px' : "100px"} className={style2.upload__button} onClick={(e) => {
+      <Box className={style.upload__box} height={!isMobile ? '350px' : '150px'}>
+        <Box width={!isMobile ? '200px' : "100px"} className={style.upload__button} onClick={(e) => {
           clickImageUpload()
         }}>
           <input ref={fileUploadRef} type='file' accept='image/*' onChange={(e) => { changeImageUpload(e) }} style={{
@@ -379,14 +381,14 @@ export default function AddLog() {
         </Box>
         {!isMobile ?
           <Box sx={{ position: 'relative', width: 'calc(100% - 215px)' }}>
-            <Box id='image__slider' ref={carouselRef} className={style2.image__slider}>
-              <Box className={style2.track__box} ref={trackRef} sx={{
+            <Box id='image__slider' ref={carouselRef} className={style.image__slider}>
+              <Box className={style.track__box} ref={trackRef} sx={{
                 transform: `translateX(calc(-1 * ${xValue}px))`,
               }}>
                 {previewImg ?
                   previewImg.map((item, idx) => (
-                    <Box className={style2.preview__box} key={idx} >
-                      <Box className={style2.preview__image}>
+                    <Box className={style.preview__box} key={idx} >
+                      <Box className={style.preview__image}>
                         {item.isRepresent ? (
                           <Box sx={{
                             position: 'absolute',
@@ -404,15 +406,15 @@ export default function AddLog() {
               </Box>
               <Box>
                 <IconButton ref={prevRef} sx={{ display: 'none' }}
-                  className={style2.button__grp}
+                  className={style.button__grp}
                   type="button"
                   onClick={() => !isTransition && handleCarouselClick('prev')}
                 >
-                  <NavigateBeforeIcon className={style2.nav__icon} fontSize='large' />
+                  <NavigateBeforeIcon className={style.nav__icon} fontSize='large' />
                 </IconButton>
                 <IconButton
                   ref={nextRef}
-                  className={style2.button__grp}
+                  className={style.button__grp}
                   type="button"
                   sx={{ right: 0 }}
                   onClick={() => {
@@ -421,7 +423,7 @@ export default function AddLog() {
                   }
                   }
                 >
-                  <NavigateNextIcon className={style2.nav__icon} fontSize='large' />
+                  <NavigateNextIcon className={style.nav__icon} fontSize='large' />
                 </IconButton>
               </Box>
             </Box>
@@ -438,7 +440,7 @@ export default function AddLog() {
                       height: '35px',
                       alignItems: 'center'
                     }} key={idx} onClick={(e: React.MouseEvent<HTMLDivElement>) => handleImgClick(e)}>
-                      <p className={style2.mobile__upload__text}> {item.name} </p>
+                      <p className={style.mobile__upload__text}> {item.name} </p>
                       <Button sx={{ width: '35%' }} onClick={() => {
                         setIsOpen(true)
                         setUrl(item.url)
@@ -456,12 +458,12 @@ export default function AddLog() {
       <Box>
         {/* 글 */}
         <Box>
-          <input className={style2.title} value={title} placeholder="제목을 입력하세요." onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          <input className={style.title} value={title} placeholder="제목을 입력하세요." onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setTitle(e.target.value)
           }} style={{
             fontSize: 'xx-large',
           }} />
-          <select className={style2.spot__list} ref={customAutoCompleteRef} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+          <select className={style.spot__list} ref={customAutoCompleteRef} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setSpotPk(e.target.value)
           }}>
             <option value="" style={{ padding: 0 }}>
@@ -473,21 +475,21 @@ export default function AddLog() {
               </option>
             ))}
           </select>
-          <textarea className={style2.content} placeholder="내용을 입력하세요."
+          <textarea className={style.content} placeholder="내용을 입력하세요."
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
               setContent(e.target.value)
             }} style={{
               height: '52vh'
             }} />
         </Box>
-        <Box className={style2.log__footer} >
+        <Box className={style.log__footer} >
           <Button variant="text" onClick={router.back}>뒤로가기</Button>
           {toast &&
             <Box>
               <Toast setToast={setToast} text={errMsg} />
             </Box>
           }
-          <Button className={style2.add__btn} variant="text" onClick={insertLog}>로그 등록</Button>
+          <Button className={style.add__btn} variant="text" onClick={insertLog}>로그 등록</Button>
         </Box>
       </Box>
     </>
@@ -506,16 +508,16 @@ const Modal = (props: Iprops) => {
   const modalRef = useRef<HTMLDivElement | null>(null)
 
   return (
-    <Box id='modalBox' ref={modalRef} className={style2.modal__box} onClick={e => {
+    <Box id='modalBox' ref={modalRef} className={style.modal__box} onClick={e => {
       modalRef.current === e.target && props.setIsOpen(false)
     }}>
-      <Box className={style2.container}>
-        <Box className={style2.image__box} sx={{
+      <Box className={style.container}>
+        <Box className={style.image__box} sx={{
           backgroundImage: `url(${props.img})`,
         }}
         />
       </Box>
-      <Button className={style2.close} onClick={() => props.setIsOpen(false)}>
+      <Button className={style.close} onClick={() => props.setIsOpen(false)}>
         닫기
       </Button>
     </Box>

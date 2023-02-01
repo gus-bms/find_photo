@@ -96,7 +96,7 @@ function Slider(props: Iprops) {
     return (
       <div>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box className={style.slider__wrapper} width={'300px'} sx={{ textAlign: 'center' }}>
+          <Box className={style.slider__wrapper} width={'400px'} sx={{ textAlign: 'center' }}>
             <Box className={style.image__wrapper} sx={{
               transform: `translateX(-${(current * (1 / props.images.length * 100))}%)`,
               position: 'relative',
@@ -105,7 +105,7 @@ function Slider(props: Iprops) {
                 props.images.length > 0 && (
                   props.images.map((img, idx) => (
                     <Box className={style.image__box} key={idx} sx={{
-                      width: '300px !important',
+                      width: '400px !important',
                       backgroundImage: `url(https://log-image.s3.ap-northeast-2.amazonaws.com/fsupload/${img})`
                     }} />
                   ))
@@ -129,7 +129,7 @@ function Slider(props: Iprops) {
         {
           props.images.length > 0 &&
           <Box className={style.progress__wrapper}>
-            <Box sx={{ width: '300px' }}>
+            <Box sx={{ width: '400px' }}>
               <LinearProgress variant="determinate" value={(current + 1) / props.images.length * 100} sx={{
                 backgroundColor: '#f3f3f3',
                 '.css-5xe99f-MuiLinearProgress-bar1': {
