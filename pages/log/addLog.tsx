@@ -86,7 +86,6 @@ export default function AddLog() {
     formData.append('title', title)
     formData.append('content', content)
     formData.append('spotPk', spotPk)
-    formData.append('userPk', '18')
 
     let representImg = previewImg.find(item => {
       if (item.isRepresent == true)

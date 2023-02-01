@@ -78,7 +78,7 @@ const saveS3 = async (req: NextApiRequest) => {
       console.log(res);
     }
     if (res) {
-      let id = insertLog(fileData.fields, fileData.files);
+      let id = insertLog(fileData.fields, fileData.files, req);
       return id;
     } else {
       console.log("@@res", res);
@@ -143,9 +143,14 @@ const uploadS3 = async (file: any) => {
  */
 async function insertLog<T>(
   fields: InsertLogProps,
-  files: any
+  files: any,
+  req: any
 ): Promise<T | unknown> {
   let imgNames: string[] = [];
+  const {
+    cookies: { uid },
+  } = req;
+  console.log("@@@uid == ", uid);
   try {
     // 이미지가 있는지 체크하여 있을 경우 저장될 이름만 별도의 array에 할당합니다.
     console.log("@@fields = ", fields);
@@ -166,7 +171,7 @@ async function insertLog<T>(
         title: fields.title,
         spot_pk: fields.spotPk,
         content: fields.content,
-        user_pk: fields.userPk,
+        uid: uid,
         images: imgNames,
         representImg: representImg,
       })

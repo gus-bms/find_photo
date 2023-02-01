@@ -7,10 +7,11 @@ import style from '../../styles/Profile.module.css'
 const Profile = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const [logList, setLogList] = useState<{ id: string, title: string, content: string, url: string }[]>([])
-  const [user, setUser] = useState<{ userPk: string, profileUrl: string, intro: string }>({
+  const [user, setUser] = useState<{ userPk: string, name: string, profileUrl: string, intro: string }>({
     userPk: '',
     profileUrl: '',
-    intro: ''
+    intro: '',
+    name: ''
   })
   const [intro, setIntro] = useState<string>('')
   const introRef = useRef<HTMLTextAreaElement | null>(null)
@@ -72,6 +73,7 @@ const Profile = () => {
   useEffect(() => {
     const getUser = async () => {
       const user = await axios.get("/api/user/selectUser")
+      console.log(user.data.user)
       setUser(user.data.user)
       setIntro(user.data.user.intro)
 
@@ -119,7 +121,7 @@ const Profile = () => {
         </Box>
         <Box className={style.intro__box}>
           <Typography className={style.title}>
-            Gus-Bms
+            {user.name}
           </Typography>
           {!isEdit ?
             <Typography>
