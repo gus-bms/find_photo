@@ -34,16 +34,6 @@
   box-shadow: none !important;
 }
 
-.represent__card {
-  transform: translateY(-20px);
-  transition: transform 450ms;
-}
-
-.represent__cancel {
-  transform: translateY(0px);
-  transition: transform 450ms;
-}
-
 .select input[type="radio"]:checked + div {
   background-color: indigo;
   color: #fff;

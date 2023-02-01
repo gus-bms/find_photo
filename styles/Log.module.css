@@ -1,7 +1,7 @@
 /* Add Log module */
 .title {
   width: 100%;
-  height: 5vh;
+  height: 50px;
   padding: 0;
   font-size: 0.875rem;
   font-weight: 400;
@@ -20,7 +20,7 @@
 
 .spot__list {
   width: 100%;
-  height: 2vh;
+  height: 20px;
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 2vh;
@@ -28,6 +28,9 @@
   background: dark;
   border: none;
   font-family: "twayair";
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .spot__list:focus {
@@ -40,7 +43,7 @@
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
-  margin-bottom: 0.4vh;
+  margin-bottom: 38px;
   padding: 0;
   color: dark;
   background: dark;
@@ -52,6 +55,74 @@
 .content:focus {
   border-color: none !important;
   outline: none !important;
+}
+
+.upload__box {
+  display: flex;
+  width: 100%;
+}
+
+.image__slider {
+  width: 100%;
+  overflow: hidden;
+  height: 100%;
+}
+
+.preview__box {
+  width: 300px;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  margin-right: 10px;
+  /* transition: all 0.1s linear; */
+}
+
+.preview__image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-position: center bottom;
+  background-size: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.represent__card {
+  transform: translateY(-20px);
+  transition: transform 450ms;
+}
+
+.represent__cancel {
+  transform: translateY(0px);
+  transition: transform 450ms;
+}
+
+.track__box {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.button__grp {
+  top: 40%;
+  padding: 30px 30px !important;
+  position: absolute !important;
+}
+
+.btn__show {
+  display: block !important;
+}
+
+.btn__hide {
+  display: none !important;
+}
+
+.nav__icon {
+  color: white;
+  background: rgb(75 75 75 / 55%);
+  border-radius: 20px;
 }
 
 .upload__button {
@@ -67,6 +138,22 @@
   margin-right: 15px;
 }
 
+.mobile__upload__text {
+  width: 65%;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.represent__text {
+  background-color: antiquewhite;
+}
+
+.represent__text__cancel {
+  background-color: none;
+}
+
 .log__footer {
   position: fixed;
   bottom: 0px;
@@ -75,6 +162,7 @@
 .log__footer > button {
   color: gray;
 }
+
 .add__btn {
   position: absolute !important;
   right: 0;
@@ -96,7 +184,7 @@
   }
 }
 
-/* log module */
+/* Log View module */
 .profile__wrapper {
   margin-top: 3vh;
   margin-bottom: 1vh;
@@ -110,8 +198,9 @@
 
 /* 모달창 */
 .modal__box {
-  z-index: 1;
+  z-index: 10;
   position: absolute;
+  background-color: #8080808c;
   top: 0px;
   left: 0px;
   width: 100%;
@@ -124,10 +213,10 @@
   height: 350px;
 
   /* 최상단 위치 */
-  z-index: 2;
+  z-index: 11;
 
   /* 중앙 배치 */
-  /* top, bottom, left, right 는 브라우저 기준으로 작동한다. */
+  /* top; bottom; left; right 는 브라우저 기준으로 작동한다. */
   /* translate는 본인의 크기 기준으로 작동한다. */
   position: absolute;
   top: 50%;
@@ -135,14 +224,24 @@
   transform: translate(-50%, -50%);
 
   /* 모달창 디자인 */
-  background-color: gray;
-  border: 1px solid black;
+  /* background-color: gray;
+  border: 1px solid black; */
   border-radius: 8px;
+}
+
+.image__box {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 /* 모달창 내부 X버튼 */
 .close {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  height: 28px;
+  background: white !important;
+  top: calc((100% - 350px) * 1.56);
+  width: 350px;
+  left: calc((100% - 350px) / 2);
 }
