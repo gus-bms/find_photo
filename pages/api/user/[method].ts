@@ -57,12 +57,12 @@ async function selectUser<T>(req: NextApiRequest): Promise<T | unknown> {
   console.log(req.cookies);
   try {
     // DB서버로 데이터를 전송합니다. 결과가 성공적일 경우, log 내용과 이미지명을 제공받습니다.
-    const log = await axios.get(`${host}/api/selectUser`, {
+    const user = await axios.get(`${host}/api/selectUser`, {
       params: {
         uid: uid,
       },
     });
-    return log.data;
+    return user.data;
   } catch (err) {
     console.log(err);
     return err;

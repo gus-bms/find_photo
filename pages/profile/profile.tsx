@@ -29,7 +29,6 @@ const Profile = () => {
    */
   const getUser = async () => {
     const user = await axios.get("/api/user/selectUser")
-    console.log(user.data.user.intro)
     setUser((prevUser) => {
       let newUser = { ...prevUser }
       newUser['intro'] = user.data.user.intro

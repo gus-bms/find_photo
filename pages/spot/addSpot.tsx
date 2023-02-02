@@ -91,10 +91,10 @@ export default function AddSpot() {
             let rObj = {
               id: item.id,
               name: item.place_name ? item.place_name : '',
-              address: item.road_address_name != null ? item.road_address_name : item.address_name,
-              address_dong: item.address_name != null ? item.address_name.match(regex)[0] : '',
+              address: item.road_address_name != "" ? item.road_address_name : item.address_name,
+              address_dong: item.address_name != "" ? item.address_name.match(regex)[0] : '',
             }
-            // console.log(item)
+            console.log(item)
             return rObj
           })
           setSpotList(spotArr)
@@ -155,7 +155,6 @@ export default function AddSpot() {
             sx={{
               width: "100%",
               bgcolor: "background.paper",
-              // marginTop: "1vh",
             }}
           >
             <RadioGroup
@@ -234,7 +233,7 @@ export default function AddSpot() {
                       <Box sx={{
                         backgroundColor: 'lightgray',
                         borderRadius: '10px',
-                        width: '20vw',
+                        width: '15vw',
                         textAlign: 'center',
                         height: '50px',
                         marginRight: '3vh',
