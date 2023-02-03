@@ -11,23 +11,23 @@
 
 import Head from 'next/head'
 import Map from './components/map/map'
-import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [cookies, ,] = useCookies(['uid']);
   const [sKeyword, setSKeyword] = useState<string>('');
-  const authCheck = () => { // 페이지에 들어올때 쿠키로 사용자 체크
-    const uid = cookies.uid; // 쿠키에서 id 를 꺼내기
+  const router = useRouter();
 
-  }
   useEffect(() => {
-    authCheck(); // 로그인 체크 함수
     // querystring에 한글은 깨지기 때문에 변환합니다.
     const decodeUri = decodeURI(window.location.search);
     setSKeyword(decodeUri.split('?sKeyword=')[1])
+
+    router.beforePopState(state => {
+      const decodeUri = decodeURI(window.location.search);
+      decodeUri.length != 0 ? setSKeyword(decodeUri.split('?sKeyword=')[1]) : setSKeyword('');
+      return true;
+    });
   }, [])
 
   useEffect(() => {

@@ -17,6 +17,7 @@ interface ISpot extends Spot {
 
 export default function AddSpot() {
   const [keyword, setKeyword] = useState<string>('')
+  const [search, setSearch] = useState<string>('')
   const [typeList, setTypeList] = useState<string[]>(['C', 'R', 'H'])
   const [spotList, setSpotList] = useState<ISpot[]>([]);
   const [isSelected, setIsSelected] = useState<boolean>(false)
@@ -121,8 +122,22 @@ export default function AddSpot() {
 
   useEffect(() => {
     // querystring에 한글은 깨지기 때문에 변환합니다.
-    const decodeUri = decodeURI(window.location.search);
-    setKeyword(decodeUri.split('?sKeyword=')[1])
+    const decodeUri = decodeURI(window.location.search).split('?sKeyword=')[1];
+    setKeyword(decodeUri)
+    setSearch(decodeUri)
+
+    router.beforePopState(state => {
+      const decodeUri = decodeURI(window.location.search);
+      decodeUri.length != 0
+        ? (
+          setKeyword(decodeUri.split('?sKeyword=')[1]),
+          setSearch(decodeUri.split('?sKeyword=')[1])
+        ) : (
+          setKeyword(''),
+          setSearch('')
+        )
+      return true;
+    });
 
     // maps script가 모두 로딩이 되지 않을 경우 동적으로 로드합니다.
     window.kakao.maps.load(function () {
@@ -135,12 +150,16 @@ export default function AddSpot() {
     console.log(toast)
   }, [toast])
 
+  useEffect(() => {
+    router.push(`/spot/addSpot?sKeyword=${keyword}`)
+  }, [keyword])
+
   return (
     <>
       <Head>
         <title>장소 등록 | Find Photo</title>
       </Head>
-      <Search keyword={keyword} setKeyword={setKeyword} text="장소를 입력해주세요!" ></Search>
+      <Search search={search} setSearch={setSearch} keyword={keyword} setKeyword={setKeyword} text="장소를 입력해주세요!" ></Search>
       {spotList.length > 0 &&
         <>
           <Typography sx={{

@@ -66,6 +66,7 @@ const Map = ({ pKeyword }: MapProps) => {
   const dispatch = useDispatch(); // dispatch를 사용하기 쉽게 하는 hook 입니다.
 
   const [keyword, setKeyword] = useState<string>('')
+  const [search, setSearch] = useState<string>('')
   const [spotList, setSpotList] = useState<Spot[]>([])
   const [spot, setSpot] = useState<Spot>({})
   const [map, setMap] = useState<any>()
@@ -84,6 +85,7 @@ const Map = ({ pKeyword }: MapProps) => {
         timeout: 3000
       }).then(res => {
         setSpotList(res.data.spotList)
+        console.log(res.data.spotList)
         return res.data.list;
       })
 
@@ -115,10 +117,8 @@ const Map = ({ pKeyword }: MapProps) => {
 
   // 장소 클릭 시 지도 위치를 재설정합니다.
   useEffect(() => {
-    console.log('useEffect with spot')
     if (geocoder != undefined) {
       // 주소-좌표 변환 객체를 생성합니다
-      console.log(geocoder)
       geocoder.addressSearch(spot.address, function (result: any, status: any) {
         // 정상적으로 검색이 완료됐으면 
         if (status === window.kakao.maps.services.Status.OK) {
@@ -193,14 +193,13 @@ const Map = ({ pKeyword }: MapProps) => {
           var infowindow = new window.kakao.maps.InfoWindow({
             removable: false
           });
-          console.log(selectedInfowindow == infowindow)
           if (!selectedMarker || selectedMarker !== marker) {
 
             if (selectedInfowindow != undefined) selectedInfowindow.close();
             if (infowindow != undefined) {
-              infowindow.setContent('<div class ="label"><span class="left"></span><span class="center">카카오!</span><span class="right"></span></div>')
+              // infowindow.setContent('<div class ="label"><span class="left"></span><span class="center">카카오!</span><span class="right"></span></div>')
               // infowindow.setContent('<div style="padding:10px;font-size:12px;">' + spot.name + '</div>');
-              infowindow.open(map, marker);
+              // infowindow.open(map, marker);
             }
 
             // 클릭된 마커 객체가 null이 아니면
@@ -212,7 +211,6 @@ const Map = ({ pKeyword }: MapProps) => {
           } else if (selectedMarker == marker && selectedInfowindow != undefined) {
             // selectedInfowindow.close();
             // selectedInfowindow.getPosition()
-            console.log(selectedInfowindow.getContent().length)
           }
 
 
@@ -241,51 +239,46 @@ const Map = ({ pKeyword }: MapProps) => {
 
   // keyword의 변경을 감지합니다.
   useEffect(() => {
-    if (keyword != '') {
-      (async () => {
-        // 검색어의 결과를 리스트로 뿌려줍니다.
-        if (pKeyword != '')
-          router.push(`/?sKeyword=${keyword}`)
-        await getSpotList()
+    (async () => {
+      // 검색어의 결과를 리스트로 뿌려줍니다.
+      router.push(`/?sKeyword=${keyword}`)
+      await getSpotList()
 
-        // 검색어의 위치로 지도의 중심을 이동시킵니다.
-        if (geocoder == undefined) {
-          if (window.kakao.maps.services != undefined) {
-            setGeocoder(new window.kakao.maps.services.Geocoder())
-            return
-          }
-          return
-        }
-        if (window.kakao.maps.services != undefined && geocoder == undefined) {
+      // 검색어의 위치로 지도의 중심을 이동시킵니다.
+      if (geocoder == undefined) {
+        if (window.kakao.maps.services != undefined) {
           setGeocoder(new window.kakao.maps.services.Geocoder())
           return
         }
-        // 주소-좌표 변환 객체를 생성합니다
-        console.log(geocoder)
-        geocoder.addressSearch(keyword, function (result: any, status: any) {
-          // 정상적으로 검색이 완료됐으면 
-          if (status === window.kakao.maps.services.Status.OK) {
-            var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-            map.setCenter(coords);
-          } else {
-            if (Array.isArray(result) || result.length == 0) {
-              router.back()
-              alert('검색되지 않습니다.')
-            }
+        return
+      }
+      if (window.kakao.maps.services != undefined && geocoder == undefined) {
+        setGeocoder(new window.kakao.maps.services.Geocoder())
+        return
+      }
+      // 주소-좌표 변환 객체를 생성합니다
+      geocoder.addressSearch(keyword, function (result: any, status: any) {
+        // 정상적으로 검색이 완료됐으면 
+        if (status === window.kakao.maps.services.Status.OK) {
+          var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+          // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+          map.setCenter(coords);
+        } else {
+          if (Array.isArray(result) || result.length == 0) {
+            router.back()
+            alert('검색되지 않습니다.')
           }
-        });
+        }
+      });
 
-      })();
-    }
+    })();
   }, [keyword, geocoder])
 
   useEffect(() => {
-    console.log('useEffect with pKeyword')
     console.log('query ==', pKeyword)
     typeof (pKeyword) == 'string' && (async () => {
       setKeyword(pKeyword)
-      await getSpotList()
+      setSearch(pKeyword)
     })();
 
   }, [pKeyword])
@@ -293,7 +286,7 @@ const Map = ({ pKeyword }: MapProps) => {
   return (
     <>
       {/* Search에서 데이터 전달 받기 위해 state 함수 전달 */}
-      <Search keyword={keyword} setKeyword={setKeyword} text='동을 입력해주세요!' />
+      <Search search={search} setSearch={setSearch} keyword={keyword} setKeyword={setKeyword} text='동을 입력해주세요!' />
       <Box
         id="map"
         component='main'
