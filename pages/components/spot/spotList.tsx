@@ -91,6 +91,8 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
    * @param spot
    */
   const handleSpotClick = (spot: Spot) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
     selectedSpot != spot ? (setSpot(
       {
         name: spot.name,

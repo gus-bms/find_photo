@@ -163,6 +163,8 @@ const Map = ({ pKeyword }: MapProps) => {
           image: normalImage
         });
 
+        console.log('@@@', selectedMarker)
+
         // 마커 객체에 마커아이디와 마커의 기본 이미지를 추가합니다
         marker.normalImage = normalImage;
 
