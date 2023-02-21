@@ -338,7 +338,7 @@ export default function AddLog() {
           },
           timeout: 3000
         }).then(res => {
-          setSpotList(res.data.spotList)
+          setSpotList(res.data.spotList.list)
           return;
         })
 
