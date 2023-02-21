@@ -25,16 +25,19 @@ console.log(host);
  */
 async function selectListSpot<T>(req: NextApiRequest): Promise<T | unknown> {
   const {
-    query: { address_dong },
+    query: { address_dong, pages },
   } = req;
+  console.log(pages);
   try {
     const spotList = await axios.get(`${host}/api/spot/selectSpotList`, {
       params: {
         address_dong: address_dong,
+        pages: pages != undefined ? pages : 5,
+        isInit: pages != undefined ? false : true,
       },
       timeout: 3000,
     });
-    return spotList.data.list;
+    return spotList.data;
   } catch (err) {
     console.log(err);
     return err;

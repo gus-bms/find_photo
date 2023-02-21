@@ -30,9 +30,8 @@ export default function Home() {
     });
   }, [])
 
-  useEffect(() => {
-    console.log(sKeyword)
-  }, [sKeyword])
+  // useEffect(() => {
+  // }, [sKeyword])
 
   return (
     <>

@@ -10,7 +10,7 @@
  */
 
 import { useRouter } from 'next/router'
-import React, { useState, useEffect, useRef, Dispatch, SetStateAction, use } from 'react'
+import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react'
 import { Box, IconButton, Button } from "@mui/material"
 import axios from 'axios'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
@@ -18,6 +18,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Spot } from '../components/map/map'
 import Toast from '../components/global/toast'
+import LoadingSpinner from '../components/global/loading';
 import Head from 'next/head'
 import style from '../../styles/Log.module.css'
 
@@ -28,6 +29,7 @@ export default function AddLog() {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   const [spotList, setSpotList] = useState<Spot[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
   const [spotPk, setSpotPk] = useState<string>('')
@@ -107,12 +109,16 @@ export default function AddLog() {
 
     // 서버에 업로드된 이미지와 데이터를 전송합니다.
     try {
+      setIsLoading(true)
       const { data } = await axios.post("/api/log/insertLog", formData);
-      if (data.done == "ok")
+      if (data.done == "ok") {
+        setIsLoading(false)
         router.push(`/log/${data.id}`)
+      }
 
     } catch (err) {
       console.log(err);
+      setIsLoading(false)
       return [];
     }
   }
@@ -135,6 +141,13 @@ export default function AddLog() {
     // 업로드된 파일이 한개인지 아닌지를 구별하여 다수일 경우 이 전 배열을 복사합니다.
     // 파일이 선택되었을 때에만 e.target.files의 길이가 1이상이므로 체크합니다.
     if (e.target.files && e.target.files.length != 0) {
+      // 파일 용량 체크 vercel 배포는 4.5MB 제한있음
+      if (e.target.files[0].size > 4718592) {
+        setToast(true)
+        setErrMsg('파일 용량이 4.5Mb를 넘습니다!')
+        return
+      }
+
       if (img.length != 0 && previewImg.length != 0) {
         // 중복된 이미지인지 체크합니다.
         let idx = img.findIndex(item => e.target.files != null && item.name === e.target.files[0].name)
@@ -143,6 +156,16 @@ export default function AddLog() {
           setToast(true)
           return
         }
+        const size = img.reduce(function add(sum, currValue) {
+          return sum + currValue.size;
+        }, 0);
+
+        if (size + e.target.files[0].size > 4718592) {
+          setToast(true)
+          setErrMsg('파일 용량이 4.5Mb를 넘습니다!')
+          return
+        }
+
         setImg([...img, e.target.files[0]]);
         setPreviewImg([...previewImg, {
           url: URL.createObjectURL(e.target.files[0]),
@@ -174,7 +197,6 @@ export default function AddLog() {
     // 현재 이미지슬라이드 내에 모든 이미지가 보여지지 않을 경우 버튼을 추가합니다.
 
     isTransition = true
-    console.log(isTransition)
     let imgSliderR: number = carouselRef.current ? Math.round(carouselRef.current?.getBoundingClientRect().right) : 0;
     let imgSliderL: number = carouselRef.current ? Math.round(carouselRef.current?.getBoundingClientRect().left) : 0;
     let lastImgR: number = trackRef.current?.lastElementChild ? Math.round(trackRef.current?.lastElementChild?.getBoundingClientRect().right) : 0;
@@ -294,7 +316,6 @@ export default function AddLog() {
       }
     }
     isTransition = false
-    console.log(isTransition)
   }
 
 
@@ -343,7 +364,6 @@ export default function AddLog() {
       let imgSliderX: number = Math.round(carouselRef.current ? carouselRef.current?.getBoundingClientRect().right : 0)
       let lastImgX: number = trackRef.current?.lastElementChild ? Math.round(trackRef.current?.lastElementChild?.getBoundingClientRect().right) : 0;
       if (nextRef.current != null) {
-        console.log('슬라이드, 이미지 ===', imgSliderX, lastImgX)
         if (lastImgX > imgSliderX) {
           nextRef.current.classList.remove(style.btn__hide)
           nextRef.current.classList.add(style.btn__show)
@@ -368,6 +388,7 @@ export default function AddLog() {
       <Head>
         <title>로그 남기기 | Find Photo</title>
       </Head>
+      {isLoading ? <LoadingSpinner /> : null}
       <Box className={style.upload__box} height={!isMobile ? '350px' : '150px'}>
         <Box width={!isMobile ? '200px' : "100px"} className={style.upload__button} onClick={(e) => {
           clickImageUpload()
@@ -417,7 +438,6 @@ export default function AddLog() {
                   type="button"
                   sx={{ right: 0 }}
                   onClick={() => {
-                    console.log(isTransition)
                     !isTransition && handleCarouselClick('next')
                   }
                   }

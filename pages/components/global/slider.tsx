@@ -65,8 +65,6 @@ function Slider(props: Iprops) {
 
   useEffect(() => {
     // 마지막으로 이동해야할 때
-    console.log(current)
-
     if (current == -1) {
       let lVar = (!isMobile ? 530 : 543) + ((props.images.length - 1) * (!isMobile ? 310 : 280))
       setTimeout(function () {

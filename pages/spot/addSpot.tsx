@@ -9,7 +9,6 @@ import Toast from '../components/global/toast'
 import router from 'next/router'
 import Head from "next/head";
 import { LocalCafe, LocalDining, PhotoCamera } from "@mui/icons-material";
-import { indigo } from "@mui/material/colors";
 
 interface ISpot extends Spot {
   id: string
@@ -68,15 +67,12 @@ export default function AddSpot() {
   }
 
   const handleChange = (e: React.ChangeEvent<unknown>, value: number) => {
-    // console.log(value, e)
     pagination.gotoPage(value)
   };
 
   useEffect(() => {
     // / 장소 검색 객체를 생성합니다
     setIsSelected(false)
-    console.log('@@keyword == ', keyword)
-
     const searchPlace = () => {
       let ps = new window.kakao.maps.services.Places();
       // 키워드로 장소를 검색합니다
@@ -95,12 +91,10 @@ export default function AddSpot() {
               address: item.road_address_name != "" ? item.road_address_name : item.address_name,
               address_dong: item.address_name != "" ? item.address_name.match(regex)[0] : '',
             }
-            console.log(item)
             return rObj
           })
           setSpotList(spotArr)
           setPagination(pagination)
-          // console.log(pagination)
         } else {
           setSpotList([])
         }
@@ -141,17 +135,15 @@ export default function AddSpot() {
 
     // maps script가 모두 로딩이 되지 않을 경우 동적으로 로드합니다.
     window.kakao.maps.load(function () {
-      console.log('load complete')
     })
 
   }, [])
 
   useEffect(() => {
-    console.log(toast)
   }, [toast])
 
   useEffect(() => {
-    router.push(`/spot/addSpot?sKeyword=${keyword}`)
+    router.push(`/spot/addSpot?sKeyword=${keyword}`, undefined, { shallow: true })
   }, [keyword])
 
   return (
@@ -187,17 +179,14 @@ export default function AddSpot() {
               }}
             >
               {spotList.map((spot, idx) => (
-                <>
-                  <FormControlLabel key={spot.id} value={spot.name} control={<Radio sx={{
-                    color: '#3b3b3ba8',
-                    '&.Mui-checked': {
-                      color: 'indigo',
-                    },
-                  }} onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
-                    width: '40%'
-                  }} />
-                  {/* </Box> */}
-                </>
+                <FormControlLabel key={spot.id} value={spot.name} control={<Radio sx={{
+                  color: '#3b3b3ba8',
+                  '&.Mui-checked': {
+                    color: 'indigo',
+                  },
+                }} onChange={e => handleRadioBtn(e, 'spot', spot)} />} label={spot.name} sx={{
+                  width: '40%'
+                }} />
               ))
               }
             </RadioGroup>
@@ -205,13 +194,12 @@ export default function AddSpot() {
               alignItems: 'center',
               marginTop: '7vh'
             }}>
-              <Pagination count={pagination.last} onChange={handleChange} sx={{
+              <Pagination className={style.pagination} count={pagination.last} onChange={handleChange} sx={{
                 '.MuiPaginationItem-root': {
                   '&.Mui-selected': {
                     backgroundColor: 'indigo',
                     color: '#fff'
                   }
-
                 }
               }} />
             </Stack>
@@ -233,40 +221,34 @@ export default function AddSpot() {
           }}>
             {
               typeList.length > 0 && typeList.map((type, idx) => (
-                <>
-                  {/* <Button key={idx}>
-              {type}
-            </Button> */}
-
-                  <Box sx={{
-                    display: 'inline-flex',
-                  }} className={style.select}>
-                    <label key={idx}>
-                      <input
-                        style={{ visibility: 'hidden' }}
-                        type="radio"
-                        value={type}
-                        checked={selectedRadio === type}
-                        onChange={(e) => handleRadioBtn(e, 'type')}
-                      />
-                      <Box sx={{
-                        backgroundColor: 'lightgray',
-                        borderRadius: '10px',
-                        width: '15vw',
-                        textAlign: 'center',
-                        height: '50px',
-                        marginRight: '3vh',
-                        marginTop: '2vh',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>{type == 'C' ? <LocalCafe /> : (
-                        type == 'R' ? <LocalDining /> :
-                          <PhotoCamera />)}</Box>
-                    </label>
-                  </Box>
-                </>
+                <Box key={idx} sx={{
+                  display: 'inline-flex',
+                }} className={style.select}>
+                  <label>
+                    <input
+                      style={{ visibility: 'hidden' }}
+                      type="radio"
+                      value={type}
+                      checked={selectedRadio === type}
+                      onChange={(e) => handleRadioBtn(e, 'type')}
+                    />
+                    <Box sx={{
+                      backgroundColor: 'lightgray',
+                      borderRadius: '10px',
+                      width: '15vw',
+                      textAlign: 'center',
+                      height: '50px',
+                      marginRight: '3vh',
+                      marginTop: '2vh',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>{type == 'C' ? <LocalCafe /> : (
+                      type == 'R' ? <LocalDining /> :
+                        <PhotoCamera />)}</Box>
+                  </label>
+                </Box>
               ))
             }
           </Box>

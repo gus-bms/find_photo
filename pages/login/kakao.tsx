@@ -9,7 +9,7 @@
  * @project find-photo
  */
 
-import { NextPage } from 'next';
+import next, { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect } from 'react';
 import axios from 'axios'
@@ -76,7 +76,8 @@ const Kakao: NextPage = () => {
               // expires: expireDate,
             });// 쿠키에 토큰 저장
 
-            router.push('/');
+            const nextUrl = window.localStorage.getItem('nextUrl');
+            nextUrl ? (router.push(nextUrl), window.localStorage.removeItem('nextUrl')) : router.push('/');
             dispatch(loginAction());
 
           } else {
@@ -98,6 +99,7 @@ const Kakao: NextPage = () => {
    * 발생되지 않을 경우에는 로그인 페이지로 이동시킵니다.
    */
   useEffect(() => {
+    console.log(window.location.search)
     authCode ? loginHandler(authCode) :
       (
         kakaoServerError ? (
@@ -107,10 +109,6 @@ const Kakao: NextPage = () => {
       )
   }, [loginHandler, authCode, kakaoServerError, router]);
 
-
-  /**
-   * @TO_DO 로그인 중입니다. 페이지 예쁘게 변경 필요함.
-   */
   return (
     <Loading />
   );

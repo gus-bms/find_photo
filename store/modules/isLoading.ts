@@ -18,10 +18,8 @@ const reducer = (state = initialState, action: any) => {
     action.type // 액션의 type이 COUNT_PLUS일땐 state에 + 1 COUNT_MINUS 일 땐 state에 -1
   ) {
     case LOADING_START:
-      console.log(state);
       return (state = true);
     case LOADING_END:
-      console.log(state);
       return (state = false);
     default:
       return state;

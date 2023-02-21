@@ -21,8 +21,6 @@ import {
   IconButton,
   Button,
 } from "@mui/material";
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Spot } from '../map/map'
 import { LocalCafe, LocalDining, PhotoCamera, ExpandLess, ExpandMore } from "@mui/icons-material";
 import style from '../../../styles/Spot.module.css'
@@ -76,14 +74,8 @@ export default SpotList;
  */
 const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [current, setCurrent] = useState<number>(0)
   const [spotPk, setSpotPk] = useState<number>()
   const [images, setImages] = useState<{ logPk: string, url: string, title: string, name: string, profile_url: string }[]>([])
-
-  const carouselRef = useRef(null)
-  const prevRef = useRef<HTMLButtonElement | null>(null)
-  const nextRef = useRef<HTMLButtonElement | null>(null)
-  const trackRef = useRef(null)
 
   /**
    * 스팟 라벨을 클릭할 때 발생하는 이벤트입니다.
@@ -110,7 +102,6 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
   }
 
   useEffect(() => {
-    console.log(spotPk)
     if (spotPk == undefined) {
       return
     }
@@ -121,7 +112,6 @@ const DetailSpot: React.FunctionComponent<Cprops> = ({ spot, setSpot }: Cprops) 
       }
     }).then(resp => {
       if (resp.data.r) {
-        console.log(resp.data.row)
         let logArr = resp.data.row.map((log: { log_pk: number, img_name: string, title: string, name: string, profile_url: string }) => {
           var rObj: { logPk: string, url: string, title: string, profile_url: string, name: string } = {
             logPk: '',

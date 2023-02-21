@@ -34,6 +34,11 @@
   box-shadow: none !important;
 }
 
+.box__category {
+  display: flex;
+  justify-content: center;
+}
+
 .select input[type="radio"]:checked + div {
   background-color: indigo;
   color: #fff;
@@ -58,6 +63,9 @@
   }
   .spot__footer {
     width: 90vw;
+  }
+  .pagination {
+    margin-top: 50px;
   }
 }
 

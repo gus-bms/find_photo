@@ -45,10 +45,6 @@ const Naver: NextPage = () => {
     dispatch(loginAction());                // 서버에서 로그인이 성공처리 되면 헤더의 로그인 State를 변경해줍니다.
   }, []);
 
-
-  useEffect(() => {
-    console.log('hi')
-  }, [])
   /**
    * 서버로 접근토큰을 전송합니다.
    * 전송된 접근토큰에 대한 사용자 정보를 응답 받는데 성공하면 uid값을 쿠키로 저장합니다.
@@ -72,7 +68,6 @@ const Naver: NextPage = () => {
            * 서버 결과(ok)가 false일 경우 로그인 화면으로 다시 이동합니다.
            */
           if (resp.data.ok) {
-            console.log(resp.data)
             const expireDate = new Date()
             expireDate.setMinutes(expireDate.getMinutes() + (60 * 24 * 7))
 

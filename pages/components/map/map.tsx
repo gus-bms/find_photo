@@ -58,7 +58,7 @@ const MARKER_WIDTH = 33, // 기본, 클릭 마커의 너비
 
 var selectedMarker: any = null
 var selectedInfowindow: any
-
+var dataLength: number;
 const Map = ({ pKeyword }: MapProps) => {
   // Redux store의 state 중 isLogin을 불러오는 hook 입니다.
   const isLoading = useSelector<IRootState, boolean>(state => state.isLoading);
@@ -76,16 +76,18 @@ const Map = ({ pKeyword }: MapProps) => {
    * SpotList를 조회하는 함수 입니다.
    * @returns 
    */
-  async function getSpotList(): Promise<any> {
+  async function getSpotList(pages?: number): Promise<any> {
     try {
       await axios.get('/api/spot/selectSpotList', {
         params: {
           address_dong: keyword,
+          pages: pages
         },
         timeout: 3000
       }).then(res => {
-        setSpotList(res.data.spotList)
-        console.log(res.data.spotList)
+        setSpotList(res.data.spotList.list)
+        if (res.data.spotList.count)
+          dataLength = res.data.spotList.count
         return res.data.list;
       })
 
@@ -163,7 +165,6 @@ const Map = ({ pKeyword }: MapProps) => {
           image: normalImage
         });
 
-        console.log('@@@', selectedMarker)
 
         // 마커 객체에 마커아이디와 마커의 기본 이미지를 추가합니다
         marker.normalImage = normalImage;
@@ -277,7 +278,6 @@ const Map = ({ pKeyword }: MapProps) => {
   }, [keyword, geocoder])
 
   useEffect(() => {
-    console.log('query ==', pKeyword)
     typeof (pKeyword) == 'string' && (async () => {
       setKeyword(pKeyword)
       setSearch(pKeyword)
@@ -316,6 +316,21 @@ const Map = ({ pKeyword }: MapProps) => {
             </Link>
           </Box>
         }
+        <Button sx={{
+          width: '100px',
+          backgroundColor: 'gray',
+          color: 'white',
+          fontSize: '1rem',
+          margin: ' 20px 0 40px 0',
+          '&:hover': {
+            backgroundColor: 'gray'
+          }
+        }} onClick={() => {
+          let moreCnt: number
+          if (spotList.length === dataLength || spotList.length > dataLength) return
+          moreCnt = dataLength - spotList.length < 5 ? spotList.length + dataLength - spotList.length : spotList.length + 5
+          getSpotList(moreCnt)
+        }}>+ 더보기</Button>
       </Box>
     </>
   )

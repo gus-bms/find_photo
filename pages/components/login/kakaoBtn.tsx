@@ -23,7 +23,6 @@ export default function KakaoBtn() {
   // 카카오 객체에 앱 키를 세팅합니다.
   const initKakao = () => {
     window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APPKEY);
-    console.log(window.Kakao.isInitialized());
   }
 
   // 카카오 버튼 클릭 시 카카오 객체로부터 로그인 창을 호출합니다.

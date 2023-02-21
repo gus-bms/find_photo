@@ -47,6 +47,12 @@ const Login = () => {
 
   }, [toast])
 
+  useEffect(() => {
+    const decodeUri = decodeURI(window.location.search).split('?next=')[1];
+    if (decodeUri)
+      window.localStorage.setItem('nextUrl', decodeUri)
+  }, [])
+
   return (
     <>
       <Head>

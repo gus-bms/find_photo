@@ -46,7 +46,7 @@ export const Header = () => {
   return (
     <Box className={style.header__box}>
       <Link className={style.logo} href='/'>
-        <Typography >Find Photo</Typography>
+        <Typography >Find Photo.</Typography>
       </Link>
       {isLogin
         ?

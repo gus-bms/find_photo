@@ -72,7 +72,6 @@ const Profile = () => {
   useEffect(() => {
     const getUser = async () => {
       const user = await axios.get("/api/user/selectUser")
-      console.log(user.data.user)
       setUser(user.data.user)
       setIntro(user.data.user.intro)
 

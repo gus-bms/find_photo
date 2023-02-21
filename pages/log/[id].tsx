@@ -8,11 +8,8 @@
  * @project find-photo
  */
 
-import React, { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
-import { Grid, Box, IconButton, Typography, Avatar } from "@mui/material";
-import style from '../../styles/Spot.module.css'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Avatar } from "@mui/material";
 import axios from 'axios';
 import Error404 from '../error_404'
 import { useCookies } from 'react-cookie';
