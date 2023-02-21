@@ -322,6 +322,7 @@ const Map = ({ pKeyword }: MapProps) => {
           color: 'white',
           fontSize: '1rem',
           margin: ' 20px 0 40px 0',
+          display: spotList && spotList.length === dataLength || spotList && spotList.length > dataLength ? 'none' : '',
           '&:hover': {
             backgroundColor: 'gray'
           }

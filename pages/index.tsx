@@ -39,7 +39,7 @@ export default function Home() {
         <title>Find Photo</title>
         <meta name="description" content="안녕하세요, Find Photo 입니다." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/findPhotoFavicon.ico" />
       </Head>
       <Map {...{ pKeyword: sKeyword }} />
     </>
